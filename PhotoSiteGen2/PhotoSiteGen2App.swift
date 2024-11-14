@@ -10,8 +10,11 @@ import SwiftUI
 @main
 struct PhotoSiteGen2App: App {
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        DocumentGroup(newDocument: WebSiteDocument()) { file in
+            ContentView(websiteDocument: file.$document)
         }
+//        WindowGroup {
+//            ContentView()
+//        }
     }
 }

@@ -6,13 +6,31 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		272410002CE69DCA00161602 /* DetailViewEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27240FFF2CE69DC000161602 /* DetailViewEnum.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		27240FFF2CE69DC000161602 /* DetailViewEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewEnum.swift; sourceTree = "<group>"; };
 		279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoSiteGen2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		279629C52CE1556A008F2CE2 /* Exceptions for "PhotoSiteGen2" folder in "PhotoSiteGen2" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 279629AA2CE147D4008F2CE2 /* PhotoSiteGen2 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				279629C52CE1556A008F2CE2 /* Exceptions for "PhotoSiteGen2" folder in "PhotoSiteGen2" target */,
+			);
 			path = PhotoSiteGen2;
 			sourceTree = "<group>";
 		};
@@ -34,6 +52,7 @@
 			children = (
 				279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */,
 				279629AC2CE147D4008F2CE2 /* Products */,
+				27240FFF2CE69DC000161602 /* DetailViewEnum.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				272410002CE69DCA00161602 /* DetailViewEnum.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +277,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PhotoSiteGen2/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -284,6 +305,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PhotoSiteGen2/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
