@@ -19,21 +19,14 @@ struct ContentView: View {
             )
             .frame(minWidth: 250)
         } detail: {
-            if let selection {
-                switch selection {
-                case .noSelection:
-                    Text("Select a page to edit")
-                case .siteConfiguration:
-                    SiteConfigEditView(websiteDocument: $websiteDocument)
-                case .gallerySelection(let id):
-                    GalleryView(
-                        galleryDocument: $websiteDocument.galleries.first(
-                            where: { $0.id == id })!)
-                }
-            } else {
-                Text("Select a page to edit")
+            switch selection {
+            case .gallerySelection(let id):
+                GalleryView(
+                    galleryDocument: $websiteDocument.galleries.first(
+                        where: { $0.id == id })!)
+            default:  // .siteConfiguration:
+                SiteConfigEditView(websiteDocument: $websiteDocument)
             }
-
         }
     }
 }

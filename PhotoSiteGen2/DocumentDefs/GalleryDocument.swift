@@ -12,10 +12,7 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     var title: String
     var directory: String
     var titleImageName: String = ""
-//    var sequenceNumber: Int
     var categories = [String]()
-    
-//    var id: String { directory }
     
     static let mock = GalleryDocument(title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"])
 }

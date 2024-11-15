@@ -21,35 +21,24 @@ struct ListingView: View {
                 }
 
                 Section {
-                    ForEach(
-                        $websiteDocument.galleries, editActions: .move //,
-//                        selection: $selection
-                    ) { $galleryDocument in
+                    ForEach($websiteDocument.galleries, editActions: .move) {
+                        $galleryDocument in
                         NavigationLink(
                             value: DetailViewEnum.gallerySelection(
                                 id: galleryDocument.id)
                         ) {
-                            Text(galleryDocument.title)
-                                .contextMenu {
-                                    Button("Delete") {
-                                        deleteGallery(galleryDocument)
+                            HStack {
+                                Image(systemName: "photo")
+                                Text(galleryDocument.title)
+                                    .contextMenu {
+                                        Button("Delete") {
+                                            deleteGallery(galleryDocument)
+                                        }
                                     }
-                                }
-                                .padding(.leading, 20)
+                            }
+                            .padding(.leading, 20)
                         }
-                        //                        NavigationLink(
-                        //                            destination: DetailViewEnum.gallerySelelection(id: $galleryDocument.id)
-                        //                        ) {
-                        //                            Text(galleryDocument.title)
-                        //                                .contextMenu {
-                        //                                    Button("Delete") {
-                        //                                        deleteGallery(galleryDocument)
-                        //                                    }
-                        //                                }
-                        //                        }
                     }
-//                    .onDelete(perform: deleteGallery)
-                   
                 } header: {
                     HStack {
                         Label("Galleries", systemImage: "photo.stack")
@@ -61,9 +50,6 @@ struct ListingView: View {
                     }
                 }
             }
-            //        .toolbar {
-            //            Button("Add Gallery", systemImage: "plus", action: addGallery)
-            //        }
         }
     }
 
@@ -94,21 +80,23 @@ struct ListingView: View {
     }
 
     func deleteGallery(_ gallery: GalleryDocument) {
-        print("deleting gallery with is: \(gallery.id)")
-        let deletionIndex = websiteDocument.galleries.firstIndex(of: gallery)
-        if gallery == websiteDocument.galleries.last {
-            selection = DetailViewEnum.gallerySelection(id: websiteDocument.galleries[deletionIndex!.advanced(by: -1)].id)
-        } else {
-            selection = DetailViewEnum.gallerySelection(id: websiteDocument.galleries[deletionIndex!.advanced(by: 1)].id)
-        }
-        $websiteDocument.galleries.wrappedValue.removeAll {
-            $0.id == gallery.id
-        }
-        debugPrint($websiteDocument.galleries)
-//        selection = nil
+        guard
+            let deletionIndex = websiteDocument.galleries.firstIndex(
+                of: gallery)
+        else { return }
+        
+        let newSelectedId =  deletionIndex.advanced(
+            by: gallery == websiteDocument.galleries.last ? -1 : 1)
+        selection = DetailViewEnum.gallerySelection(
+            id: websiteDocument.galleries[newSelectedId].id
+        )
+        
+        $websiteDocument.galleries.wrappedValue.remove(at: deletionIndex)
     }
 }
 
 #Preview {
-    ListingView(websiteDocument: .constant(WebSiteDocument.mock), selection: .constant(nil))
+    ListingView(
+        websiteDocument: .constant(WebSiteDocument.mock),
+        selection: .constant(nil))
 }

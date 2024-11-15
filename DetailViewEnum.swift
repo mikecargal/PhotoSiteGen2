@@ -8,7 +8,6 @@
 import SwiftUI
 
 enum DetailViewEnum: Hashable {
-    case noSelection
     case siteConfiguration
     case gallerySelection(id: UUID)
 }

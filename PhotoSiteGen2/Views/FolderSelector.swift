@@ -14,24 +14,25 @@ struct FolderSelector: View {
 
     var body: some View {
         HStack {
-            Text(label)
-            Button {
-                let panel = NSOpenPanel()
-                panel.directoryURL = selectedFolder
-                panel.allowsMultipleSelection = false
-                panel.canChooseFiles = false
-                panel.canChooseDirectories = true
-                panel.canCreateDirectories = true
+            LabeledContent(label) {
+                Button {
+                    let panel = NSOpenPanel()
+                    panel.directoryURL = selectedFolder
+                    panel.allowsMultipleSelection = false
+                    panel.canChooseFiles = false
+                    panel.canChooseDirectories = true
+                    panel.canCreateDirectories = true
 
-                if panel.runModal() == .OK {
-                    if let url = panel.url {
-                        onChange(url)
+                    if panel.runModal() == .OK {
+                        if let url = panel.url {
+                            onChange(url)
+                        }
                     }
+                } label: {
+                    Image(systemName: "folder")
                 }
-            } label: {
-                Image(systemName: "folder")
+                Text(selectedFolder.absoluteString)
             }
-            Text(selectedFolder.absoluteString)
         }
     }
 }
@@ -40,5 +41,5 @@ struct FolderSelector: View {
     FolderSelector(
         label: "Select Folder",
         selectedFolder: FileManager.default.homeDirectoryForCurrentUser
-    ) { url in }
+    ) { _ in }
 }

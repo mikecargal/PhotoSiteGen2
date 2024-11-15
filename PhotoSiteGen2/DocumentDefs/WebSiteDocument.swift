@@ -36,10 +36,9 @@ struct WebSiteDocument: FileDocument, Codable {
         doc.staticSiteFolder = .init(fileURLWithPath: "StaticSite")
         doc.destinationFolder = .init(fileURLWithPath: "Destination")
         doc.galleries.append(GalleryDocument.mock)
-        doc.galleries.append(GalleryDocument(title: "Gallery 2", directory: "dir2"))
-        doc.galleries.append(GalleryDocument(title: "Gallery 3", directory: "dir3"))
-        doc.galleries.append(GalleryDocument(title: "Gallery 4", directory: "dir4"))
-        doc.galleries.append(GalleryDocument(title: "Gallery 5", directory: "dir5"))
+        for i in 1...10 {
+            doc.galleries.append(.init(title: "Gallery \(i)", directory: "\(i)"))
+        }
         return doc
     }()
 }

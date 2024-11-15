@@ -13,8 +13,5 @@ struct PhotoSiteGen2App: App {
         DocumentGroup(newDocument: WebSiteDocument()) { file in
             ContentView(websiteDocument: file.$document)
         }
-//        WindowGroup {
-//            ContentView()
-//        }
     }
 }

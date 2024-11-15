@@ -11,7 +11,6 @@ struct GalleryView: View {
     @Binding var galleryDocument: GalleryDocument
 
     var body: some View {
-        let _ = debugPrint(galleryDocument,galleryDocument.id)
         Form {
             Text("Directory: \(galleryDocument.directory)")
             Spacer()
