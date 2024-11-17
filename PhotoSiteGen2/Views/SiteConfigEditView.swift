@@ -9,31 +9,30 @@ import SwiftUI
 
 struct SiteConfigEditView: View {
     @Binding var websiteDocument: WebSiteDocument
-    
+
     var body: some View {
         Form {
             FolderSelector(
                 label: "Source Folder",
-                selectedFolder: websiteDocument.sourceFolder
-                ?? FileManager.default.homeDirectoryForCurrentUser
-            ) { url in websiteDocument.sourceFolder = url
-            }
-            
+                selectedFolder: $websiteDocument.sourceFolder,
+                defaultFolder: FileManager.default.homeDirectoryForCurrentUser
+                    .appendingPathComponent("WebsiteSource")
+            )
+
             FolderSelector(
                 label: "Static Source Folder",
-                selectedFolder: websiteDocument.staticSiteFolder
-                ?? FileManager.default.homeDirectoryForCurrentUser
-            ) { url in
-                websiteDocument.staticSiteFolder = url
-            }
-            
+                selectedFolder: $websiteDocument.staticSiteFolder,
+                defaultFolder: FileManager.default.homeDirectoryForCurrentUser
+                    .appendingPathComponent("WebsiteStatic")
+            )
+
             FolderSelector(
                 label: "DestinationFolder",
-                selectedFolder: websiteDocument.destinationFolder
-                ?? FileManager.default.homeDirectoryForCurrentUser
-            ) { url in
-                websiteDocument.destinationFolder = url
-            }
+                selectedFolder: $websiteDocument.destinationFolder,
+                defaultFolder: FileManager.default.homeDirectoryForCurrentUser
+                    .appendingPathComponent("Sites").appendingPathComponent(
+                        "MySite")
+            )
         }
         .padding()
     }

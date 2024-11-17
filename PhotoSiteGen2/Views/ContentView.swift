@@ -15,16 +15,13 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             ListingView(
-                websiteDocument: $websiteDocument, selection: $selection
+                webSiteDocument: $websiteDocument, selection: $selection
             )
             .frame(minWidth: 250)
         } detail: {
-            switch selection {
-            case .gallerySelection(let id):
-                GalleryView(
-                    galleryDocument: $websiteDocument.galleries.first(
-                        where: { $0.id == id })!)
-            default:  // .siteConfiguration:
+            if let selection {
+                selection.viewForDocument($websiteDocument)
+            } else {
                 SiteConfigEditView(websiteDocument: $websiteDocument)
             }
         }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ListingView: View {
-    @Binding var websiteDocument: WebSiteDocument
+    @Binding var webSiteDocument: WebSiteDocument
     @Binding var selection: DetailViewEnum?
 
     var body: some View {
@@ -21,23 +21,10 @@ struct ListingView: View {
                 }
 
                 Section {
-                    ForEach($websiteDocument.galleries, editActions: .move) {
-                        $galleryDocument in
-                        NavigationLink(
-                            value: DetailViewEnum.gallerySelection(
-                                id: galleryDocument.id)
-                        ) {
-                            HStack {
-                                Image(systemName: "photo")
-                                Text(galleryDocument.title)
-                                    .contextMenu {
-                                        Button("Delete") {
-                                            deleteGallery(galleryDocument)
-                                        }
-                                    }
-                            }
-                            .padding(.leading, 20)
-                        }
+                    ForEach($webSiteDocument.galleries, editActions: .move) {
+                        galleryListLinkView(galleryDocument: $0.wrappedValue,
+                                            webSiteDocument: webSiteDocument,
+                                            deleteGallery: deleteGallery)
                     }
                 } header: {
                     HStack {
@@ -52,10 +39,10 @@ struct ListingView: View {
             }
         }
     }
-
+    
     func addGallery() {
         let panel = NSOpenPanel()
-        panel.directoryURL = websiteDocument.sourceFolder
+        panel.directoryURL = webSiteDocument.sourceFolder
         panel.allowsMultipleSelection = true
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
@@ -63,40 +50,36 @@ struct ListingView: View {
 
         if panel.runModal() == .OK {
             for url in panel.urls {
-                if !$websiteDocument.galleries.contains(where: {
+                if !$webSiteDocument.galleries.contains(where: {
                     $0.wrappedValue.directory == url.lastPathComponent
                 }) {
                     let gallery = GalleryDocument(
                         title: url.lastPathComponent,
                         directory: url.lastPathComponent)
-                    $websiteDocument.galleries.wrappedValue.append(gallery)
+                    $webSiteDocument.galleries.wrappedValue.append(gallery)
                 }
             }
         }
     }
 
-    func deleteGallery(offsets: IndexSet) {
-        $websiteDocument.galleries.wrappedValue.remove(atOffsets: offsets)
-    }
-
     func deleteGallery(_ gallery: GalleryDocument) {
         guard
-            let deletionIndex = websiteDocument.galleries.firstIndex(
+            let deletionIndex = webSiteDocument.galleries.firstIndex(
                 of: gallery)
         else { return }
-        
-        let newSelectedId =  deletionIndex.advanced(
-            by: gallery == websiteDocument.galleries.last ? -1 : 1)
+
+        let newSelectedId = deletionIndex.advanced(
+            by: gallery == webSiteDocument.galleries.last ? -1 : 1)
         selection = DetailViewEnum.gallerySelection(
-            id: websiteDocument.galleries[newSelectedId].id
+            id: webSiteDocument.galleries[newSelectedId].id
         )
-        
-        $websiteDocument.galleries.wrappedValue.remove(at: deletionIndex)
+
+        $webSiteDocument.galleries.wrappedValue.remove(at: deletionIndex)
     }
 }
 
 #Preview {
     ListingView(
-        websiteDocument: .constant(WebSiteDocument.mock),
+        webSiteDocument: .constant(WebSiteDocument.mock),
         selection: .constant(nil))
 }

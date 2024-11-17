@@ -13,6 +13,20 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     var directory: String
     var titleImageName: String = ""
     var categories = [String]()
-    
-    static let mock = GalleryDocument(title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"])
+
+    func gallerySourceUrl(webSiteDocument: WebSiteDocument) -> URL {
+        URL(fileURLWithPath: directory, relativeTo: webSiteDocument.sourceFolder)
+//        webSiteDocument.sourceFolder!
+//            .appendingPathComponent("galleries")
+//            .appendingPathComponent(directory)
+    }
+
+    func titleImageUrl(webSiteDocument: WebSiteDocument) -> URL? {
+        guard !titleImageName.isEmpty else { return nil }
+        return gallerySourceUrl(webSiteDocument: webSiteDocument)
+            .appendingPathComponent(titleImageName)
+    }
+
+    static let mock = GalleryDocument(
+        title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"])
 }
