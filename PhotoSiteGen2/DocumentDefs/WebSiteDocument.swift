@@ -39,7 +39,9 @@ struct WebSiteDocument: FileDocument, Codable {
     }
 
     mutating func ensureGalleryAt(directory: URL) {
-        let relativeDirectory = directory.relativePath(from: sourceFolder)!
+       guard let relativeDirectory = directory.relativePath(from: sourceFolder) else {
+            return
+        }
         guard !galleries.contains(where: { $0.directory == relativeDirectory })
         else {
             return
@@ -50,19 +52,17 @@ struct WebSiteDocument: FileDocument, Codable {
                 title: relativeDirectory,
                 directory: relativeDirectory,
                 webSite: self), at: 0)
-
     }
 
     static let mock: WebSiteDocument = {
         var doc = WebSiteDocument()
-        doc.sourceFolder = .init(fileURLWithPath: "Source")
-        doc.staticSiteFolder = .init(fileURLWithPath: "StaticSite")
-        doc.destinationFolder = .init(fileURLWithPath: "Destination")
-        doc.galleries.append(GalleryDocument.mock)
+        doc.sourceFolder = FileManager.default.homeDirectoryForCurrentUser
+        doc.staticSiteFolder = FileManager.default.homeDirectoryForCurrentUser
+        doc.destinationFolder = FileManager.default.homeDirectoryForCurrentUser
         for i in 1...10 {
-            doc.galleries.append(
-                .init(title: "Gallery \(i)", directory: "\(i)", webSite: doc))
+            doc.ensureGalleryAt(directory: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Gallery \(i)"))
         }
+        doc.adoptGalleries()
         return doc
     }()
 }

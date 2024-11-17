@@ -6,12 +6,7 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		272410002CE69DCA00161602 /* DetailViewEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27240FFF2CE69DC000161602 /* DetailViewEnum.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
-		27240FFF2CE69DC000161602 /* DetailViewEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewEnum.swift; sourceTree = "<group>"; };
 		279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoSiteGen2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -52,7 +47,6 @@
 			children = (
 				279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */,
 				279629AC2CE147D4008F2CE2 /* Products */,
-				27240FFF2CE69DC000161602 /* DetailViewEnum.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -138,7 +132,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				272410002CE69DCA00161602 /* DetailViewEnum.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -29,16 +29,7 @@ public extension URL {
         }
 
         // Ensure that it's absolute paths. Ignore relative paths.
-//        guard self.baseURL == nil && base.baseURL == nil else {
-//            return nil
-//        }
-
-        guard self.baseURL == nil  else {
-            print("self is relative")
-            return nil
-        }
-        guard  base.baseURL == nil else {
-            print("base is relative")
+        guard self.baseURL == nil && base.baseURL == nil else {
             return nil
         }
 

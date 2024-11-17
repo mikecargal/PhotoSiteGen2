@@ -22,9 +22,8 @@ struct ListingView: View {
 
                 Section {
                     ForEach($webSiteDocument.galleries, editActions: .move) {
-                        galleryListLinkView(
+                        GalleryListLinkView(
                             galleryDocument: $0.wrappedValue,
-                            webSiteDocument: webSiteDocument,
                             deleteGallery: deleteGallery)
                     }
                 } header: {

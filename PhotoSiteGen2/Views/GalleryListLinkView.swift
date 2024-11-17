@@ -6,9 +6,8 @@
 //
 import SwiftUI
 
-struct galleryListLinkView: View {
+struct GalleryListLinkView: View {
     var galleryDocument: GalleryDocument
-    var webSiteDocument: WebSiteDocument
     var deleteGallery: (GalleryDocument) -> Void
 
     var body: some View {
@@ -41,4 +40,9 @@ struct galleryListLinkView: View {
             .padding(.leading, 20)
         }
     }
+}
+
+#Preview {
+    GalleryListLinkView(galleryDocument: WebSiteDocument.mock.galleries.first!)
+    { _ in }
 }

@@ -19,7 +19,7 @@ enum DetailViewEnum: Hashable {
                 galleryDocument: webSiteDocumentBinding.galleries.first(
                     where: { $0.id == id })!,
                 webSiteDocument: webSiteDocumentBinding.wrappedValue)
-        default:  // .siteConfiguration:
+        case .siteConfiguration:
             SiteConfigEditView(websiteDocument: webSiteDocumentBinding)
         }
     }

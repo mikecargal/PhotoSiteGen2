@@ -22,7 +22,6 @@ struct GalleryEditView: View {
             Spacer()
             TextField("Title", text: $galleryDocument.title)
             sourceDirectorySelector()
-
             Spacer()
         }
         .padding()
