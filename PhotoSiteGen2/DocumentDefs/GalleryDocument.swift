@@ -13,20 +13,42 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     var directory: String
     var titleImageName: String = ""
     var categories = [String]()
+    var webSite: WebSiteDocument?
 
-    func gallerySourceUrl(webSiteDocument: WebSiteDocument) -> URL {
-        URL(fileURLWithPath: directory, relativeTo: webSiteDocument.sourceFolder)
-//        webSiteDocument.sourceFolder!
-//            .appendingPathComponent("galleries")
-//            .appendingPathComponent(directory)
+    init(
+        title: String,
+        directory: String,
+        titleImageName: String = "",
+        categories: [String] = [String](),
+        webSite: WebSiteDocument?
+    ) {
+        self.title = title
+        self.directory = directory
+        self.titleImageName = titleImageName
+        self.categories = categories
+        self.webSite = webSite
     }
 
-    func titleImageUrl(webSiteDocument: WebSiteDocument) -> URL? {
+    private enum CodingKeys: String, CodingKey {
+        case id, title, directory, titleImageName, categories
+    }
+
+    static func == (lhs: GalleryDocument, rhs: GalleryDocument) -> Bool {
+        lhs.id == rhs.id && lhs.title == rhs.title
+            && lhs.directory == rhs.directory
+            && lhs.titleImageName == rhs.titleImageName
+            && lhs.categories == rhs.categories
+    }
+
+    var gallerySourceUrl: URL {
+        URL(fileURLWithPath: directory, relativeTo: webSite?.sourceFolder)
+    }
+
+    var titleImageUrl: URL? {
         guard !titleImageName.isEmpty else { return nil }
-        return gallerySourceUrl(webSiteDocument: webSiteDocument)
-            .appendingPathComponent(titleImageName)
+        return gallerySourceUrl.appendingPathComponent(titleImageName)
     }
 
     static let mock = GalleryDocument(
-        title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"])
+        title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"],webSite: WebSiteDocument.mock)
 }

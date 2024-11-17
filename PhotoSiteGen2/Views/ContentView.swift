@@ -21,9 +21,14 @@ struct ContentView: View {
         } detail: {
             if let selection {
                 selection.viewForDocument($websiteDocument)
-            } else {
-                SiteConfigEditView(websiteDocument: $websiteDocument)
             }
+//            else {
+//                SiteConfigEditView(websiteDocument: $websiteDocument)
+//            }
+        }
+        .onAppear() {
+            websiteDocument.adoptGalleries()
+            selection = .siteConfiguration // forces rerender after adoption
         }
     }
 }

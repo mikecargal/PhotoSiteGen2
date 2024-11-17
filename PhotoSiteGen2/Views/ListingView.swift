@@ -22,9 +22,10 @@ struct ListingView: View {
 
                 Section {
                     ForEach($webSiteDocument.galleries, editActions: .move) {
-                        galleryListLinkView(galleryDocument: $0.wrappedValue,
-                                            webSiteDocument: webSiteDocument,
-                                            deleteGallery: deleteGallery)
+                        galleryListLinkView(
+                            galleryDocument: $0.wrappedValue,
+                            webSiteDocument: webSiteDocument,
+                            deleteGallery: deleteGallery)
                     }
                 } header: {
                     HStack {
@@ -39,7 +40,7 @@ struct ListingView: View {
             }
         }
     }
-    
+
     func addGallery() {
         let panel = NSOpenPanel()
         panel.directoryURL = webSiteDocument.sourceFolder
@@ -50,14 +51,7 @@ struct ListingView: View {
 
         if panel.runModal() == .OK {
             for url in panel.urls {
-                if !$webSiteDocument.galleries.contains(where: {
-                    $0.wrappedValue.directory == url.lastPathComponent
-                }) {
-                    let gallery = GalleryDocument(
-                        title: url.lastPathComponent,
-                        directory: url.lastPathComponent)
-                    $webSiteDocument.galleries.wrappedValue.append(gallery)
-                }
+                webSiteDocument.ensureGalleryAt(directory: url)
             }
         }
     }

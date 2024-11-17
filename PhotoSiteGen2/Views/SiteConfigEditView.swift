@@ -14,24 +14,17 @@ struct SiteConfigEditView: View {
         Form {
             FolderSelector(
                 label: "Source Folder",
-                selectedFolder: $websiteDocument.sourceFolder,
-                defaultFolder: FileManager.default.homeDirectoryForCurrentUser
-                    .appendingPathComponent("WebsiteSource")
+                selectedFolder: $websiteDocument.sourceFolder
             )
 
             FolderSelector(
                 label: "Static Source Folder",
-                selectedFolder: $websiteDocument.staticSiteFolder,
-                defaultFolder: FileManager.default.homeDirectoryForCurrentUser
-                    .appendingPathComponent("WebsiteStatic")
+                selectedFolder: $websiteDocument.staticSiteFolder
             )
 
             FolderSelector(
                 label: "DestinationFolder",
-                selectedFolder: $websiteDocument.destinationFolder,
-                defaultFolder: FileManager.default.homeDirectoryForCurrentUser
-                    .appendingPathComponent("Sites").appendingPathComponent(
-                        "MySite")
+                selectedFolder: $websiteDocument.destinationFolder
             )
         }
         .padding()

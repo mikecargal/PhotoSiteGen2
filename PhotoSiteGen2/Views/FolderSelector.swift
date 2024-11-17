@@ -9,9 +9,10 @@ import SwiftUI
 
 struct FolderSelector: View {
     let label: String
-    @Binding var selectedFolder: URL?
-    var defaultFolder: URL? = URL.currentDirectory()
+    @Binding var selectedFolder: URL
+    var selectedPathIsRelative: Bool = false
     var validate: ((URL) throws -> Void)? = nil
+
     @State var panelDelegate: PanelDelegate?
 
     var body: some View {
@@ -19,7 +20,7 @@ struct FolderSelector: View {
             LabeledContent(label) {
                 Button {
                     let panel = NSOpenPanel()
-                    panel.directoryURL = selectedFolder ?? defaultFolder
+                    panel.directoryURL = selectedFolder
                     panel.allowsMultipleSelection = false
                     panel.canChooseFiles = false
                     panel.canChooseDirectories = true
@@ -36,9 +37,11 @@ struct FolderSelector: View {
                 } label: {
                     Image(systemName: "folder")
                 }
-                Text(
-                    selectedFolder?.absoluteString ?? defaultFolder?
-                        .absoluteString ?? "Select Folder")
+                if selectedPathIsRelative {
+                    Text(selectedFolder.relativePath).padding(.leading, 5)
+                } else {
+                    Text(selectedFolder.absoluteString).padding(.leading, 5)
+                }
             }
         }
     }

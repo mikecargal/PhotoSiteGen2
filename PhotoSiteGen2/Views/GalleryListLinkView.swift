@@ -17,8 +17,7 @@ struct galleryListLinkView: View {
                 id: galleryDocument.id)
         ) {
             ZStack {
-                let imageUrl = galleryDocument.titleImageUrl(
-                    webSiteDocument: webSiteDocument)
+                let imageUrl = galleryDocument.titleImageUrl
                 if let imageUrl {
                     AsyncImage(
                         url: imageUrl
@@ -28,6 +27,8 @@ struct galleryListLinkView: View {
                     .frame(height: 120)
                 } else {
                     Image(systemName: "photo")
+                        .resizable()
+                        .frame(width: 120, height: 120)
                 }
                 Text(galleryDocument.title)
                     .contextMenu {
