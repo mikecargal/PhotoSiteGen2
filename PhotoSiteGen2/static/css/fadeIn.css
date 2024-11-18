@@ -1,0 +1,25 @@
+.fadein {
+    overflow: hidden;
+}
+
+/*=============== blurred ==================*/
+.background:has(.blurred) {
+    filter: blur(var(--blur-px, 15px));
+    background-size: 100%;
+}
+
+img.blurred {
+    opacity: 0;
+}
+
+/*=============== NOT blurred ==================*/
+.background:not(:has(.blurred)) {
+    transition:
+        opacity 500ms ease,
+        filter 500ms ease;
+}
+
+img:not(.blurred) {
+    object-fit: contain;
+    opacity: 1;
+}

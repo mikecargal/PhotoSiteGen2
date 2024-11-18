@@ -1,0 +1,17 @@
+.galleryImage {
+    position: absolute;
+    transition: all 500ms ease-in-out;
+    content: "";
+    background-size: 100%;
+    cursor: pointer;
+}
+
+.caption {
+    text-align: center;
+    width: 100%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-weight: lighter;
+    padding-top: 0.1rem;
+    padding-bottom: 0.3rem;
+}

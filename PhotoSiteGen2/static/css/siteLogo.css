@@ -1,0 +1,26 @@
+a {
+    text-decoration: none;
+}
+
+#logoicon {
+    width: 4rem;
+    height: 4rem;
+}
+
+#logotext {
+    width: 20rem;
+    height: 2rem;
+}
+
+#logoicon,
+#logotext {
+    background: linear-gradient(to left, #ff6a00, #ee0979);
+    display: inline-block;
+    opacity: 0;
+}
+
+#logoicon.loaded,
+#logotext.loaded {
+    opacity: 1;
+    transition: opacity 1000ms ease;
+}

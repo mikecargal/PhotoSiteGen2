@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2724100D2CEBC00D00161602 /* SwiftHtml in Frameworks */ = {isa = PBXBuildFile; productRef = 2724100C2CEBC00D00161602 /* SwiftHtml */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoSiteGen2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -26,6 +30,9 @@
 			exceptions = (
 				279629C52CE1556A008F2CE2 /* Exceptions for "PhotoSiteGen2" folder in "PhotoSiteGen2" target */,
 			);
+			explicitFolders = (
+				static,
+			);
 			path = PhotoSiteGen2;
 			sourceTree = "<group>";
 		};
@@ -36,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2724100D2CEBC00D00161602 /* SwiftHtml in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +86,7 @@
 			);
 			name = PhotoSiteGen2;
 			packageProductDependencies = (
+				2724100C2CEBC00D00161602 /* SwiftHtml */,
 			);
 			productName = PhotoSiteGen2;
 			productReference = 279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */;
@@ -107,6 +116,9 @@
 			);
 			mainGroup = 279629A22CE147D4008F2CE2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2724100B2CEBC00D00161602 /* XCRemoteSwiftPackageReference "swift-html" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 279629AC2CE147D4008F2CE2 /* Products */;
 			projectDirPath = "";
@@ -336,6 +348,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2724100B2CEBC00D00161602 /* XCRemoteSwiftPackageReference "swift-html" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/binarybirds/swift-html";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2724100C2CEBC00D00161602 /* SwiftHtml */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2724100B2CEBC00D00161602 /* XCRemoteSwiftPackageReference "swift-html" */;
+			productName = SwiftHtml;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 279629A32CE147D4008F2CE2 /* Project object */;
 }

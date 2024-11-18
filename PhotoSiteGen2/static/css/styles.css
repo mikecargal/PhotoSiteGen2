@@ -1,0 +1,102 @@
+body {
+    background-color: rgb(20, 20, 20);
+    color: #ee0979;
+    font-family: "open Sans", Helvetica, sans-serif;
+}
+
+.wall {
+    height: fit-content;
+    position: relative;
+}
+
+.hide {
+    display: none;
+}
+
+#slideShow {
+    display: block;
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+}
+
+#gotoPrev {
+    width: 20vw;
+    height: calc(100vh - 4rem);
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    cursor: pointer;
+}
+
+#prevIcon {
+    position: absolute;
+    height: 2rem;
+    width: 2rem;
+    transform: rotate(-45deg);
+    left: 2rem;
+    top: 50%;
+    border-top: 3px solid white;
+    border-left: 3px solid white;
+}
+
+#gotoNext {
+    width: 20vw;
+    height: calc(100vh - 6rem);
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    cursor: pointer;
+}
+
+#nextIcon {
+    position: absolute;
+    height: 2rem;
+    width: 2rem;
+    transform: rotate(45deg);
+    right: 2rem;
+    top: calc(50% - 1rem);
+    border-top: 3px solid white;
+    border-right: 3px solid white;
+}
+
+#prev,
+#next {
+    display: none;
+}
+
+#current {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+}
+
+#slideShow.slideShowHidden {
+    display: none;
+}
+
+#slideShow button {
+    background-color: transparent;
+    color: #EEE;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1.2rem;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#slideShow>button:hover {
+    background-color: rgba(128, 128, 128, .3);
+    border-radius: 50%;
+}
+
+#slideshow.ssControls {
+    z-index: 100;
+}
