@@ -41,7 +41,7 @@ func copyDirectory(from source: URL,
 
             try? FileManager.default.removeItem(at: copyDest)
             if let filter = filterFinder?(filename) {
-                let fileString = try! String(contentsOf: url)
+                let fileString = try! String(contentsOf: url,encoding: .utf8)
                 let filteredContent = try filter.filter(fileString)
                 try! filteredContent.write(to: copyDest, atomically: true, encoding: .utf8)
             } else {

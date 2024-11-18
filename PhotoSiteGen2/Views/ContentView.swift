@@ -27,7 +27,7 @@ struct ContentView: View {
         }
         .onAppear {
             websiteDocument.adoptGalleries()
-            selection = .siteConfiguration  // forces rerender after adoption
+            selection = .siteConfiguration  // forces re-render after adoption
         }
     }
 }

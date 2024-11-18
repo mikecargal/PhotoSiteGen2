@@ -137,18 +137,18 @@ final class WebSiteGenerator: Sendable {
         return DocumentRenderer(minify: minify, indent: 2).render(document)
     }
 
-    private var metadata: SiteMetadata? {
-        let mdFile = sourceFolder.appendingPathComponent("metadata.json")
-        do {
-            return try SiteMetadata.create(from: Data(contentsOf: mdFile))
-        } catch {
-            let logger = logger
-            Task {
-                await logger.handleError("Reading WebSite Metadata \(mdFile.absoluteString)", error)
-            }
-            return nil
-        }
-    }
+//    private var metadata: SiteMetadata? {
+//        let mdFile = sourceFolder.appendingPathComponent("metadata.json")
+//        do {
+//            return try SiteMetadata.create(from: Data(contentsOf: mdFile))
+//        } catch {
+//            let logger = logger
+//            Task {
+//                await logger.handleError("Reading WebSite Metadata \(mdFile.absoluteString)", error)
+//            }
+//            return nil
+//        }
+//    }
 
     private var filename: URL {
         destinationFolder.appendingPathComponent("index.html")

@@ -15,9 +15,9 @@ enum DetailViewEnum: Hashable {
     func viewForDocument(_ webSiteDocumentBinding: Binding<WebSiteDocument>) -> some View {
         switch self {
         case .gallerySelection(let id):
+            let galleryDocument = webSiteDocumentBinding.galleries.first { $0.id == id }!
             GalleryEditView(
-                galleryDocument: webSiteDocumentBinding.galleries.first(
-                    where: { $0.id == id })!,
+                galleryDocument: galleryDocument,
                 webSiteDocument: webSiteDocumentBinding.wrappedValue)
         case .siteConfiguration:
             SiteConfigEditView(websiteDocument: webSiteDocumentBinding)

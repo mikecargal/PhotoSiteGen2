@@ -51,7 +51,7 @@ struct InlineStyleSheetFilter: FileFilter {
             if let matches = try? linkRegex.wholeMatch(in: line) {
                 ra.append("<!-- \(line) -->")
                 ra.append("<style>")
-                ra.append(try String(contentsOf: matches[cssLocationReference]))
+                ra.append(try String(contentsOf: matches[cssLocationReference], encoding: .utf8))
                 ra.append("</style>")
             } else {
                 ra.append(line)

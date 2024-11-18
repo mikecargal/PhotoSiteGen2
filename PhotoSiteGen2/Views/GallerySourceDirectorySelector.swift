@@ -8,11 +8,22 @@
 import SwiftUI
 
 struct GallerySourceDirectorySelector: View {
+    @Binding var galleryDocument: GalleryDocument
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        let folderBinding = Binding(
+            get: { galleryDocument.gallerySourceUrl },
+            set: { url in galleryDocument.setGallerySourceTo(url: url) }
+        )
+        FolderSelector(
+            label: "Source Directory",
+            selectedFolder: folderBinding,
+            selectedPathIsRelative: true
+        )
     }
 }
 
 #Preview {
-    GallerySourceDirectorySelector()
+    GallerySourceDirectorySelector(
+        galleryDocument: .constant(GalleryDocument.mock))
 }

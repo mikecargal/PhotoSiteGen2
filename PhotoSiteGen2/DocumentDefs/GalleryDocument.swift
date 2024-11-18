@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct GalleryDocument: Codable, Identifiable, Equatable {
     var id = UUID()
@@ -33,13 +34,6 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
         case id, title, directory, titleImageName, categories
     }
 
-    static func == (lhs: GalleryDocument, rhs: GalleryDocument) -> Bool {
-        lhs.id == rhs.id && lhs.title == rhs.title
-            && lhs.directory == rhs.directory
-            && lhs.titleImageName == rhs.titleImageName
-            && lhs.categories == rhs.categories
-    }
-
     var gallerySourceUrl: URL {
         URL(fileURLWithPath: directory, relativeTo: webSite?.sourceFolder)
     }
@@ -49,6 +43,22 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
         return gallerySourceUrl.appendingPathComponent(titleImageName)
     }
 
+    mutating func setGallerySourceTo(url: URL) {
+        guard let webSite else { return }
+        guard let path = url.relativePath(from: webSite.sourceFolder) else {
+            return
+        }
+        directory = path
+    }
+    
+    static func == (lhs: GalleryDocument, rhs: GalleryDocument) -> Bool {
+        lhs.id == rhs.id && lhs.title == rhs.title
+            && lhs.directory == rhs.directory
+            && lhs.titleImageName == rhs.titleImageName
+            && lhs.categories == rhs.categories
+    }
+    
     static let mock = GalleryDocument(
-        title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"],webSite: WebSiteDocument.mock)
+        title: "Mock Gallery", directory: "mock", categories: ["tag1", "tag2"],
+        webSite: WebSiteDocument.mock)
 }
