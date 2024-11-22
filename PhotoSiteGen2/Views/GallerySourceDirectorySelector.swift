@@ -11,7 +11,7 @@ struct GallerySourceDirectorySelector: View {
     @Binding var galleryDocument: GalleryDocument
 
     var body: some View {
-        let folderBinding = Binding(
+        let folderBinding = Binding<URL?>(
             get: { galleryDocument.gallerySourceUrl },
             set: { url in galleryDocument.setGallerySourceTo(url: url) }
         )
@@ -20,6 +20,7 @@ struct GallerySourceDirectorySelector: View {
             selectedFolder: folderBinding,
             selectedPathIsRelative: true
         )
+        .labelsHidden()
     }
 }
 

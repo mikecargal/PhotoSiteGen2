@@ -34,6 +34,7 @@ struct GalleryTitleImagePicker: View {
             }
         } label: {
             Image(systemName: "photo")
+                .background(Color.gray.opacity(0.2))
         }
     }
     

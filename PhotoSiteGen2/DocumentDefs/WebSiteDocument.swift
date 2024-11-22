@@ -13,9 +13,10 @@ struct WebSiteDocument: FileDocument, Codable {
         UTType(exportedAs: "com.mikecargal.photositegen2.website")
     ]
 
-    var sourceFolder: URL = FileManager.default.homeDirectoryForCurrentUser
-    var staticSiteFolder: URL = FileManager.default.homeDirectoryForCurrentUser
-    var destinationFolder: URL = FileManager.default.homeDirectoryForCurrentUser
+    var websiteName: String = "Untitled Website"
+    var sourceFolder: URL?  // = FileManager.default.homeDirectoryForCurrentUser
+    var staticSiteFolder: URL? = FileManager.default.homeDirectoryForCurrentUser
+    var destinationFolder: URL? = FileManager.default.homeDirectoryForCurrentUser
     var categories = [String]()
     var galleries = [GalleryDocument]()
 
@@ -26,12 +27,17 @@ struct WebSiteDocument: FileDocument, Codable {
     }
 
     init() {}
+    
+    var configured: Bool {
+        return sourceFolder != nil
+    }
 
     mutating func adoptGalleries() {
         for (idx, _) in galleries.enumerated() {
-            galleries[idx].webSite = self
+            galleries[idx].webSite = .constant(self)
         }
     }
+
 
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         let data = try JSONEncoder().encode(self)
@@ -39,19 +45,17 @@ struct WebSiteDocument: FileDocument, Codable {
     }
 
     mutating func ensureGalleryAt(directory: URL) {
-       guard let relativeDirectory = directory.relativePath(from: sourceFolder) else {
-            return
-        }
+        guard let sourceFolder else { return }
+        guard let relativeDirectory = directory.relativePath(from: sourceFolder)
+        else { return }
         guard !galleries.contains(where: { $0.directory == relativeDirectory })
-        else {
-            return
-        }
+        else { return }
 
         galleries.insert(
             GalleryDocument(
-                title: relativeDirectory,
+                title: directory.lastPathComponent,
                 directory: relativeDirectory,
-                webSite: self), at: 0)
+                webSite: .constant(self)), at: 0)
     }
 
     static let mock: WebSiteDocument = {
@@ -60,7 +64,9 @@ struct WebSiteDocument: FileDocument, Codable {
         doc.staticSiteFolder = FileManager.default.homeDirectoryForCurrentUser
         doc.destinationFolder = FileManager.default.homeDirectoryForCurrentUser
         for i in 1...10 {
-            doc.ensureGalleryAt(directory: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Gallery \(i)"))
+            doc.ensureGalleryAt(
+                directory: FileManager.default.homeDirectoryForCurrentUser
+                    .appendingPathComponent("Gallery \(i)"))
         }
         doc.adoptGalleries()
         return doc

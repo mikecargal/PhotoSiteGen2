@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FolderSelector: View {
     let label: String
-    @Binding var selectedFolder: URL
+    @Binding var selectedFolder: URL?
     var selectedPathIsRelative: Bool = false
     var validate: ((URL) throws -> Void)? = nil
 
@@ -36,11 +36,16 @@ struct FolderSelector: View {
                 } label: {
                     Image(systemName: "folder")
                 }
-                if selectedPathIsRelative {
-                    Text(selectedFolder.relativePath).padding(.leading, 5)
+                if let selectedFolder {
+                    if selectedPathIsRelative {
+                        Text(selectedFolder.relativePath).padding(.leading, 5)
+                    } else {
+                        Text(selectedFolder.absoluteString).padding(.leading, 5)
+                    }
                 } else {
-                    Text(selectedFolder.absoluteString).padding(.leading, 5)
+                    Text("Select Folder").padding(.leading, 5)
                 }
+
             }
         }
     }

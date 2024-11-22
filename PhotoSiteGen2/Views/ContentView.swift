@@ -9,25 +9,33 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var websiteDocument: WebSiteDocument
-
-    @State var selection: DetailViewEnum?
+    @State var reRender = false
+    @State private var showConfiguration = false
 
     var body: some View {
-        NavigationSplitView {
-            ListingView(
-                webSiteDocument: $websiteDocument, selection: $selection
-            )
-            .frame(minWidth: 250)
-        } detail: {
-            if let selection {
-                selection.viewForDocument($websiteDocument)
-            } else {
-                EmptyView()
+        NavigationStack {
+            TextField("Wbbsite Name", text: $websiteDocument.websiteName)
+                .textFieldStyle(.plain)
+                .font(.largeTitle)
+                .multilineTextAlignment(.center)
+            if showConfiguration || !websiteDocument.configured {
+                SiteConfigEditView(websiteDocument: $websiteDocument)
+            }
+            if reRender {
+                GalleryGridView(webSiteDocument: $websiteDocument)
+            }
+
+        }
+        .toolbar {
+            Button {
+                showConfiguration.toggle()
+            } label: {
+                Image(systemName: "gear")
             }
         }
         .onAppear {
             websiteDocument.adoptGalleries()
-            selection = .siteConfiguration  // forces re-render after adoption
+            reRender = true
         }
     }
 }

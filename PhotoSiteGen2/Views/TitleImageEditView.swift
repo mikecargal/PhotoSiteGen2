@@ -14,8 +14,8 @@ struct TitleImageEditView: View {
     var body: some View {
         let imageUrl = galleryDocument.titleImageUrl
         HStack(alignment: .bottom) {
-            if let imageUrl {
-                ZStack(alignment: .bottomLeading) {
+            ZStack(alignment: .bottom) {
+                if let imageUrl {
                     AsyncImage(url: imageUrl) { phase in
                         switch phase {
                         case .empty:
@@ -23,28 +23,37 @@ struct TitleImageEditView: View {
                         case .success(let image):
                             image.resizable()
                                 .scaledToFit()
-                                .frame(height: 200)
+                            //                                .frame(height: 200)
                         case .failure:
                             Image(systemName: "photo")
                                 .resizable()
-                                .frame(width: 200, height: 200)
+                            //                                .frame(width: 200, height: 200)
                         @unknown default:
                             EmptyView()
                         }
                     }
-
-                    Button {
-                        showTitleImageName.toggle()
-                    } label: {
-                        Image(systemName: "info.circle")
+                    HStack {
+                        Button {
+                            showTitleImageName.toggle()
+                        } label: {
+                            Image(systemName: "info.circle")
+                                .background(Color.gray.opacity(0.2))
+                        }
+                        Spacer()
+                        GalleryTitleImagePicker(gallerySourceURL: galleryDocument.gallerySourceUrl, titleImageName: $galleryDocument.titleImageName)
+                    }
+                    
+                } else {
+                    HStack {
+                        Image(systemName: "photo.badge.exclamationmark")
+                            .resizable()
+                            .frame(width: 200, height: 200)
+                        GalleryTitleImagePicker(gallerySourceURL: galleryDocument.gallerySourceUrl, titleImageName: $galleryDocument.titleImageName)
                     }
                 }
-            } else {
-                Image(systemName: "photo")
-                    .resizable()
-                    .frame(width: 200, height: 200)
+
+
             }
-            GalleryTitleImagePicker(gallerySourceURL: galleryDocument.gallerySourceUrl, titleImageName: $galleryDocument.titleImageName)
         }
         if showTitleImageName {
             Text(galleryDocument.titleImageName)
