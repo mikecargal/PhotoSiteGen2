@@ -40,10 +40,7 @@ struct GalleryGridView: View {
         }
         .navigationTitle("Galleries")
     }
-    //
-    //    var shape: some Shape {
-    //        RoundedRectangle(cornerRadius: 20)
-    //    }
+
     func addGallery() {
         let panel = NSOpenPanel()
         panel.directoryURL = webSiteDocument.sourceFolder

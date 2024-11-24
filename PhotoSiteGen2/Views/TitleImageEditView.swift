@@ -10,12 +10,14 @@ import SwiftUI
 struct TitleImageEditView: View {
     @Binding var galleryDocument: GalleryDocument
     @State var showTitleImageName: Bool = false
-    
+
     var body: some View {
         let imageUrl = galleryDocument.titleImageUrl
+
         HStack(alignment: .bottom) {
             ZStack(alignment: .bottom) {
                 if let imageUrl {
+
                     AsyncImage(url: imageUrl) { phase in
                         switch phase {
                         case .empty:
@@ -23,11 +25,9 @@ struct TitleImageEditView: View {
                         case .success(let image):
                             image.resizable()
                                 .scaledToFit()
-                            //                                .frame(height: 200)
                         case .failure:
                             Image(systemName: "photo")
                                 .resizable()
-                            //                                .frame(width: 200, height: 200)
                         @unknown default:
                             EmptyView()
                         }
@@ -37,29 +37,34 @@ struct TitleImageEditView: View {
                             showTitleImageName.toggle()
                         } label: {
                             Image(systemName: "info.circle")
-                                .background(Color.gray.opacity(0.2))
                         }
+                        .background(Color.gray.opacity(0.6))
+                        .clipShape(.buttonBorder)
                         Spacer()
-                        GalleryTitleImagePicker(gallerySourceURL: galleryDocument.gallerySourceUrl, titleImageName: $galleryDocument.titleImageName)
+                        GalleryTitleImagePicker(
+                            gallerySourceURL: galleryDocument
+                                .gallerySourceUrl,
+                            titleImageName: $galleryDocument.titleImageName)
                     }
-                    
                 } else {
                     HStack {
                         Image(systemName: "photo.badge.exclamationmark")
                             .resizable()
                             .frame(width: 200, height: 200)
-                        GalleryTitleImagePicker(gallerySourceURL: galleryDocument.gallerySourceUrl, titleImageName: $galleryDocument.titleImageName)
+                        GalleryTitleImagePicker(
+                            gallerySourceURL: galleryDocument
+                                .gallerySourceUrl,
+                            titleImageName: $galleryDocument.titleImageName)
                     }
                 }
-
-
+            }
+            .frame(maxHeight: .infinity, alignment: .center)
+            if showTitleImageName {
+                Text(galleryDocument.titleImageName)
             }
         }
-        if showTitleImageName {
-            Text(galleryDocument.titleImageName)
-        }
     }
-    
+
 }
 
 #Preview {

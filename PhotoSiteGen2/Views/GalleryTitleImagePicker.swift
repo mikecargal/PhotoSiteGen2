@@ -34,8 +34,10 @@ struct GalleryTitleImagePicker: View {
             }
         } label: {
             Image(systemName: "photo")
-                .background(Color.gray.opacity(0.2))
+              
         }
+        .background(Color.gray.opacity(0.6))
+        .clipShape(.buttonBorder)
     }
     
     class PanelDelegate: NSObject, NSOpenSavePanelDelegate {

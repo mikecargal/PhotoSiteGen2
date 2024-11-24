@@ -15,7 +15,6 @@ struct GalleryDocumentTile: View {
     var body: some View {
         VStack {
             HStack {
-
                 TextField("Gallery Title", text: $galleryDocument.title)
                     .textFieldStyle(.plain)
                     .font(.headline)
@@ -29,6 +28,11 @@ struct GalleryDocumentTile: View {
             }
             TitleImageEditView(galleryDocument: $galleryDocument)
             GallerySourceDirectorySelector(galleryDocument: $galleryDocument)
+            Text(galleryDocument.categories.joined(separator: ", "))
+            Form {
+                TextField("Generation ID",text: $galleryDocument.genName )
+               
+            }
         }
         .padding()
         .background(Color.gray.opacity(0.1))
