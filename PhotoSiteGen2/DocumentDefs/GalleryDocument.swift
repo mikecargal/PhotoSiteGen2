@@ -51,7 +51,8 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     {
         return .init(
             sequenceNumber: sequenceNumber,
-            titleImageFileName: Photo.filteredFileNameWithExtension(titleImageUrl),
+            titleImageFileName: Photo.filteredFileNameWithExtension(
+                titleImageUrl),
             title: title,
             genName: genName,
             categories: categories)
@@ -64,6 +65,17 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
         }
         set(newValue) {
             genNameOverride = newValue
+        }
+    }
+
+    var csCategories: String {
+        get {
+            categories.joined(separator: ", ")
+        }
+        set(newValue) {
+            categories = newValue.components(
+                separatedBy: CharacterSet(charactersIn: ", ")
+            ).filter { !$0.isEmpty }
         }
     }
 

@@ -10,7 +10,7 @@ import SwiftUI
 struct GalleryDocumentTile: View {
     @Binding var galleryDocument: GalleryDocument
     @Binding var galleries: [GalleryDocument]
-    
+
     @State private var verifyDelete: Bool = false
     var body: some View {
         VStack {
@@ -28,10 +28,12 @@ struct GalleryDocumentTile: View {
             }
             TitleImageEditView(galleryDocument: $galleryDocument)
             GallerySourceDirectorySelector(galleryDocument: $galleryDocument)
-            Text(galleryDocument.categories.joined(separator: ", "))
+            TextField("categories", text: $galleryDocument.csCategories)
+                .textFieldStyle(.plain)
+                .multilineTextAlignment(.center)
             Form {
-                TextField("Generation ID",text: $galleryDocument.genName )
-               
+                TextField("Generation ID:", text: $galleryDocument.genName)
+                    .textFieldStyle(.plain)
             }
         }
         .padding()
@@ -56,8 +58,10 @@ struct GalleryDocumentTile: View {
         else { return }
 
         galleries.remove(at: deletionIndex)
-        
-        debugPrint("Deleted Gallery: \(galleryDocument.title) at index \(deletionIndex)")
+
+        debugPrint(
+            "Deleted Gallery: \(galleryDocument.title) at index \(deletionIndex)"
+        )
         debugPrint("Remaining Galleries:")
 
         galleries.forEach {
@@ -67,6 +71,7 @@ struct GalleryDocumentTile: View {
 }
 
 #Preview {
-    GalleryDocumentTile(galleryDocument: .constant(GalleryDocument.mock), galleries: .constant(WebSiteDocument.mock.galleries))
+    GalleryDocumentTile(
+        galleryDocument: .constant(GalleryDocument.mock),
+        galleries: .constant(WebSiteDocument.mock.galleries))
 }
-
