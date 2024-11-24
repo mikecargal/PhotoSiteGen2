@@ -70,7 +70,7 @@ final class WebSiteGenerator: Sendable {
             var generatedGalleries = [GeneratedGallery]()
 
             for galleryGenerator in galleryGenerators {
-                await logger.logMessage("generating Gallery \(galleryGenerator.name)")
+                await logger.logMessage("generating Gallery \(galleryGenerator.genName)")
                 group.addTask {
                     try await galleryGenerator.generate(minify: minify)
                 }

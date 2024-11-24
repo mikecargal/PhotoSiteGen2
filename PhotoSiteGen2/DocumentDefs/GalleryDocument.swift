@@ -15,6 +15,7 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     var titleImageName: String = ""
     var categories = [String]()
     var webSite: Binding<WebSiteDocument>?
+    private var genNameOverride: String?
 
     init(
         title: String,
@@ -35,7 +36,9 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     }
 
     var gallerySourceUrl: URL {
-        URL(fileURLWithPath: directory, relativeTo: webSite?.wrappedValue.sourceFolder)
+        URL(
+            fileURLWithPath: directory,
+            relativeTo: webSite?.wrappedValue.sourceFolder)
     }
 
     var titleImageUrl: URL? {
@@ -43,9 +46,32 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
         return gallerySourceUrl.appendingPathComponent(titleImageName)
     }
 
+    func getGalleryGenerationInfo(_ sequenceNumber: Int)
+        -> GalleryGenerationInfo
+    {
+        return .init(
+            sequenceNumber: sequenceNumber,
+            titleImageFileName: Photo.filteredFileNameWithExtension(titleImageUrl),
+            title: title,
+            genName: genName,
+            categories: categories)
+    }
+
+    var genName: String {
+        get {
+            genNameOverride
+                ?? String(directory.split(separator: "/").last ?? "")
+        }
+        set(newValue) {
+            genNameOverride = newValue
+        }
+    }
+
     mutating func setGallerySourceTo(url: URL?) {
         guard let webSite else { return }
-        guard let sourceFolder = webSite.wrappedValue.sourceFolder else { return }
+        guard let sourceFolder = webSite.wrappedValue.sourceFolder else {
+            return
+        }
         guard let path = url?.relativePath(from: sourceFolder) else { return }
         directory = path
     }

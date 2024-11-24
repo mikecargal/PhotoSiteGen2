@@ -23,12 +23,16 @@ final class Photo: Identifiable, Comparable, Sendable {
         self.url = url
         let smallImageURL =
             url.deletingLastPathComponent()
-                .appendingPathComponent("w0512")
-                .appendingPathComponent(url.lastPathComponent)
-        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+            .appendingPathComponent("w0512")
+            .appendingPathComponent(url.lastPathComponent)
+        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil)
+        else {
             throw PhotoReadError.ImageSourceReadError(url: url)
         }
-        guard let smallImageSource = CGImageSourceCreateWithURL(smallImageURL as CFURL, nil) else {
+        guard
+            let smallImageSource = CGImageSourceCreateWithURL(
+                smallImageURL as CFURL, nil)
+        else {
             throw PhotoReadError.ImageSourceReadError(url: url)
         }
         metadata = ImageMetaData(for: imageSource)
@@ -76,19 +80,28 @@ final class Photo: Identifiable, Comparable, Sendable {
     }
 
     static func filteredFileName(_ url: URL) -> String {
-        let inParts = url.deletingPathExtension().lastPathComponent.split(separator: "-")
+        let inParts = url.deletingPathExtension().lastPathComponent.split(
+            separator: "-")
 
-        var rest = inParts[1 ..< inParts.endIndex]
-            .filter { $0.count < 3 // sequence numbers 2 digits at most (other will be date that Dxo puts on it)
-                && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: String($0)))
+        var rest = inParts[1..<inParts.endIndex]
+            .filter {
+                $0.count < 3  // sequence numbers 2 digits at most (other will be date that Dxo puts on it)
+                    && CharacterSet.decimalDigits.isSuperset(
+                        of: CharacterSet(charactersIn: String($0)))
             }
         rest.insert(inParts.first!, at: 0)
 
         return rest.joined(separator: "-")
     }
 
+    static func filteredFileNameWithExtension(_ url: URL?) -> String? {
+        guard let url else { return nil }
+        return filteredFileNameWithExtension(url)
+    }
+
     static func filteredFileNameWithExtension(_ url: URL) -> String {
-        "\(Self.filteredFileName(url)).\(url.pathExtension)"
+
+        return "\(Self.filteredFileName(url)).\(url.pathExtension)"
     }
 
     func heightOfImage(ofWidth width: Int) -> Int {

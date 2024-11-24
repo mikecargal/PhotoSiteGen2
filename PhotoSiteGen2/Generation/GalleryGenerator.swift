@@ -19,7 +19,7 @@ struct GalleryGenerator {
     let wsDestination: URL
     let wsSource: URL
 
-    let name: String
+    let genName: String
     let sequenceNumber: Int
     let titleImageFileName: String?
     let title: String
@@ -33,19 +33,19 @@ struct GalleryGenerator {
         wsDestination: URL,
         logger: Logger,
         galleryInfo: GalleryGenerationInfo
-    ) throws {
+    ) {
         self.generationID = generationID
         self.wsSource = wsSource
         self.wsDestination = wsDestination
 
-        name = galleryInfo.name
+        genName = galleryInfo.genName
         sequenceNumber = galleryInfo.sequenceNumber
         titleImageFileName = galleryInfo.titleImageFileName
         title = galleryInfo.title
         categories = galleryInfo.categories
 
         self.logger = logger
-        destinationFolder = wsDestination.appendingPathComponent(name)
+        destinationFolder = wsDestination.appendingPathComponent(genName)
     }
 
     func generate(minify: Bool) async throws -> GeneratedGallery {
@@ -53,63 +53,78 @@ struct GalleryGenerator {
         let title = title
         let photos = getPhotos()
 
-        let thumbImageName = "/thumbs/\(name).jpg"
+        let thumbImageName = "/thumbs/\(genName).jpg"
 
-        let thumbPcts = await generateSpritesImage(thumbPhotos: photos, width: THUMBNAIL_WIDTH,
-                                                   filename: wsDestination
-                                                       .appendingPathComponent("thumbs")
-                                                       .appendingPathComponent("\(name).jpg"),
-                                                   errorHandler: logger)
+        let thumbPcts = await generateSpritesImage(
+            thumbPhotos: photos, width: THUMBNAIL_WIDTH,
+            filename:
+                wsDestination
+                .appendingPathComponent("thumbs")
+                .appendingPathComponent("\(genName).jpg"),
+            errorHandler: logger)
         let document = Document(.html) {
             Comment("generated: \(Date.now)")
-            PSGPage(generationID: generationID,
-                    jsFiles: ["js/webcomponents.js?tsid=\(generationID)",
-                              "js/layout.js?tsid=\(generationID)",
-                              "js/slides.js?tsid=\(generationID)",
-                              "js/startup.js?tsid=\(generationID)"],
-                    preload: thumbImageName) { [self] in
+            PSGPage(
+                generationID: generationID,
+                jsFiles: [
+                    "js/webcomponents.js?tsid=\(generationID)",
+                    "js/layout.js?tsid=\(generationID)",
+                    "js/slides.js?tsid=\(generationID)",
+                    "js/startup.js?tsid=\(generationID)",
+                ],
+                preload: thumbImageName
+            ) { [self] in
                 SwiftHtml.Text(title)
                 Br()
-                getHTML(thumbImageName: thumbImageName, photos: photos, thumbPcts: thumbPcts)
+                getHTML(
+                    thumbImageName: thumbImageName, photos: photos,
+                    thumbPcts: thumbPcts)
             }
         }
-        let renderer = DocumentRenderer(minify: minify, indent: 2).render(document)
-        _ = try renderer.write(to:
-            wsDestination.appendingPathComponent("\(name).html"),
+        let renderer = DocumentRenderer(minify: minify, indent: 2).render(
+            document)
+        _ = try renderer.write(
+            to:
+                wsDestination.appendingPathComponent("\(genName).html"),
             atomically: true,
             encoding: String.Encoding.utf8)
 
-        return GeneratedGallery(favoritePhoto: try getFavoritePhoto(photos: photos),
-                                 categories: categories,
-                                 title: title,
-                                 name: name,
-                                 sequenceNumber: sequenceNumber)
+        return GeneratedGallery(
+            favoritePhoto: try getFavoritePhoto(photos: photos),
+            categories: categories,
+            title: title,
+            name: genName,
+            sequenceNumber: sequenceNumber)
     }
 
     private func copyToDestination() async throws {
-        try await copyDirectory(from: wsSource
-            .appending(component: "galleries")
-            .appending(component: name),
-            to: wsDestination
-                .appending(component: name),
+        try await copyDirectory(
+            from:
+                wsSource
+                .appending(component: "galleries")
+                .appending(component: genName),
+            to:
+                wsDestination
+                .appending(component: genName),
             logger: logger,
-            context: "Copying images for gallery; \(name)",
+            context: "Copying images for gallery; \(genName)",
             renamer: Photo.filteredFileNameWithExtension(_:))
     }
 
     private func getPhotos() -> [Photo] {
         do {
             return try FileManager.default.contentsOfDirectory(
-                at: wsDestination.appendingPathComponent(name),
+                at: wsDestination.appendingPathComponent(genName),
                 includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
-                options: [.skipsHiddenFiles])
-                .filter { !$0.hasDirectoryPath }
-                .map { try Photo(url: $0) }
-                .sorted()
+                options: [.skipsHiddenFiles]
+            )
+            .filter { !$0.hasDirectoryPath }
+            .map { try Photo(url: $0) }
+            .sorted()
 
         } catch {
             let eh = logger
-            let nm = name
+            let nm = genName
             Task {
                 await eh.handleError("gathering photos for \(nm)", error)
             }
@@ -125,21 +140,32 @@ struct GalleryGenerator {
         guard let titleImageFileName = titleImageFileName else {
             return photos.first!
         }
-        if !photos.contains(where: { $0.filteredFileNameWithExtension() == titleImageFileName }) {
+        
+        if !photos.contains(where: {
+            $0.filteredFileNameWithExtension() == titleImageFileName
+        }) {
             let eh = logger
             Task {
-                await eh.logMessage("could not find titleImage (\(titleImageFileName))... using default (first)")
+                await eh.logMessage(
+                    "could not find titleImage (\(titleImageFileName))... using default (first)"
+                )
             }
         }
-        return photos[photos.firstIndex { $0.filteredFileNameWithExtension() == titleImageFileName } ?? 0]
+        return photos[
+            photos.firstIndex {
+                $0.filteredFileNameWithExtension() == titleImageFileName
+            } ?? 0]
     }
 
-    private func getHTML(thumbImageName: String, photos: [Photo], thumbPcts: [Double]) -> Tag {
+    private func getHTML(
+        thumbImageName: String, photos: [Photo], thumbPcts: [Double]
+    ) -> Tag {
         GroupTag {
             Div {
                 FadeInImage().id("current")
                     .attribute("explicitSizing", "true")
-                    .attribute("thumbsrc", "\(thumbImageName)?tsid=\(generationID)")
+                    .attribute(
+                        "thumbsrc", "\(thumbImageName)?tsid=\(generationID)")
                 Div {
                     Button { Text("X") }.onClick("window.slideShow.hide()")
                     Div { Div().id("prevIcon") }.id("gotoPrev")
@@ -152,17 +178,19 @@ struct GalleryGenerator {
             .class("slideShowHidden")
             Div {
                 for (index, photo) in photos.enumerated() {
-                    galleryImage(photo: photo, index: index, thumbPct: thumbPcts[index])
+                    galleryImage(
+                        photo: photo, index: index, thumbPct: thumbPcts[index])
                 }
             }
             .id("gallery")
             .class("wall")
-            .attribute("data-gallery-name", name)
+            .attribute("data-gallery-name", genName)
             .attribute("thumbsrc", "\(thumbImageName)?tsid=\(generationID)")
         }
     }
 
-    private func galleryImage(photo: Photo, index: Int, thumbPct: Double) -> Tag {
+    private func galleryImage(photo: Photo, index: Int, thumbPct: Double) -> Tag
+    {
         let md = photo.metadata
         return GalleryImage()
             .attribute("imagesrc", photo.filteredFileNameWithExtension())

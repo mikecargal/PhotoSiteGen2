@@ -27,6 +27,11 @@ struct ContentView: View {
 
         }
         .toolbar {
+            Button(action: generate) {
+                Text("Generate")
+                Image(systemName: "wand.and.sparkles")
+            }
+
             Button {
                 showConfiguration.toggle()
             } label: {
@@ -37,6 +42,23 @@ struct ContentView: View {
             websiteDocument.adoptGalleries()
             reRender = true
         }
+    }
+
+    func generate() {
+        Task {
+            let logger = Logger()
+            let generator = websiteDocument.getWebsiteGenerator(logger: logger)
+            guard let generator else {
+                debugPrint("No generator")
+                return
+            }
+            await generator.generate(
+                inlineWebComponentCSS: true,
+                cleanBuild: true,
+                minify: true)
+
+        }
+
     }
 }
 

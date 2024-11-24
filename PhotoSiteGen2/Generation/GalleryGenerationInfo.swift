@@ -9,6 +9,6 @@ struct GalleryGenerationInfo {
     var sequenceNumber: Int
     var titleImageFileName: String?
     var title: String
-    var name: String
+    var genName: String
     var categories: [String]
 }

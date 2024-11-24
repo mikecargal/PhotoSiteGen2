@@ -40,6 +40,7 @@ class Logger: ErrorHandler {
     }
 
     func logMessage(_ message: String) {
+        debugPrint(message)
         messages.append(message)
     }
 
@@ -49,6 +50,7 @@ class Logger: ErrorHandler {
         } else {
             completionStatus = .completedWithError
         }
+        debugPrint(completionStatus)
     }
 
     func updateGalleryProgress(galleryName: String, itemCount: Int, completionCount: Int) async {
@@ -56,6 +58,7 @@ class Logger: ErrorHandler {
         let allGalleries = galleriesProgress.values.reduce((ttl: 0, complete: 0))
             { (ttl: $0.ttl + $1.ttl, complete: $0.complete + $1.complete) }
         overallPercentComplete = Double(allGalleries.complete) / Double(allGalleries.ttl)
+        debugPrint(galleryName, overallPercentComplete)
     }
 
     func progressFor(gallery galleryName: String) -> Double {

@@ -16,7 +16,8 @@ struct WebSiteDocument: FileDocument, Codable {
     var websiteName: String = "Untitled Website"
     var sourceFolder: URL?  // = FileManager.default.homeDirectoryForCurrentUser
     var staticSiteFolder: URL? = FileManager.default.homeDirectoryForCurrentUser
-    var destinationFolder: URL? = FileManager.default.homeDirectoryForCurrentUser
+    var destinationFolder: URL? = FileManager.default
+        .homeDirectoryForCurrentUser
     var categories = [String]()
     var galleries = [GalleryDocument]()
 
@@ -27,7 +28,7 @@ struct WebSiteDocument: FileDocument, Codable {
     }
 
     init() {}
-    
+
     var configured: Bool {
         return sourceFolder != nil
     }
@@ -38,6 +39,26 @@ struct WebSiteDocument: FileDocument, Codable {
         }
     }
 
+    func getWebsiteGenerator(logger: Logger) -> WebSiteGenerator? {
+        guard let sourceFolder, let staticSiteFolder, let destinationFolder
+        else { return nil }
+        let tsid = TSID()
+        return WebSiteGenerator(
+            sourceFolder: sourceFolder,
+            staticSourceFolder: staticSiteFolder,
+            destinationFolder: destinationFolder,
+            galleryGenerators: galleries.enumerated().map {
+                (idx, galleryDocument) in
+                GalleryGenerator(
+                    generationID: tsid,
+                    wsSource: sourceFolder,
+                    wsDestination: destinationFolder,
+                    logger: logger,
+                    galleryInfo: galleryDocument.getGalleryGenerationInfo(idx))
+            },
+            logger: logger,
+            generationID: tsid)
+    }
 
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         let data = try JSONEncoder().encode(self)
