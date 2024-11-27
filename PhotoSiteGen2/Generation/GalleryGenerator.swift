@@ -25,30 +25,35 @@ struct GalleryGenerator {
     let title: String
     let categories: [String]
     let destinationFolder: URL
-    let logger: Logger
-
+    let generationStatus: GalleryGenerationStatus
+   
     init(
         generationID: TSID,
         wsSource: URL,
         wsDestination: URL,
-        logger: Logger,
+        generationStatus: GalleryGenerationStatus,
         galleryInfo: GalleryGenerationInfo
     ) {
         self.generationID = generationID
         self.wsSource = wsSource
         self.wsDestination = wsDestination
-
+        
         genName = galleryInfo.genName
         sequenceNumber = galleryInfo.sequenceNumber
         titleImageFileName = galleryInfo.titleImageFileName
         title = galleryInfo.title
         categories = galleryInfo.categories
 
-        self.logger = logger
+        self.generationStatus = generationStatus
         destinationFolder = wsDestination.appendingPathComponent(genName)
     }
 
     func generate(minify: Bool) async throws -> GeneratedGallery {
+        async let _ = generationStatus.startGeneration()
+//        if Bool.random() {
+//            await gs
+//            await generationStatus.logError("Dummy Error")
+//        }
         try await copyToDestination()
         let title = title
         let photos = getPhotos()
@@ -61,7 +66,7 @@ struct GalleryGenerator {
                 wsDestination
                 .appendingPathComponent("thumbs")
                 .appendingPathComponent("\(genName).jpg"),
-            errorHandler: logger)
+            errorHandler: generationStatus)
         let document = Document(.html) {
             Comment("generated: \(Date.now)")
             PSGPage(
@@ -89,12 +94,15 @@ struct GalleryGenerator {
             atomically: true,
             encoding: String.Encoding.utf8)
 
-        return GeneratedGallery(
+        let generatedGallery = GeneratedGallery(
             favoritePhoto: try getFavoritePhoto(photos: photos),
             categories: categories,
             title: title,
             name: genName,
             sequenceNumber: sequenceNumber)
+
+        async let _ = generationStatus.completeGeneration()
+        return generatedGallery
     }
 
     private func copyToDestination() async throws {
@@ -106,7 +114,7 @@ struct GalleryGenerator {
             to:
                 wsDestination
                 .appending(component: genName),
-            logger: logger,
+            logger: generationStatus,
             context: "Copying images for gallery; \(genName)",
             renamer: Photo.filteredFileNameWithExtension(_:))
     }
@@ -123,10 +131,9 @@ struct GalleryGenerator {
             .sorted()
 
         } catch {
-            let eh = logger
             let nm = genName
             Task {
-                await eh.handleError("gathering photos for \(nm)", error)
+                async let _ = generationStatus.logError("Error generating Photos for \(nm)")
             }
             return []
         }
@@ -144,9 +151,8 @@ struct GalleryGenerator {
         if !photos.contains(where: {
             $0.filteredFileNameWithExtension() == titleImageFileName
         }) {
-            let eh = logger
             Task {
-                await eh.logMessage(
+                await generationStatus.logError(
                     "could not find titleImage (\(titleImageFileName))... using default (first)"
                 )
             }

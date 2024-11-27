@@ -32,7 +32,6 @@ struct FolderSelector: View {
                     if panel.runModal() == .OK, let url = panel.url {
                         selectedFolder = url
                     }
-
                 } label: {
                     Image(systemName: "folder")
                 }

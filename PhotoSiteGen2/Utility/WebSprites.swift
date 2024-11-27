@@ -25,7 +25,7 @@ func generateSpritesImage(thumbPhotos: [Photo], width: Int, filename: URL, error
                                   bytesPerRow: 0,
                                   space: CGColorSpace(name: CGColorSpace.sRGB)!,
                                   bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else {
-        await errorHandler.handleError("creating CGContext for thumbnames", SpriteGenerationError.ContextCreationError)
+        await errorHandler.handleError("creating CGContext for thumbnames\n\(filename)\nwidth: \(width), height: \(totalHeight)", SpriteGenerationError.ContextCreationError)
         return []
     }
 

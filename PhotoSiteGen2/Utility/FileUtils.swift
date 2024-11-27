@@ -12,7 +12,7 @@ typealias FilterFinder = (String) -> FileFilter?
 
 func copyDirectory(from source: URL,
                    to dest: URL,
-                   logger: Logger,
+                   logger: ErrorHandler,
                    context: String,
                    renamer: Renamer? = nil,
                    filterFinder: FilterFinder? = nil) async throws {
@@ -35,7 +35,7 @@ func copyDirectory(from source: URL,
             let filename = renamer?(url) ?? url.lastPathComponent
             let copyDest = dest.appending(component: filename)
             if fileNameSet.contains(filename) {
-                await logger.handleError(context, GalleryGenerationError.DuplicateName(filename))
+                async let _ = logger.handleError(context, GalleryGenerationError.DuplicateName(filename))
             }
             fileNameSet.insert(filename)
 

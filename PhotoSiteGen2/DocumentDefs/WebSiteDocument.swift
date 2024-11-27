@@ -25,6 +25,7 @@ struct WebSiteDocument: FileDocument, Codable {
         if let data = configuration.file.regularFileContents {
             self = try JSONDecoder().decode(WebSiteDocument.self, from: data)
         }
+        adoptGalleries()
     }
 
     init() {}
@@ -39,24 +40,30 @@ struct WebSiteDocument: FileDocument, Codable {
         }
     }
 
-    func getWebsiteGenerator(logger: Logger) -> WebSiteGenerator? {
+    @MainActor
+    func getWebsiteGenerator() -> WebSiteGenerator? {
         guard let sourceFolder, let staticSiteFolder, let destinationFolder
         else { return nil }
         let tsid = TSID()
+        let generationStatus = WebsiteGenerationStatus()
         return WebSiteGenerator(
             sourceFolder: sourceFolder,
             staticSourceFolder: staticSiteFolder,
             destinationFolder: destinationFolder,
             galleryGenerators: galleries.enumerated().map {
                 (idx, galleryDocument) in
-                GalleryGenerator(
+                let galleryGenStatus = GalleryGenerationStatus(
+                    galleryTitle: galleryDocument.title,
+                    galleryName: galleryDocument.genName,
+                    webSiteGenerationStatus: generationStatus)
+                return GalleryGenerator(
                     generationID: tsid,
                     wsSource: sourceFolder,
                     wsDestination: destinationFolder,
-                    logger: logger,
+                    generationStatus: galleryGenStatus,
                     galleryInfo: galleryDocument.getGalleryGenerationInfo(idx))
             },
-            logger: logger,
+            generationStatus: generationStatus,
             generationID: tsid)
     }
 

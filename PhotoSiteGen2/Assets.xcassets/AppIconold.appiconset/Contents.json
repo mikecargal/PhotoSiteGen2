@@ -1,61 +1,51 @@
 {
   "images" : [
     {
-      "filename" : "PhotoGenIcon16.heic",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "PhotoGenIcon32 1.heic",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "PhotoGenIcon32.heic",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "PhotoGenIcon64.heic",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "PhotoGenIcon128.heic",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "PhotoGenIcon256 1.heic",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "PhotoGenIcon256.heic",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "PhotoGenIcon512 1.heic",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "PhotoGenIcon512.heic",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "PhotoGenIcon1024.heic",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"

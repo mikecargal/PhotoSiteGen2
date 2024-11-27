@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var websiteDocument: WebSiteDocument
-    @State var reRender = false
     @State private var showConfiguration = false
+    @State private var showGenerationSheet = false
 
     var body: some View {
         NavigationStack {
@@ -21,13 +21,12 @@ struct ContentView: View {
             if showConfiguration || !websiteDocument.configured {
                 SiteConfigEditView(websiteDocument: $websiteDocument)
             }
-            if reRender {
-                GalleryGridView(webSiteDocument: $websiteDocument)
-            }
-
+            GalleryGridView(webSiteDocument: $websiteDocument)
         }
         .toolbar {
-            Button(action: generate) {
+            Button {
+                showGenerationSheet = true
+            } label: {
                 Text("Generate")
                 Image(systemName: "wand.and.sparkles")
             }
@@ -38,27 +37,11 @@ struct ContentView: View {
                 Image(systemName: "gear")
             }
         }
-        .onAppear {
-            websiteDocument.adoptGalleries()
-            reRender = true
+        .sheet(isPresented: $showGenerationSheet) {
+            GenerationSheetView(
+                websiteDocument: websiteDocument,
+                showSheet: $showGenerationSheet)
         }
-    }
-
-    func generate() {
-        Task {
-            let logger = Logger()
-            let generator = websiteDocument.getWebsiteGenerator(logger: logger)
-            guard let generator else {
-                debugPrint("No generator")
-                return
-            }
-            await generator.generate(
-                inlineWebComponentCSS: true,
-                cleanBuild: true,
-                minify: true)
-
-        }
-
     }
 }
 

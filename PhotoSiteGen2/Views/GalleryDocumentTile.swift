@@ -58,15 +58,6 @@ struct GalleryDocumentTile: View {
         else { return }
 
         galleries.remove(at: deletionIndex)
-
-        debugPrint(
-            "Deleted Gallery: \(galleryDocument.title) at index \(deletionIndex)"
-        )
-        debugPrint("Remaining Galleries:")
-
-        galleries.forEach {
-            debugPrint("\t\($0.title)")
-        }
     }
 }
 
