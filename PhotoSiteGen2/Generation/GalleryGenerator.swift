@@ -26,7 +26,7 @@ struct GalleryGenerator {
     let categories: [String]
     let destinationFolder: URL
     let generationStatus: GalleryGenerationStatus
-   
+
     init(
         generationID: TSID,
         wsSource: URL,
@@ -37,7 +37,7 @@ struct GalleryGenerator {
         self.generationID = generationID
         self.wsSource = wsSource
         self.wsDestination = wsDestination
-        
+
         genName = galleryInfo.genName
         sequenceNumber = galleryInfo.sequenceNumber
         titleImageFileName = galleryInfo.titleImageFileName
@@ -50,10 +50,10 @@ struct GalleryGenerator {
 
     func generate(minify: Bool) async throws -> GeneratedGallery {
         async let _ = generationStatus.startGeneration()
-//        if Bool.random() {
-//            await gs
-//            await generationStatus.logError("Dummy Error")
-//        }
+        //        if Bool.random() {
+        //            await gs
+        //            await generationStatus.logError("Dummy Error")
+        //        }
         try await copyToDestination()
         let title = title
         let photos = getPhotos()
@@ -116,7 +116,19 @@ struct GalleryGenerator {
                 .appending(component: genName),
             logger: generationStatus,
             context: "Copying images for gallery; \(genName)",
-            renamer: Photo.filteredFileNameWithExtension(_:))
+            renamer: Photo.filteredFileNameWithExtension(_:),
+            directoryNameFilter: filterSubDirName
+        )
+    }
+
+    private func filterSubDirName(url: URL) -> URL {
+        var pathComponents = url.pathComponents
+        for (index, component) in pathComponents.enumerated() {
+            if component.wholeMatch(of: /W\d+/) != nil {
+                pathComponents[index] = component.lowercased()
+            }
+        }
+        return NSURL.fileURL(withPathComponents: pathComponents)!
     }
 
     private func getPhotos() -> [Photo] {
@@ -133,7 +145,8 @@ struct GalleryGenerator {
         } catch {
             let nm = genName
             Task {
-                async let _ = generationStatus.logError("Error generating Photos for \(nm)")
+                async let _ = generationStatus.logError(
+                    "Error generating Photos for \(nm)")
             }
             return []
         }
@@ -147,7 +160,7 @@ struct GalleryGenerator {
         guard let titleImageFileName = titleImageFileName else {
             return photos.first!
         }
-        
+
         if !photos.contains(where: {
             $0.filteredFileNameWithExtension() == titleImageFileName
         }) {

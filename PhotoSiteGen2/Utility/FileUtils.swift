@@ -9,14 +9,20 @@ import Foundation
 
 typealias Renamer = (URL) -> String
 typealias FilterFinder = (String) -> FileFilter?
+typealias DirectoryNameFilter = (URL) -> URL
 
-func copyDirectory(from source: URL,
-                   to dest: URL,
-                   logger: ErrorHandler,
-                   context: String,
-                   renamer: Renamer? = nil,
-                   filterFinder: FilterFinder? = nil) async throws {
-    try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true)
+func copyDirectory(
+    from source: URL,
+    to dest: URL,
+    logger: ErrorHandler,
+    context: String,
+    renamer: Renamer? = nil,
+    filterFinder: FilterFinder? = nil,
+    directoryNameFilter: DirectoryNameFilter? = nil
+) async throws {
+    try FileManager.default.createDirectory(
+        at: directoryNameFilter?(dest) ?? dest,
+        withIntermediateDirectories: true)
     let urls = try FileManager.default.contentsOfDirectory(
         at: source,
         includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
@@ -25,25 +31,29 @@ func copyDirectory(from source: URL,
     var fileNameSet = Set<String>()
     for url in urls {
         if url.hasDirectoryPath {
-            try await copyDirectory(from: url,
-                                    to: dest.appending(component: url.lastPathComponent),
-                                    logger: logger,
-                                    context: context,
-                                    renamer: renamer,
-                                    filterFinder: filterFinder)
+            try await copyDirectory(
+                from: url,
+                to: dest.appending(component: url.lastPathComponent),
+                logger: logger,
+                context: context,
+                renamer: renamer,
+                filterFinder: filterFinder,
+                directoryNameFilter: directoryNameFilter)
         } else {
             let filename = renamer?(url) ?? url.lastPathComponent
             let copyDest = dest.appending(component: filename)
             if fileNameSet.contains(filename) {
-                async let _ = logger.handleError(context, GalleryGenerationError.DuplicateName(filename))
+                async let _ = logger.handleError(
+                    context, GalleryGenerationError.DuplicateName(filename))
             }
             fileNameSet.insert(filename)
 
             try? FileManager.default.removeItem(at: copyDest)
             if let filter = filterFinder?(filename) {
-                let fileString = try! String(contentsOf: url,encoding: .utf8)
+                let fileString = try! String(contentsOf: url, encoding: .utf8)
                 let filteredContent = try filter.filter(fileString)
-                try! filteredContent.write(to: copyDest, atomically: true, encoding: .utf8)
+                try! filteredContent.write(
+                    to: copyDest, atomically: true, encoding: .utf8)
             } else {
                 _ = try FileManager.default.copyItem(at: url, to: copyDest)
             }
