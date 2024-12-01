@@ -8,7 +8,9 @@
 
 .caption {
     text-align: center;
-    width: 100%;
+/*    width: 100%;*/
+    width: min-content;
+    min-width: 100%;
     color: white;
     background-color: rgba(0, 0, 0, 0.3);
     font-weight: lighter;
