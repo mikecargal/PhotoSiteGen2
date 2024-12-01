@@ -100,7 +100,6 @@ final class WebSiteGenerator: Sendable {
     }
 
     private func copyStaticContent(inlineWebComponentCSS: Bool) async throws {
-        debugPrint("Copying static content to \(destinationFolder) inlineWebComponentCSS: \(inlineWebComponentCSS)")
         try await copyDirectory(
             from: staticSourceFolder,
             to: destinationFolder,
