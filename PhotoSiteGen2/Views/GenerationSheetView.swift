@@ -61,9 +61,9 @@ struct GenerationSheetView: View {
                 return
             }
             await generator.generate(
-                inlineWebComponentCSS: true,
-                cleanBuild: true,
-                minify: true)
+                inlineWebComponentCSS: inlineWebComponentCSS,
+                cleanBuild: cleanBuild,
+                minify: minify)
             generating = false
         }
 
