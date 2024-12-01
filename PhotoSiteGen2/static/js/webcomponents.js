@@ -3,31 +3,26 @@
 class FadeInImage extends HTMLElement {
   static _masonrySizing;
 
-  masonrySizing() {
-    if (!FadeInImage._masonrySizing) {
-      const GUTTER = "4px";
-      const bodyMargin = window.innerWidth - document.body.clientWidth;
-      const cutoff3col = 1000 + bodyMargin;
-      const cutoff4col = 1500 + bodyMargin;
-      const cutoff5col = 2000 + bodyMargin;
-      const sizing_by_col_count = {};
-      const ar = this.ar
-      for (let col_count of [2, 3, 4, 5]) {
-        sizing_by_col_count[col_count] =
-          `img {
+  masonrySizing(ar) {
+    const GUTTER = "4px";
+    const bodyMargin = window.innerWidth - document.body.clientWidth;
+    const cutoff3col = 1000 + bodyMargin;
+    const cutoff4col = 1500 + bodyMargin;
+    const cutoff5col = 2000 + bodyMargin;
+    const sizing_by_col_count = {};
+    for (let col_count of [2, 3, 4, 5]) {
+      sizing_by_col_count[col_count] = `img {
              width: calc(((100vw - ${bodyMargin}px) / ${col_count}) - ${GUTTER}); 
-             max-height: calc((((100vw - ${bodyMargin}px) / ${col_count}) - ${GUTTER}) * ${ar});
+             max-height: calc((((100vw - ${bodyMargin}px) / ${col_count}) - ${GUTTER}) / ${ar}); 
            }`;
-      }
-      const additionalSizing = `${sizing_by_col_count[2]}
+    }
+    const additionalSizing = `${sizing_by_col_count[2]}
        @media screen and (min-width: ${cutoff3col}px) {${sizing_by_col_count[3]}}
        @media screen and (min-width: ${cutoff4col}px) {${sizing_by_col_count[4]}}
        @media screen and (min-width: ${cutoff5col}px) {${sizing_by_col_count[5]}}
       `;
-      const sizes = `sizes="(min-width: ${cutoff5col}px) 20vw, (min-width: ${cutoff4col}px) 25vw, (min-width: ${cutoff3col}px) 34vw, 50vw" `;
-      FadeInImage._masonrySizing = [additionalSizing, sizes];
-    }
-    return FadeInImage._masonrySizing;
+    const sizes = `sizes="(min-width: ${cutoff5col}px) 20vw, (min-width: ${cutoff4col}px) 25vw, (min-width: ${cutoff3col}px) 34vw, 50vw" `;
+    return [additionalSizing, sizes];
   }
 
   constructor() {
@@ -35,39 +30,11 @@ class FadeInImage extends HTMLElement {
     this.blurred = true;
     this.explicitSizing = this.hasAttribute("explicitSizing");
     const [additionalSizing, sizes] = this.hasAttribute("masonrySizing")
-      ? this.masonrySizing()
+      ? this.masonrySizing(parseFloat(this.getAttribute("ar")))
       : ["", ""];
 
     this.attachShadow({ mode: "open" }).innerHTML = `
-<!--      <link rel=stylesheet href="css/fadeIn.css"> -->
-<style>
-.fadein {
-    overflow: hidden;
-}
-
-/*=============== blurred ==================*/
-.background:has(.blurred) {
-    filter: blur(var(--blur-px, 15px));
-    background-size: 100%;
-}
-
-img.blurred {
-    opacity: 0;
-}
-
-/*=============== NOT blurred ==================*/
-.background:not(:has(.blurred)) {
-    transition:
-        opacity 500ms ease,
-        filter 500ms ease;
-}
-
-img:not(.blurred) {
-    object-fit: contain;
-    opacity: 1;
-}
-
-</style>
+     <link rel=stylesheet href="css/fadeIn.css">
      <style>
        ${additionalSizing}
      </style>
@@ -185,12 +152,13 @@ class GalleryBase extends HTMLElement {
   }
 
   getGalleryName() {
-    return this.closest("[data-gallery-name]")?.attributes["data-gallery-name"]
-      ?.nodeValue;
+    return this.closest("[data-gallery-name]")?.getAttribute(
+      "data-gallery-name"
+    );
   }
 
   getThumbSrc() {
-    return this.closest("[thumbsrc]")?.attributes["thumbsrc"]?.nodeValue;
+    return this.closest("[thumbsrc]")?.getAttribute("thumbsrc");
   }
 
   getImage() {
@@ -237,75 +205,7 @@ class GalleryLink extends GalleryBase {
     );
 
     this.attachShadow({ mode: "open" }).innerHTML = `
-<!--     <link rel=stylesheet href="css/galleryLink.css"> -->
-<style>
-div {
-    position: absolute;
-    transition: all 500ms ease;
-    content: "";
-    background-size: 100%;
-}
-
-a {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-a>div {
-    flex-grow: 1;
-    position: absolute;
-    background-color: transparent;
-    height: 100%;
-    width: 100%;
-    color: transparent;
-    border: transparent;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-a>div:hover {
-    background-color: rgba(0, 0, 0, 0.4);
-    color: white;
-}
-
-a>div>* {
-    align-self: center;
-}
-
-hr {
-    display: none;
-}
-
-a>div:hover>hr {
-    display: block;
-    width: 80%;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275);
-    border: 0;
-    border-bottom: 2px solid white;
-}
-
-@media (hover: none) {
-    a>div {
-        color: white;
-        background-color: rgba(0, 0, 0, 0.2)
-    }
-
-    h2,
-    span {
-        font-size: 0.8rem;
-    }
-
-    hr {
-        display: block;
-        width: 80%;
-        border: 0;
-        border-bottom: 2px solid white;
-    }
-}
-
-</style>
+    <link rel=stylesheet href="css/galleryLink.css"> 
     <div style="top:${this.top}px;left:${this.left}px;">
        <a href="${this.gallery}.html">
          <fade-in-image ar="${this.ar}" thumbpct="${this.thumbpct}" masonrySizing></fade-in-image>
@@ -326,36 +226,14 @@ customElements.define("gallery-link", GalleryLink);
 class GalleryImage extends GalleryBase {
   constructor() {
     super();
-    this.ar = this.attributes["ar"].nodeValue;
+    this.ar = this.getAttribute("ar"); //this.attributes["ar"].nodeValue;
     this.thumbpct = this.getAttribute("thumbpct");
 
     const caption = this.getAttribute("caption");
     let captionDiv = caption ? `<div class="caption">${caption}</div>` : "";
 
     this.attachShadow({ mode: "open" }).innerHTML = `
-<!--     <link rel=stylesheet href="css/galleryImage.css"> -->
-<style>
-.galleryImage {
-    position: absolute;
-    transition: all 500ms ease-in-out;
-    content: "";
-    background-size: 100%;
-    cursor: pointer;
-}
-
-.caption {
-    text-align: center;
-/*    width: 100%;*/
-    width: min-content;
-    min-width: 100%;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.3);
-    font-weight: lighter;
-    padding-top: 0.1rem;
-    padding-bottom: 0.3rem;
-}
-
-</style>
+    <link rel=stylesheet href="css/galleryImage.css">
     <div class="galleryImage"  onclick="window.slideShow.showImage(event)">
         <fade-in-image ar="${this.ar}" thumbpct="${this.thumbpct}" masonrySizing></fade-in-image>
         ${captionDiv}
@@ -371,35 +249,7 @@ class SiteLogo extends HTMLElement {
   // connect component
   constructor() {
     super().attachShadow({ mode: "open" }).innerHTML = `
-<!--     <link rel=stylesheet href="css/siteLogo.css"> -->
-<style>
-a {
-    text-decoration: none;
-}
-
-#logoicon {
-    width: 4rem;
-    height: 4rem;
-}
-
-#logotext {
-    width: 20rem;
-    height: 2rem;
-}
-
-#logoicon,
-#logotext {
-    background: linear-gradient(to left, #ff6a00, #ee0979);
-    display: inline-block;
-    opacity: 0;
-}
-
-#logoicon.loaded,
-#logotext.loaded {
-    opacity: 1;
-    transition: opacity 1000ms ease;
-}
-</style>
+    <link rel=stylesheet href="css/siteLogo.css">
     <header>
       <a href="index.html">
         <div id="logoicon"><img src="images/HummingBirdtransparentOnDarkGrey.svg" alt="HummingBirdLogo"></div>
