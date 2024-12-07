@@ -42,8 +42,7 @@ class SlideShow {
           case "X":
             this.hide();
             break;
-          // default:
-          //   console.log(event.key);
+          // default: console.log(event.key);
         }
       }
     });
@@ -144,7 +143,7 @@ class SlideShow {
 
   checkURL() {
     const ssIdx = this.readSSIdx();
-    if (ssIdx) {
+    if (!isNaN(ssIdx)) {
       this.show(ssIdx);
     }
   }

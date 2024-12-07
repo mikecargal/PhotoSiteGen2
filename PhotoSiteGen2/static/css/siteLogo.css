@@ -1,4 +1,9 @@
-a {
+header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#homeLink {
     text-decoration: none;
 }
 
@@ -23,4 +28,18 @@ a {
 #logotext.loaded {
     opacity: 1;
     transition: opacity 1000ms ease;
+}
+
+#igLink {
+    align-self: flex-start;
+    align-items: center;
+    text-decoration: none;
+    color: #ee0979;
+    display: flex;
+    font-size: 0.75rem;
+    padding-right: 0.25rem;
+    padding-top: 0.5rem;
+    img {
+        height: 25px;
+    }
 }

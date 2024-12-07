@@ -92,8 +92,6 @@ class FadeInImage extends HTMLElement {
     if (oldValue === newValue) return;
     this[property] = newValue;
     if (this.shadowRoot) {
-      //  this.implicitWidth = this.img?.clientWidth;
-
       if (this.img) {
         if (property === "src") {
           this.img.src = this.src;
@@ -207,9 +205,13 @@ class GalleryLink extends GalleryBase {
     this.attachShadow({ mode: "open" }).innerHTML = `
     <link rel=stylesheet href="css/galleryLink.css"> 
     <div style="top:${this.top}px;left:${this.left}px;">
-       <a href="${this.gallery}.html">
+       <a href="${this.gallery}.html?ssidx=0">
          <fade-in-image ar="${this.ar}" thumbpct="${this.thumbpct}" masonrySizing></fade-in-image>
-         <div><h2>${this.linkTxt}</h2><hr>${categoriesHTML}</div>
+         <div>
+           <h2>${this.linkTxt}</h2>
+           <hr>
+           ${categoriesHTML}
+         </div>
        </a>
     </div>`;
   }
@@ -234,7 +236,7 @@ class GalleryImage extends GalleryBase {
 
     this.attachShadow({ mode: "open" }).innerHTML = `
     <link rel=stylesheet href="css/galleryImage.css">
-    <div class="galleryImage"  onclick="window.slideShow.showImage(event)">
+    <div class="galleryImage" onclick="window.slideShow.showImage(event)">
         <fade-in-image ar="${this.ar}" thumbpct="${this.thumbpct}" masonrySizing></fade-in-image>
         ${captionDiv}
     </div>`;
@@ -251,9 +253,12 @@ class SiteLogo extends HTMLElement {
     super().attachShadow({ mode: "open" }).innerHTML = `
     <link rel=stylesheet href="css/siteLogo.css">
     <header>
-      <a href="index.html">
+      <a id="homeLink" href="index.html">
         <div id="logoicon"><img src="images/HummingBirdtransparentOnDarkGrey.svg" alt="HummingBirdLogo"></div>
         <div id="logotext"><img src="images/MikeCargalPhotography.svg" alt="Mike Cargal Photography"></div>
+      </a>
+      <a id="igLink" href="https://www.instagram.com/mikecargal/"  target="_blank">
+        <img src="/images/instagramOnTransparent.svg" alt="instagram link"/> @mikecargal
       </a>
     </header>`;
   }
