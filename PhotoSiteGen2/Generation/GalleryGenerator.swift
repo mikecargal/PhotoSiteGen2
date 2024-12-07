@@ -67,6 +67,12 @@ struct GalleryGenerator {
                 .appendingPathComponent("thumbs")
                 .appendingPathComponent("\(genName).jpg"),
             errorHandler: generationStatus)
+        var preloads = [PreLoad(src:thumbImageName)]
+        preloads.append(photos.map {
+            PreLoad(src: "/\(genName)/\($0.filteredFileNameWithExtension())",
+                    srcset: $0.srcset(genName: genName))
+        }.first!)
+
         let document = Document(.html) {
             Comment("generated: \(Date.now)")
             PSGPage(
@@ -77,7 +83,7 @@ struct GalleryGenerator {
                     "js/slides.js?tsid=\(generationID)",
                     "js/startup.js?tsid=\(generationID)",
                 ],
-                preload: thumbImageName
+                preloads: preloads
             ) { [self] in
                 SwiftHtml.Text(title)
                 Br()

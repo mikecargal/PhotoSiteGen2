@@ -79,6 +79,12 @@ final class Photo: Identifiable, Comparable, Sendable {
         Self.filteredFileNameWithExtension(url)
     }
 
+    func srcset(genName: String) -> String {
+        let imgName = filteredFileNameWithExtension()
+        return
+            "\(genName)\\w0512\\\(imgName) 512w, \(genName)\\w1024\\\(imgName) 1024w, \(genName)\\w2048\\\(imgName) 2048w, \(genName)\\\(imgName)"
+    }
+
     static func filteredFileName(_ url: URL) -> String {
         let inParts = url.deletingPathExtension().lastPathComponent.split(
             separator: "-")

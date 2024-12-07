@@ -9,11 +9,11 @@ import Foundation
 import SwiftHtml
 
 class PSGPage: GroupTag {
-    public init(generationID: TSID, jsFiles: [String], preload: String? = nil, @TagBuilder _ builder: @escaping () -> Tag) {
+    public init(generationID: TSID, jsFiles: [String], preloads: [PreLoad] = [], @TagBuilder _ builder: @escaping () -> Tag) {
         let content = builder()
         let children = [
             Html {
-                PSGHead(preload: preload, generationID: generationID)
+                PSGHead(preloads: preloads, generationID: generationID)
                 Body {
                     SiteLogo()
                     Main { content }

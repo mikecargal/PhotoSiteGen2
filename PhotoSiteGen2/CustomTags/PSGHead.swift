@@ -9,7 +9,7 @@ import Foundation
 import SwiftHtml
 
 class PSGHead: GroupTag {
-    public init(preload: String? = nil, generationID: TSID) {
+    public init(preloads: [PreLoad] = [], generationID: TSID) {
         let children = [
             Head {
                 Title("Mike Cargal's Photography Site")
@@ -18,8 +18,10 @@ class PSGHead: GroupTag {
                 Link(rel: .stylesheet).href("css/styles.css?tsid=\(generationID)")
                 Link(rel: .icon).href("/images/favicon.svg?tsid=\(generationID)").type("image/svg+xml")
                 Link(rel: .manifest).href("/manifest.webmanifest?tsid=\(generationID)")
-                if let preload {
-                    Link(rel: .preload).href("\(preload)?tsid=\(generationID)").attribute("as", "image")
+                for preload in preloads {
+                    Link(rel: .preload).href("\(preload.src)") // ?tsid=\(generationID)")
+                        .attribute("srcset", preload.srcset)
+                        .attribute("as", preload.asType)
                 }
             },
         ]
