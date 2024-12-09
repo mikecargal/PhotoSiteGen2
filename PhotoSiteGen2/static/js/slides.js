@@ -5,9 +5,11 @@ class SlideShow {
     this.ssDiv = document.querySelector("#slideShow");
     if (!this.ssDiv) return;
     this.images = document.getElementsByTagName("gallery-image");
-    this.currentIdx = 0;
+    this.currentIdx = -1;
     this.galleryName =
-      document.querySelector("#gallery")?.attributes["data-gallery-name"]?.nodeValue;
+      document.querySelector("#gallery")?.attributes[
+        "data-gallery-name"
+      ]?.nodeValue;
     this.currentImg = document.querySelector("#current");
     this.nextImg = document.querySelector("#next");
     this.prevImg = document.querySelector("#prev");
@@ -93,6 +95,9 @@ class SlideShow {
   }
 
   setCurrentIdx(idx) {
+    if (this.currentIdx === idx) {
+      return;
+    }
     this.currentIdx = idx;
     this.nextIdx = (idx + 1) % this.images.length;
     this.prevIdx = (idx + this.images.length - 1) % this.images.length;
