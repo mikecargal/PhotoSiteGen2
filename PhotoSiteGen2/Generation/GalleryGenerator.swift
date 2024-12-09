@@ -67,11 +67,13 @@ struct GalleryGenerator {
                 .appendingPathComponent("thumbs")
                 .appendingPathComponent("\(genName).jpg"),
             errorHandler: generationStatus)
-        var preloads = [PreLoad(src:thumbImageName)]
-        preloads.append(photos.map {
-            PreLoad(src: "/\(genName)/\($0.filteredFileNameWithExtension())",
+        var preloads = [PreLoad(src: thumbImageName)]
+        preloads.append(
+            photos.map {
+                PreLoad(
+                    src: "/\(genName)/\($0.filteredFileNameWithExtension())",
                     srcset: $0.srcset(genName: genName))
-        }.first!)
+            }.first!)
 
         let document = Document(.html) {
             Comment("generated: \(Date.now)")
@@ -146,7 +148,15 @@ struct GalleryGenerator {
             )
             .filter { !$0.hasDirectoryPath }
             .map { try Photo(url: $0) }
-            .sorted()
+            .sorted { (p0: Photo, p1: Photo) in
+                if p0.filteredFileNameWithExtension() == titleImageFileName {
+                    return true
+                }
+                if p1.filteredFileNameWithExtension() == titleImageFileName {
+                    return false
+                }
+                return p0 < p1
+            }
 
         } catch {
             let nm = genName
