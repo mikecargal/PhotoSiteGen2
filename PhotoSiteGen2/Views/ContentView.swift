@@ -30,7 +30,7 @@ struct ContentView: View {
                 Text("Generate")
                 Image(systemName: "wand.and.sparkles")
             }
-
+            
             Button {
                 showConfiguration.toggle()
             } label: {

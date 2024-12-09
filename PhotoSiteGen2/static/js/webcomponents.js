@@ -65,7 +65,7 @@ class FadeInImage extends HTMLElement {
       if (this.background.style.backgroundImage === savedBkgImg) {
         this.background.style.backgroundImage = "none";
       }
-    }, 500);
+    }, 100);
   }
 
   blur() {
