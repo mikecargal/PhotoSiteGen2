@@ -58,6 +58,9 @@ struct GalleryGenerator {
         let title = title
         let photos = getPhotos()
 
+        let renderer = DocumentRenderer(minify: minify, indent: 2)
+        try generateInfoHtmlFiles(photos: photos, renderer: renderer)
+
         let thumbImageName = "/thumbs/\(genName).jpg"
 
         let thumbPcts = await generateSpritesImage(
@@ -69,7 +72,7 @@ struct GalleryGenerator {
             errorHandler: generationStatus)
         var preloads = [PreLoad(src: thumbImageName)]
         preloads.append(
-            photos.map {
+            photos.prefix(1).map {
                 PreLoad(
                     src: "/\(genName)/\($0.filteredFileNameWithExtension())",
                     srcset: $0.srcset(genName: genName))
@@ -94,9 +97,7 @@ struct GalleryGenerator {
                     thumbPcts: thumbPcts)
             }
         }
-        let renderer = DocumentRenderer(minify: minify, indent: 2).render(
-            document)
-        _ = try renderer.write(
+        _ = try renderer.render(document).write(
             to:
                 wsDestination.appendingPathComponent("\(genName).html"),
             atomically: true,
@@ -146,7 +147,9 @@ struct GalleryGenerator {
                 includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
                 options: [.skipsHiddenFiles]
             )
-            .filter { !$0.hasDirectoryPath }
+            .filter {
+                !$0.hasDirectoryPath && $0.pathExtension.lowercased() == "jpg"
+            }
             .map { try Photo(url: $0) }
             .sorted { (p0: Photo, p1: Photo) in
                 if p0.filteredFileNameWithExtension() == titleImageFileName {
@@ -229,14 +232,180 @@ struct GalleryGenerator {
         let md = photo.metadata
         return GalleryImage()
             .attribute("imagesrc", photo.filteredFileNameWithExtension())
-            .attribute("caption", md.iptc?.caption, md.iptc?.caption != nil)
+            .attribute("caption", md.caption, md.caption != nil)
             .attribute("ar", String(photo.aspectRatio))
             .attribute("top", String((index / 3) * 200))
             .attribute("left", String((index % 3) * 200))
             .attribute("thumbPct", "\(thumbPct)%")
-            .attribute("stars", String(photo.metadata.iptc?.starRating ?? 0))
-            .attribute("tm", photo.metadata.exif?.captureTime)
+            .attribute("stars", String(photo.metadata.starRating))
+            .attribute("tm", photo.metadata.captureTime)
             .class("brick")
     }
 
+    private func generateInfoHtmlFiles(
+        photos: [Photo],
+        renderer: DocumentRenderer
+    ) throws {
+        for photo in photos {
+            try generateInfoHtmlFile(
+                photo: photo,
+                imageSrc:
+                    "\(genName)/w0512/\(photo.filteredFileNameWithExtension())",
+                renderer: renderer)
+        }
+    }
+
+    private func generateInfoHtmlFile(
+        photo: Photo,
+        imageSrc: String,
+        renderer: DocumentRenderer
+    ) throws {
+        struct CropData {
+            var imageSrc: String
+            var top: Int
+            var bottom: Int
+            var left: Int
+            var right: Int
+            var angle: Float
+            var canvasWidth: Int
+            var canvasHeight: Int
+
+            init(md: ImageMetaData, imageSrc: String) {
+                var w: Double
+                var h: Double
+                let pw = Double(md.pixelWidth)
+                let ph = Double(md.pixelHeight)
+                if md.pixelWidth > md.pixelHeight {
+                    w = 200.0
+                    h = w * ph / pw
+
+                } else {
+                    h = 200.0
+                    w = h * pw / ph
+                }
+                top = Int(h * md.cropTop!)
+                bottom = Int(h * md.cropBottom!)
+                left = Int(w * md.cropLeft!)
+                right = Int(w * md.cropRight!)
+                angle = Float(md.cropAngle!)
+                canvasWidth = Int(w)
+                canvasHeight = Int(h)
+                self.imageSrc = imageSrc
+            }
+        }
+        let md = photo.metadata
+
+        let cropData =
+            md.hasCrop ? CropData(md: md, imageSrc: imageSrc) : nil
+
+        let html = Document(.unspecified) {
+            Div {
+                if let caption = md.caption {
+                    Div {
+                        Text(caption)
+                    }.class("caption")
+                }
+                if let captureTime = md.captureTime {
+                    Div {
+                        Text(captureTime)
+                    }.class("creationDate")
+                }
+                if let copyright = md.copyright {
+                    Div {
+                        Text(copyright)
+                    }.class("copyright")
+                }
+
+                Div {
+                    switch md.starRating {
+                    case 0: Text("&star;&star;&star;&star;&star;")
+                    case 1: Text("&starf;&star;&star;&star;&star;")
+                    case 2: Text("&starf;&starf;&star;&star;&star;")
+                    case 3: Text("&starf;&starf;&starf;&star;&star;")
+                    case 4: Text("&starf;&starf;&starf;&starf;&star;")
+                    case 5: Text("&starf;&starf;&starf;&starf;&starf;")
+                    default: Text("")
+                    }
+                }.class("rating")
+
+                if let camera = md.camera {
+                    Div {
+                        Text(camera)
+                    }.class("camera")
+                }
+                if let lens = md.lens {
+                    Div {
+                        Text(lens)
+                    }.class("lens")
+                }
+                if let focalLength = md.focalLength {
+                    Div {
+                        Text("\(focalLength)mm")
+                    }.class("focalLength")
+                }
+                if let subjectDistance = md.subjectDistance {
+                    Div {
+                        Text(  // TODO: have decimal count adjust for distance ranges
+                            "\(String(format: "%.1f" ,subjectDistance*3.28084)) ft (\(String(format: "%.1f" ,subjectDistance)) m)"
+                        )
+                    }.class("focalDistance")
+                }
+                if let iso = md.iso {
+                    Div {
+                        Text("ISO \(iso)")
+                    }.class("iso")
+                }
+                if let fstop = md.aperture {
+                    Div {
+                        Text("&fnof;\(fstop)")
+                    }.class("fstop")
+                }
+                if let exposureTime = md.exposureTime {
+                    Div {
+                        if exposureTime < 1 {
+                            let fraction = 1.0 / exposureTime
+                            Text("1/\(String(format: "%.0f" ,fraction)) sec")
+                        } else {
+                            Text("\(exposureTime) sec")
+                        }
+                    }.class("exposure")
+                }
+                if !md.keywords.isEmpty {
+                    Div {
+                        for keyword in md.keywords {
+                            Div {
+                                Text(keyword)
+                            }
+                        }
+                    }.class("keywords")
+                }
+                if let cropData {
+                    Div {
+                        Text("Crop:")
+                        Canvas().id("cropCanvas")
+                            .attribute("height", String(cropData.canvasHeight))
+                            .attribute("height", String(cropData.canvasWidth))
+                            .attribute("data-cropTop", String(cropData.top))
+                            .attribute("data-cropLeft", String(cropData.left))
+                            .attribute("data-bottom", String(cropData.bottom))
+                            .attribute("data-right", String(cropData.right))
+                            .attribute("data-angle ", String(cropData.angle))
+                            .attribute("data-imageSrc", imageSrc)
+                    }.class("crop")
+                }
+                if let preserveFileName = md.preservedFileName {
+                    Div {
+                        Text("Source: \(preserveFileName)")
+                    }.class("source")
+                }
+            }
+            .class("info","hide")
+        }
+        try renderer.render(html).write(
+            to:
+                wsDestination.appendingPathComponent(
+                    "\(genName)/\(photo.filteredFileName()).html"),
+            atomically: true,
+            encoding: String.Encoding.utf8)
+    }
 }

@@ -25,7 +25,8 @@ final class Photo: Identifiable, Comparable, Sendable {
             url.deletingLastPathComponent()
             .appendingPathComponent("w0512")
             .appendingPathComponent(url.lastPathComponent)
-        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil)
+
+        guard let imageSource = CGImageSourceCreateWithURL(smallImageURL as CFURL, nil)
         else {
             throw PhotoReadError.ImageSourceReadError(url: url)
         }
@@ -35,7 +36,7 @@ final class Photo: Identifiable, Comparable, Sendable {
         else {
             throw PhotoReadError.ImageSourceReadError(url: url)
         }
-        metadata = ImageMetaData(for: imageSource)
+        metadata = ImageMetaData(url: url)
         aspectRatio = Double(metadata.pixelWidth) / Double(metadata.pixelHeight)
 
         let img = CGImageSourceCreateImageAtIndex(imageSource, 0, nil)
@@ -44,13 +45,13 @@ final class Photo: Identifiable, Comparable, Sendable {
     }
 
     static func == (lhs: Photo, rhs: Photo) -> Bool {
-        let lhStar = lhs.metadata.iptc?.starRating ?? 0
-        let rhStar = rhs.metadata.iptc?.starRating ?? 0
+        let lhStar = lhs.metadata.starRating
+        let rhStar = rhs.metadata.starRating
         if lhStar != rhStar {
             return false
         }
-        let lhDate = lhs.metadata.exif?.captureTime ?? ""
-        let rhDate = rhs.metadata.exif?.captureTime ?? ""
+        let lhDate = lhs.metadata.captureTime ?? ""
+        let rhDate = rhs.metadata.captureTime ?? ""
         if lhDate != rhDate {
             return false
         }
@@ -58,13 +59,13 @@ final class Photo: Identifiable, Comparable, Sendable {
     }
 
     static func < (lhs: Photo, rhs: Photo) -> Bool {
-        let lhStar = lhs.metadata.iptc?.starRating ?? 0
-        let rhStar = rhs.metadata.iptc?.starRating ?? 0
+        let lhStar = lhs.metadata.starRating
+        let rhStar = rhs.metadata.starRating
         if lhStar != rhStar {
             return lhStar > rhStar
         }
-        let lhDate = lhs.metadata.exif?.captureTime ?? ""
-        let rhDate = rhs.metadata.exif?.captureTime ?? ""
+        let lhDate = lhs.metadata.captureTime ?? ""
+        let rhDate = rhs.metadata.captureTime ?? ""
         if lhDate != rhDate {
             return lhDate < rhDate
         }
