@@ -17,7 +17,8 @@ struct GenerationSheetView: View {
         true
     @AppStorage("Clean Build") private var cleanBuild = false
     @AppStorage("Minify Build") private var minify = false
-
+    @AppStorage("Skip Static Content") private var skipStaticContent = false
+    
     @State var generator: WebSiteGenerator?
 
     var body: some View {
@@ -28,6 +29,7 @@ struct GenerationSheetView: View {
                     isOn: $inlineWebComponentCSS)
                 Toggle("Clean Build", isOn: $cleanBuild)
                 Toggle("Minify", isOn: $minify)
+                Toggle("Skip Static Content", isOn: $skipStaticContent)
             }
             .disabled(generating)
             Button(action: generate) {
@@ -63,7 +65,8 @@ struct GenerationSheetView: View {
             await generator.generate(
                 inlineWebComponentCSS: inlineWebComponentCSS,
                 cleanBuild: cleanBuild,
-                minify: minify)
+                minify: minify,
+                skipStaticContent: skipStaticContent)
             generating = false
         }
 

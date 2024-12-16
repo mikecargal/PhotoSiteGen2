@@ -200,17 +200,31 @@ struct GalleryGenerator {
     ) -> Tag {
         GroupTag {
             Div {
-                FadeInImage().id("current")
-                    .attribute("explicitSizing", "true")
-                    .attribute(
-                        "thumbsrc", "\(thumbImageName)?tsid=\(generationID)")
                 Div {
-                    Button { Text("X") }.onClick("window.slideShow.hide()")
-                    Div { Div().id("prevIcon") }.id("gotoPrev")
-                    Div { Div().id("nextIcon") }.id("gotoNext")
-                }.class("ssControls")
-                Img(src: "", alt: "prev").id("prev")
-                Img(src: "", alt: "next").id("next")
+                    FadeInImage().id("current")
+                        .attribute("explicitSizing", "true")
+                        .attribute(
+                            "thumbsrc", "\(thumbImageName)?tsid=\(generationID)"
+                        )
+                    Div().id("infoContainer")
+                    Div {
+                        Button { Text("X") }
+                            .onClick("window.slideShow.hide()")
+                            .id("hideSS")
+                        Div { Div().id("prevIcon") }.id("gotoPrev")
+                        Div { Div().id("nextIcon") }.id("gotoNext")
+                        Button {
+                            Img(
+                                src: "images/info-circle.svg",
+                                alt: "show picture info"
+                            )
+                        }
+                        .onClick("window.slideShow.toggleInfo()")
+                        .id("showInfo")
+                    }.class("ssControls")
+                    Img(src: "", alt: "prev").id("prev")
+                    Img(src: "", alt: "next").id("next")
+                }.class("ssContainer")
             }
             .id("slideShow")
             .class("slideShowHidden")
@@ -275,13 +289,14 @@ struct GalleryGenerator {
                 var h: Double
                 let pw = Double(md.pixelWidth)
                 let ph = Double(md.pixelHeight)
-                if md.pixelWidth > md.pixelHeight {
+                let originalWidth = pw / (md.cropRight! - md.cropLeft!)
+                let originalHeight = ph / (md.cropBottom! - md.cropTop!)
+                if originalWidth > originalHeight {
                     w = 200.0
-                    h = w * ph / pw
-
+                    h = 200 * originalHeight / originalWidth
                 } else {
                     h = 200.0
-                    w = h * pw / ph
+                    w = 200 * originalWidth / originalHeight
                 }
                 top = Int(h * md.cropTop!)
                 bottom = Int(h * md.cropBottom!)
@@ -352,21 +367,21 @@ struct GalleryGenerator {
                 }
                 if let iso = md.iso {
                     Div {
-                        Text("ISO \(iso)")
+                        Text(String(iso))
                     }.class("iso")
                 }
                 if let fstop = md.aperture {
                     Div {
-                        Text("&fnof;\(fstop)")
+                        Text(fstop)
                     }.class("fstop")
                 }
                 if let exposureTime = md.exposureTime {
                     Div {
                         if exposureTime < 1 {
                             let fraction = 1.0 / exposureTime
-                            Text("1/\(String(format: "%.0f" ,fraction)) sec")
+                            Text("1/\(String(format: "%.0f" ,fraction))")
                         } else {
-                            Text("\(exposureTime) sec")
+                            Text(String(format: "%.0f", exposureTime))
                         }
                     }.class("exposure")
                 }
@@ -381,25 +396,35 @@ struct GalleryGenerator {
                 }
                 if let cropData {
                     Div {
-                        Text("Crop:")
                         Canvas().id("cropCanvas")
                             .attribute("height", String(cropData.canvasHeight))
-                            .attribute("height", String(cropData.canvasWidth))
+                            .attribute("width", String(cropData.canvasWidth))
+                            .attribute(
+                                "data-height", String(cropData.canvasHeight)
+                            )
+                            .attribute(
+                                "data-width", String(cropData.canvasWidth)
+                            )
                             .attribute("data-cropTop", String(cropData.top))
                             .attribute("data-cropLeft", String(cropData.left))
-                            .attribute("data-bottom", String(cropData.bottom))
-                            .attribute("data-right", String(cropData.right))
-                            .attribute("data-angle ", String(cropData.angle))
+                            .attribute(
+                                "data-cropbottom", String(cropData.bottom)
+                            )
+                            .attribute("data-cropright", String(cropData.right))
+                            .attribute(
+                                "data-cropangle ", String(cropData.angle)
+                            )
                             .attribute("data-imageSrc", imageSrc)
                     }.class("crop")
                 }
-                if let preserveFileName = md.preservedFileName {
+                if md.preservedFileName != nil || md.rawFileName != nil {
                     Div {
-                        Text("Source: \(preserveFileName)")
+                        Text(md.preservedFileName ?? md.rawFileName!)
                     }.class("source")
                 }
             }
-            .class("info","hide")
+            .id("info")
+            .class("hide")
         }
         try renderer.render(html).write(
             to:

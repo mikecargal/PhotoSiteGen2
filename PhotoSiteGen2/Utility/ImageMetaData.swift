@@ -8,8 +8,19 @@
 import CoreGraphics
 import CoreImage
 import Foundation
+import RegexBuilder
+
+let xmpMatcher = Regex {
+    "<x:xmpmeta"
+    OneOrMore {
+        NegativeLookahead { "</x:xmpmeta>" }
+        CharacterClass.any
+    }
+    "</x:xmpmeta>"
+}
 
 final class ImageMetaData: Sendable {
+
     let pixelHeight: Int
     let pixelWidth: Int
     let caption: String?
@@ -30,6 +41,7 @@ final class ImageMetaData: Sendable {
     let cropRight: Double?
     let cropAngle: Double?
     let preservedFileName: String?
+    let rawFileName: String?
     let copyright: String?
 
     init(url: URL) {
@@ -39,67 +51,72 @@ final class ImageMetaData: Sendable {
             CGImageSourceCopyPropertiesAtIndex(
                 imageSource, 0, nil)! as NSDictionary
         let iptcProperties =
-            getDictionary(
+            Self.getDictionary(
                 key: kCGImagePropertyIPTCDictionary,
                 from: imageProperties) as NSDictionary?
         let exifProperties =
-            getDictionary(
+            Self.getDictionary(
                 key: kCGImagePropertyExifDictionary,
                 from: imageProperties) as NSDictionary?
         let tiffProperties =
-            getDictionary(
+            Self.getDictionary(
                 key: kCGImagePropertyTIFFDictionary,
                 from: imageProperties) as NSDictionary?
+        
+        if url.lastPathComponent.contains("9777") {
+            debugPrint("Found it!")
+        }
 
-        pixelHeight = getInt(
+        pixelHeight = Self.getInt(
             key: kCGImagePropertyPixelHeight,
             from: imageProperties)!
-        pixelWidth = getInt(
+        pixelWidth = Self.getInt(
             key: kCGImagePropertyPixelWidth,
             from: imageProperties)!
-        caption = getString(
+        caption = Self.getString(
             key: kCGImagePropertyIPTCCaptionAbstract,
             from: iptcProperties)
-        copyright = getString(
+        copyright = Self.getString(
             key: kCGImagePropertyIPTCCopyrightNotice,
             from: iptcProperties)
         starRating =
-            getInt(
+            Self.getInt(
                 key: kCGImagePropertyIPTCStarRating,
                 from: iptcProperties)
             ?? 0
-        captureTime = getString(
+        captureTime = Self.getString(
             key: kCGImagePropertyExifDateTimeDigitized,
             from: exifProperties)
-        camera = getString(
+        camera = Self.getString(
             key: kCGImagePropertyTIFFModel,
             from: tiffProperties)
-        lens = getString(
+        lens = Self.getString(
             key: kCGImagePropertyExifLensModel,
             from: exifProperties)
         focalLength =
-            getNumber(
+            Self.getNumber(
                 key: kCGImagePropertyExifFocalLength,
                 from: exifProperties)?.intValue
-        subjectDistance = getDouble(
+        subjectDistance = Self.getDouble(
             key: kCGImagePropertyExifSubjectDistance,
             from: exifProperties)
         iso =
-            getIntArray(
+            Self.getIntArray(
                 key: kCGImagePropertyExifISOSpeedRatings,
                 from: exifProperties)?[0].intValue
-        exposureTime = getDouble(
+        exposureTime = Self.getDouble(
             key: kCGImagePropertyExifExposureTime,
             from: exifProperties)
         aperture =
-            getNumber(
+            Self.getNumber(
                 key: kCGImagePropertyExifFNumber,
                 from: exifProperties)?.stringValue
         keywords =
-            getStringArray(
+            Self.getStringArray(
                 key: kCGImagePropertyIPTCKeywords,
                 from: iptcProperties) ?? []
-        let xmpFields = getXMPFields(data: data, dump: false)
+        let xmpFields = XMPFields(
+            data: data, dump:  url.lastPathComponent.contains("9777"))
         hasCrop = xmpFields.hasCrop
         cropTop = xmpFields.cropTop
         cropLeft = xmpFields.cropLeft
@@ -107,111 +124,37 @@ final class ImageMetaData: Sendable {
         cropRight = xmpFields.cropRight
         cropAngle = xmpFields.cropAngle
         preservedFileName = xmpFields.preservedFileName
+        rawFileName = xmpFields.rawFileName
     }
 
-    func getHtml() {
-
+    static func getString(key: CFString, from: NSDictionary?) -> String? {
+        from?.value(forKey: key as String) as? String
     }
-}
 
-func getString(key: CFString, from: NSDictionary?) -> String? {
-    from?.value(forKey: key as String) as? String
-}
-
-func getInt(key: CFString, from: NSDictionary?) -> Int? {
-    from?.value(forKey: key as String) as? Int
-}
-
-func getDictionary(key: CFString, from: NSDictionary?) -> NSDictionary? {
-    from?.value(forKey: key as String) as? NSDictionary
-}
-
-func getDouble(key: CFString, from: NSDictionary?) -> Double? {
-    from?.value(forKey: key as String) as? Double
-}
-
-func getNumber(key: CFString, from: NSDictionary?) -> NSNumber? {
-    from?.value(forKey: key as String) as? NSNumber
-}
-
-func getIntArray(key: CFString, from: NSDictionary?) -> [NSNumber]? {
-    from?.value(forKey: key as String) as? [NSNumber]
-}
-
-func getStringArray(key: CFString, from: NSDictionary?) -> [String]? {
-    from?.value(forKey: key as String) as? [String]
-}
-
-struct XMPFields {
-    var cropTop: Double? = nil
-    var cropLeft: Double? = nil
-    var cropBottom: Double? = nil
-    var cropRight: Double? = nil
-    var cropAngle: Double? = nil
-    var hasCrop: Bool = false
-    var preservedFileName: String? = nil
-}
-
-func getXMPFields(data: Data, dump: Bool) -> XMPFields {
-    let dataString = String(decoding: data, as: UTF8.self)
-    let beginRange = dataString.range(of: "<?xpacket begin")
-    let endRange = dataString.range(
-        of: "<?xpacket end.*?>", options: .regularExpression)
-    if beginRange == nil || endRange == nil {
-        print("parseXmpMetaData: did not find tags\n")
-        return XMPFields()
+    static func getInt(key: CFString, from: NSDictionary?) -> Int? {
+        from?.value(forKey: key as String) as? Int
     }
-    let startIndex = beginRange!.lowerBound
-    let endIndex = endRange!.upperBound
-    let xmlString = String(dataString[startIndex..<endIndex])
-    if dump {
-        print("XML doc length is \(xmlString.count)")
-        print("XML String to parse is \(xmlString)")
+
+    static func getDictionary(key: CFString, from: NSDictionary?)
+        -> NSDictionary?
+    {
+        from?.value(forKey: key as String) as? NSDictionary
     }
-    let xmlParser = XMLParser(data: Data(xmlString.utf8))
-    let mpd = XmpParserDelegate()
-    mpd.dump = dump
-    xmlParser.delegate = mpd
-    xmlParser.shouldProcessNamespaces = true
-    xmlParser.parse()
-    return mpd.xmpFields
-}
 
-enum XMPFieldEnum {
-    case none, hasCrop, cropTop, cropLeft, cropBottom, cropRight, cropAngle
-}
+    static func getDouble(key: CFString, from: NSDictionary?) -> Double? {
+        from?.value(forKey: key as String) as? Double
+    }
 
-class XmpParserDelegate: NSObject, XMLParserDelegate {
-    let RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    var xmpFields = XMPFields()
-    private var currentElement: XMPFieldEnum = .none
+    static func getNumber(key: CFString, from: NSDictionary?) -> NSNumber? {
+        from?.value(forKey: key as String) as? NSNumber
+    }
 
-    var dump: Bool = false
+    static func getIntArray(key: CFString, from: NSDictionary?) -> [NSNumber]? {
+        from?.value(forKey: key as String) as? [NSNumber]
+    }
 
-    func parser(
-        _ parser: XMLParser, didStartElement elementName: String,
-        namespaceURI: String?, qualifiedName qName: String?,
-        attributes attributeDict: [String: String] = [:]
-    ) {
-        if elementName == "Description",
-            namespaceURI == RDF_NS,
-            (attributeDict["crs:HasCrop"]) != nil
-        {
-            xmpFields.hasCrop =
-                attributeDict["crs:HasCrop"]?.lowercased() == "true"
-            if xmpFields.hasCrop {
-                xmpFields.cropTop = Double(attributeDict["crs:CropTop"] ?? "-1")
-                xmpFields.cropLeft = Double(
-                    attributeDict["crs:CropLeft"] ?? "-1")
-                xmpFields.cropBottom = Double(
-                    attributeDict["crs:CropBottom"] ?? "-1")
-                xmpFields.cropRight = Double(
-                    attributeDict["crs:CropRight"] ?? "-1")
-                xmpFields.cropAngle = Double(
-                    attributeDict["crs:CropAngle"] ?? "-1")
-            }
-            xmpFields.preservedFileName =
-                attributeDict["xmpMM:PreservedFileName"]
-        }
+    static func getStringArray(key: CFString, from: NSDictionary?) -> [String]?
+    {
+        from?.value(forKey: key as String) as? [String]
     }
 }

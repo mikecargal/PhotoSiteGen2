@@ -40,7 +40,10 @@ final class WebSiteGenerator: Sendable {
         self.generationStatus = generationStatus
     }
 
-    func generate(inlineWebComponentCSS: Bool, cleanBuild: Bool, minify: Bool)
+    func generate(inlineWebComponentCSS: Bool,
+                  cleanBuild: Bool,
+                  minify: Bool,
+                  skipStaticContent: Bool)
         async
     {
         async let _ = generationStatus.startGeneration()
@@ -49,8 +52,10 @@ final class WebSiteGenerator: Sendable {
                 try deleteContentsOfFolder(from: destinationFolder)
             }
             let generatedGalleries = try await generateGalleries(minify: minify)
-            try await copyStaticContent(
-                inlineWebComponentCSS: inlineWebComponentCSS)
+            if !skipStaticContent {
+                try await copyStaticContent(
+                    inlineWebComponentCSS: inlineWebComponentCSS)
+            }
             let thumbPcts = await generateIndexThumb(
                 galleries: generatedGalleries)
             try getHTMLSource(

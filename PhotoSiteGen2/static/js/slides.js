@@ -121,9 +121,14 @@ class SlideShow {
 
     this.setSSIdx();
     this.moveCurrentImgIntoView();
+    this.loadInfo(currentGalleryImage.src);
   }
 
   resize(entry) {
+    if (this.currentIdx < 0) {
+      return;
+    }
+
     const ar = this.images[this.currentIdx].ar;
     let width;
     if (entry) {
@@ -168,5 +173,62 @@ class SlideShow {
     const url = new URL(window.location);
     url.searchParams.set("ssidx", this.currentIdx);
     window.history.pushState(null, "", url.toString());
+  }
+
+  toggleInfo() {
+    document.getElementById("info").classList.toggle("hide");
+  }
+
+  loadInfo(imgSrc) {
+    if (!imgSrc) {
+      return;
+    }
+    const infoHtmlURL = imgSrc.replace(/\.jpg$/, ".html");
+
+    try {
+      const fetchPromise = fetch(infoHtmlURL);
+      fetchPromise.then((response) => {
+        const htmlPromise = response.text();
+        htmlPromise.then((html) => {
+          const infoContainer = document.getElementById("infoContainer");
+          infoContainer.innerHTML = html;
+          const infoDiv = document.getElementById("info");
+          const canvas = document.getElementById("cropCanvas");
+          if (!canvas) {
+            return;
+          }
+          const parms = {
+            width: parseInt(canvas.getAttribute("data-width")),
+            height: parseInt(canvas.getAttribute("data-height")),
+            top: parseInt(canvas.getAttribute("data-croptop")),
+            bottom: parseInt(canvas.getAttribute("data-cropbottom")),
+            left: parseInt(canvas.getAttribute("data-cropleft")),
+            right: parseInt(canvas.getAttribute("data-cropright")),
+            angle: parseInt(canvas.getAttribute("data-cropangle")),
+            imageSrc: canvas.getAttribute("data-imagesrc"),
+          };
+          this.drawCrop(canvas, parms);
+        });
+      });
+    } catch (error) {
+      console.debug(error);
+    }
+  }
+
+  drawCrop(canvas, crop) {
+    const { width, height, top, bottom, left, right, angle, imageSrc } = crop;
+    const cropW = right - left;
+    const cropH = bottom - top;
+    const img = new Image();
+    img.onload = function () {
+      if (canvas.getContext) {
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgb(100,100,100)";
+        ctx.fillRect(0, 0, width, height);
+        ctx.clearRect(left, top, cropW, cropH);
+        ctx.drawImage(img, left, top, cropW, cropH);
+      }
+    };
+    img.src = imageSrc;
   }
 }

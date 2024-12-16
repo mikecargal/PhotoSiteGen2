@@ -138,12 +138,15 @@ class GalleryBase extends HTMLElement {
     this.altText = this.caption || this.imagesrc;
 
     this.srcset =
-      `${this.galleryName}\\w0512\\${this.imagesrc} 512w, ` +
-      `${this.galleryName}\\w1024\\${this.imagesrc} 1024w, ` +
-      `${this.galleryName}\\w2048\\${this.imagesrc} 2048w, ` +
-      `${this.galleryName}\\${this.imagesrc}`;
+      `${this.galleryName}/w0512/${this.imagesrc} 512w, ` +
+      `${this.galleryName}/w1024/${this.imagesrc} 1024w, ` +
+      `${this.galleryName}/w2048/${this.imagesrc} 2048w, ` +
+      `${this.galleryName}/${this.imagesrc}`;
 
     this.img = this.div.querySelector("fade-in-image");
+    this.src = `${this.galleryName}/${this.imagesrc}`;
+    this.setAttribute("src", this.src);
+    this.img.setAttribute("src", this.src);
     this.img.setAttribute("srcset", this.srcset);
     this.img.setAttribute("alt", this.altText);
     this.img.setAttribute("thumbsrc", this.thumbsrc);
