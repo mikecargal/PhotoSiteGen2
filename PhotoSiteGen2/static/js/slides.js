@@ -11,8 +11,10 @@ class SlideShow {
         "data-gallery-name"
       ]?.nodeValue;
     this.currentImg = document.querySelector("#current");
-    this.nextImg = document.querySelector("#next");
     this.prevImg = document.querySelector("#prev");
+    this.prevSmallImg = document.querySelector("#prevSmall");
+    this.nextImg = document.querySelector("#next");
+    this.nextSmallImg = document.querySelector("#nextSmall");
     document
       .querySelector("#gotoPrev")
       .addEventListener("click", () => this.prevSlide());
@@ -111,13 +113,25 @@ class SlideShow {
 
     this.resize();
 
+    document.getElementById("infoContainer").classList.add("hide");
+
     const nextImage = this.images[this.nextIdx];
     this.nextImg.setAttribute("src", nextImage.src);
     this.nextImg.setAttribute("srcset", nextImage.srcset);
+    this.nextSmallImg.setAttribute(
+      "src",
+      nextImage.src.replace("/", "/w0512/")
+    );
+    fetch(this.nextImg.src.replace(".jpg", ".html"));
 
     const prevImage = this.images[this.prevIdx];
     this.prevImg.setAttribute("src", prevImage.src);
     this.prevImg.setAttribute("srcset", prevImage.srcset);
+    this.prevSmallImg.setAttribute(
+      "src",
+      prevImage.src.replace("/", "/w0512/")
+    );
+    fetch(this.prevImg.src.replace(".jpg", ".html"));
 
     this.setSSIdx();
     this.moveCurrentImgIntoView();
@@ -176,7 +190,7 @@ class SlideShow {
   }
 
   toggleInfo() {
-    document.getElementById("info").classList.toggle("hide");
+    document.getElementById("infoContainer").classList.toggle("hide");
   }
 
   loadInfo(imgSrc) {

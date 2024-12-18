@@ -26,14 +26,16 @@ final class Photo: Identifiable, Comparable, Sendable {
             .appendingPathComponent("w0512")
             .appendingPathComponent(url.lastPathComponent)
 
-        guard let imageSource = CGImageSourceCreateWithURL(smallImageURL as CFURL, nil)
+        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil)
         else {
+            debugPrint("Couldn't create image source for \(url)")
             throw PhotoReadError.ImageSourceReadError(url: url)
         }
         guard
             let smallImageSource = CGImageSourceCreateWithURL(
                 smallImageURL as CFURL, nil)
         else {
+            debugPrint("Couldn't create image source for \(smallImageURL)")
             throw PhotoReadError.ImageSourceReadError(url: url)
         }
         metadata = ImageMetaData(url: url)

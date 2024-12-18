@@ -10,15 +10,6 @@ import CoreImage
 import Foundation
 import RegexBuilder
 
-let xmpMatcher = Regex {
-    "<x:xmpmeta"
-    OneOrMore {
-        NegativeLookahead { "</x:xmpmeta>" }
-        CharacterClass.any
-    }
-    "</x:xmpmeta>"
-}
-
 final class ImageMetaData: Sendable {
 
     let pixelHeight: Int
@@ -43,6 +34,7 @@ final class ImageMetaData: Sendable {
     let preservedFileName: String?
     let rawFileName: String?
     let copyright: String?
+    let exposureComp: String?
 
     init(url: URL) {
         let data = try! Data(contentsOf: url)
@@ -62,10 +54,6 @@ final class ImageMetaData: Sendable {
             Self.getDictionary(
                 key: kCGImagePropertyTIFFDictionary,
                 from: imageProperties) as NSDictionary?
-        
-        if url.lastPathComponent.contains("9777") {
-            debugPrint("Found it!")
-        }
 
         pixelHeight = Self.getInt(
             key: kCGImagePropertyPixelHeight,
@@ -115,16 +103,43 @@ final class ImageMetaData: Sendable {
             Self.getStringArray(
                 key: kCGImagePropertyIPTCKeywords,
                 from: iptcProperties) ?? []
+        exposureComp = Self.getString(
+            key: kCGImagePropertyExifExposureBiasValue,
+            from: exifProperties)
+
         let xmpFields = XMPFields(
-            data: data, dump:  url.lastPathComponent.contains("9777"))
+            data: data, dump: false)  // url.lastPathComponent.contains("9777"))
         hasCrop = xmpFields.hasCrop
         cropTop = xmpFields.cropTop
         cropLeft = xmpFields.cropLeft
         cropBottom = xmpFields.cropBottom
         cropRight = xmpFields.cropRight
         cropAngle = xmpFields.cropAngle
-        preservedFileName = xmpFields.preservedFileName
-        rawFileName = xmpFields.rawFileName
+        preservedFileName = Self.cleanUpFilename(
+            filename: xmpFields.preservedFileName)
+        rawFileName = Self.cleanUpFilename(filename: xmpFields.rawFileName)
+    }
+
+    static private let REM_REGEX =
+        #"[\-_](DxO|CR(2|3)[\._-]|Enhanced|NR[\._-]|\d{8}|\-?[Ee]dit).*?\.(jpg|dng|CR2|CR3|tif|tiff|psd)$"#
+    static private let SUFFIX_REGEX = #"\.(jpg|JPG|dng|CR2|CR3|tif|tiff|psd)$"#
+    static func cleanUpFilename(filename: String?) -> String? {
+        guard let filename else { return nil }
+        let res =
+            filename
+            .replacingOccurrences(
+                of: REM_REGEX, with: "", options: .regularExpression
+            )
+            .replacingOccurrences(
+                of: Self.SUFFIX_REGEX, with: "", options: .regularExpression
+            )
+//        debugPrint("cleanUpFilename:  \(res)      -> \(filename)")
+        if res.isEmpty {
+            debugPrint(
+                "============= uh oh =============\n\\(filename)\n=================="
+            )
+        }
+        return res
     }
 
     static func getString(key: CFString, from: NSDictionary?) -> String? {

@@ -5,6 +5,7 @@
 //  Created by Mike Cargal on 11/25/24.
 //
 
+import AVKit
 import SwiftUI
 
 struct GenerationSheetView: View {
@@ -12,13 +13,14 @@ struct GenerationSheetView: View {
     @Binding var showSheet: Bool
 
     @State private var generating = false
+    @State private var audioPlayer: AVAudioPlayer?
 
     @AppStorage("Inline Web Component CSS") private var inlineWebComponentCSS =
         true
     @AppStorage("Clean Build") private var cleanBuild = false
     @AppStorage("Minify Build") private var minify = false
     @AppStorage("Skip Static Content") private var skipStaticContent = false
-    
+
     @State var generator: WebSiteGenerator?
 
     var body: some View {
@@ -50,11 +52,19 @@ struct GenerationSheetView: View {
             }
         }
         .padding()
+        .onAppear {
+            if let path = Bundle.main.path(
+                forResource: "notification.mp3", ofType: nil) {
+                let url = URL(fileURLWithPath: path)
+                audioPlayer = try? AVAudioPlayer(contentsOf: url)
+            }
+        }
     }
 
     func generate() {
         generating = true
         Task {
+            debugPrint(Date(), "Generating website")
             generator = websiteDocument.getWebsiteGenerator()
             guard
                 let generator
@@ -68,6 +78,8 @@ struct GenerationSheetView: View {
                 minify: minify,
                 skipStaticContent: skipStaticContent)
             generating = false
+            debugPrint(Date(), "Generation complete")
+            audioPlayer?.play()
         }
 
     }

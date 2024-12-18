@@ -6,8 +6,17 @@
 //
 
 import Foundation
+import RegexBuilder
 
 class XMPFields: NSObject, XMLParserDelegate {
+    static let xmpMatcher = Regex {
+        "<x:xmpmeta"
+        OneOrMore {
+            NegativeLookahead { "</x:xmpmeta>" }
+            CharacterClass.any
+        }
+        "</x:xmpmeta>"
+    }
     var cropTop: Double? = nil
     var cropLeft: Double? = nil
     var cropBottom: Double? = nil
@@ -23,9 +32,7 @@ class XMPFields: NSObject, XMLParserDelegate {
         super.init()
         let dataString = String(decoding: data, as: UTF8.self)
         let matches = getXMPMatches(dataString: dataString)
-        if matches.isEmpty {
-            return
-        }
+
         for match in matches {
             let startIndex = match.lowerBound
             let endIndex = match.upperBound
@@ -41,15 +48,18 @@ class XMPFields: NSObject, XMLParserDelegate {
     }
 
     func getXMPMatches(dataString: String) -> [Range<String.Index>] {
-        var result = [Range<String.Index>]()
-        dataString.matches(of: xmpMatcher).forEach { match in
-            result.append(match.range)
-        }
-        return result
+        zip(
+            dataString.ranges(of: "<x:xmpmeta"),
+            dataString.ranges(of: "</x:xmpmeta>")
+        )
+        .map { $0.lowerBound..<$1.upperBound }
     }
+
     func parser(
-        _ parser: XMLParser, didStartElement elementName: String,
-        namespaceURI: String?, qualifiedName qName: String?,
+        _ parser: XMLParser,
+        didStartElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName qName: String?,
         attributes attributeDict: [String: String] = [:]
     ) {
         if elementName == "Description",

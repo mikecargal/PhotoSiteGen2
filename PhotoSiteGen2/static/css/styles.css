@@ -146,15 +146,15 @@ body {
     grid-template-columns: auto auto auto;
     gap: 4px;
     grid-template-areas:
-        "caption  caption  caption"
-        "rating   create   create"
-        "camera   lens     lens"
-        "fLength  fDist    fDist"
-        "iso      fstop    exp"
-        "keywords keywords keywords"
-        "crop     crop     crop"
-        "source   source   source"
-        "copy     copy     copy";
+        "caption  caption  caption  caption"
+        "rating   create   create   create"
+        "camera   lens     lens     lens"
+        "fLength  fLength  fDist    fDist"
+        "iso      fstop    exp      ecomp"
+        "keywords keywords keywords keywords"
+        "crop     crop     crop     crop"
+        "source   source   source   source"
+        "copy     copy     copy     copy";
     place-content: center;
 
     .creationDate {
@@ -166,7 +166,7 @@ body {
     }
 
     .copyright::before {
-        content: "\00a9 "
+        content: "\00a9\00a0"
     }
 
     .copyright {
@@ -238,6 +238,10 @@ body {
     }
 
     .source::before {
-        content: "Source:";
+        content: "Source: ";
+    }
+
+    .exposureComp {
+        grid-area: eComp;
     }
 }

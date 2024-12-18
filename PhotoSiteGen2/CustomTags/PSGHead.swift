@@ -21,7 +21,7 @@ class PSGHead: GroupTag {
                 for preload in preloads {
                     Link(rel: .preload).href("\(preload.src)") // ?tsid=\(generationID)")
                         .attribute("srcset", preload.srcset)
-                        .attribute("as", preload.asType)
+                        .attribute("as", preload.asType.rawValue)
                 }
             },
         ]

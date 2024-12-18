@@ -7,12 +7,16 @@
 
 import Foundation
 
+enum PreloadType: String {
+    case image, fetch, script, style, track, font
+}
+
 struct PreLoad {
-   let src: String
-   let srcset: String?
-   let asType: String
-    
-   init(src: String, srcset: String? = nil, asType: String = "image") {
+    let src: String
+    let srcset: String?
+    let asType: PreloadType
+
+    init(src: String, srcset: String? = nil, asType: PreloadType = .image) {
         self.src = src
         self.srcset = srcset
         self.asType = asType

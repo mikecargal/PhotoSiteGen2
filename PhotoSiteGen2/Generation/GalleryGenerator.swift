@@ -50,10 +50,7 @@ struct GalleryGenerator {
 
     func generate(minify: Bool) async throws -> GeneratedGallery {
         async let _ = generationStatus.startGeneration()
-        //        if Bool.random() {
-        //            await gs
-        //            await generationStatus.logError("Dummy Error")
-        //        }
+
         try await copyToDestination()
         let title = title
         let photos = getPhotos()
@@ -71,12 +68,24 @@ struct GalleryGenerator {
                 .appendingPathComponent("\(genName).jpg"),
             errorHandler: generationStatus)
         var preloads = [PreLoad(src: thumbImageName)]
+
+        let first = photos.first!
+
         preloads.append(
-            photos.prefix(1).map {
-                PreLoad(
-                    src: "/\(genName)/\($0.filteredFileNameWithExtension())",
-                    srcset: $0.srcset(genName: genName))
-            }.first!)
+            PreLoad(
+                src:
+                    "/\(genName)/\(first.filteredFileNameWithExtension())",
+                srcset: first.srcset(genName: genName)))
+        preloads.append(
+            PreLoad(
+                src:
+                    "/\(genName)/w0512/\(first.filteredFileNameWithExtension())"
+            ))
+        preloads.append(
+            PreLoad(
+                src:
+                    "/\(genName)/\(first.filteredFileName().appending(".html"))",
+                asType: .fetch))
 
         let document = Document(.html) {
             Comment("generated: \(Date.now)")
@@ -223,7 +232,9 @@ struct GalleryGenerator {
                         .id("showInfo")
                     }.class("ssControls")
                     Img(src: "", alt: "prev").id("prev")
+                    Img(src: "", alt: "prev").id("prevSmall")
                     Img(src: "", alt: "next").id("next")
+                    Img(src: "", alt: "next").id("nextSmall")
                 }.class("ssContainer")
             }
             .id("slideShow")
@@ -314,6 +325,7 @@ struct GalleryGenerator {
             md.hasCrop ? CropData(md: md, imageSrc: imageSrc) : nil
 
         let html = Document(.unspecified) {
+            Comment(" tsID=\(generationID) ")
             Div {
                 if let caption = md.caption {
                     Div {
@@ -394,6 +406,12 @@ struct GalleryGenerator {
                         }
                     }.class("keywords")
                 }
+                if let exposureComp = md.exposureComp {
+//                    let _ = debugPrint("exposureComp: \(exposureComp)")
+                    Div {
+                        Text(exposureComp)
+                    }.class("exposureComp")
+                }
                 if let cropData {
                     Div {
                         Canvas().id("cropCanvas")
@@ -424,7 +442,6 @@ struct GalleryGenerator {
                 }
             }
             .id("info")
-            .class("hide")
         }
         try renderer.render(html).write(
             to:
