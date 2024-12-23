@@ -14,6 +14,7 @@ struct GenerationSheetView: View {
 
     @State private var generating = false
     @State private var audioPlayer: AVAudioPlayer?
+    @State private var generationTask: Task<Void, Error>?
 
     @AppStorage("Inline Web Component CSS") private var inlineWebComponentCSS =
         true
@@ -44,6 +45,12 @@ struct GenerationSheetView: View {
             }
 
             HStack {
+                if generating {
+                    Button("Cancel") {
+                        generationTask?.cancel()
+                    }
+                }
+
                 Spacer()
                 Button("Dismiss") {
                     showSheet = false
@@ -63,7 +70,7 @@ struct GenerationSheetView: View {
 
     func generate() {
         generating = true
-        Task {
+        generationTask = Task {
             debugPrint(Date(), "Generating website")
             generator = websiteDocument.getWebsiteGenerator()
             guard

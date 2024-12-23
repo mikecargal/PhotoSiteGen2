@@ -49,93 +49,111 @@ struct GalleryGenerator {
     }
 
     func generate(minify: Bool) async throws -> GeneratedGallery {
-        async let _ = generationStatus.startGeneration()
+        do {
+            async let _ = generationStatus.startGeneration()
+            let imageCount = try folderFileCount(at: sourceDirectory)
+            async let _ = generationStatus.setItemCount(imageCount)
 
-        try await copyToDestination()
-        let title = title
-        let photos = getPhotos()
+            try await copyToDestination()
+            let title = title
+            let photos = try await getPhotos()
 
-        let renderer = DocumentRenderer(minify: minify, indent: 2)
-        try generateInfoHtmlFiles(photos: photos, renderer: renderer)
+            try Task.checkCancellation()
 
-        let thumbImageName = "/thumbs/\(genName).jpg"
+            let renderer = DocumentRenderer(minify: minify, indent: 2)
+            try generateInfoHtmlFiles(photos: photos, renderer: renderer)
 
-        let thumbPcts = await generateSpritesImage(
-            thumbPhotos: photos, width: THUMBNAIL_WIDTH,
-            filename:
-                wsDestination
-                .appendingPathComponent("thumbs")
-                .appendingPathComponent("\(genName).jpg"),
-            errorHandler: generationStatus)
-        var preloads = [PreLoad(src: thumbImageName)]
+            let thumbImageName = "/thumbs/\(genName).jpg"
 
-        let first = photos.first!
+            let thumbPcts = await generateSpritesImage(
+                thumbPhotos: photos, width: THUMBNAIL_WIDTH,
+                filename:
+                    wsDestination
+                    .appendingPathComponent("thumbs")
+                    .appendingPathComponent("\(genName).jpg"),
+                errorHandler: generationStatus)
+            var preloads = [PreLoad(src: thumbImageName)]
 
-        preloads.append(
-            PreLoad(
-                src:
-                    "/\(genName)/\(first.filteredFileNameWithExtension())",
-                srcset: first.srcset(genName: genName)))
-        preloads.append(
-            PreLoad(
-                src:
-                    "/\(genName)/w0512/\(first.filteredFileNameWithExtension())"
-            ))
-        preloads.append(
-            PreLoad(
-                src:
-                    "/\(genName)/\(first.filteredFileName().appending(".html"))",
-                asType: .fetch))
+            if let first = photos.first {
 
-        let document = Document(.html) {
-            Comment("generated: \(Date.now)")
-            PSGPage(
-                generationID: generationID,
-                jsFiles: [
-                    "js/webcomponents.js?tsid=\(generationID)",
-                    "js/layout.js?tsid=\(generationID)",
-                    "js/slides.js?tsid=\(generationID)",
-                    "js/startup.js?tsid=\(generationID)",
-                ],
-                preloads: preloads
-            ) { [self] in
-                SwiftHtml.Text(title)
-                Br()
-                getHTML(
-                    thumbImageName: thumbImageName, photos: photos,
-                    thumbPcts: thumbPcts)
+                preloads.append(
+                    PreLoad(
+                        src:
+                            "/\(genName)/\(first.filteredFileNameWithExtension())",
+                        srcset: first.srcset(genName: genName)))
+                preloads.append(
+                    PreLoad(
+                        src:
+                            "/\(genName)/w0512/\(first.filteredFileNameWithExtension())"
+                    ))
+                preloads.append(
+                    PreLoad(
+                        src:
+                            "/\(genName)/\(first.filteredFileName().appending(".html"))",
+                        asType: .fetch))
             }
+
+            let document = Document(.html) {
+                Comment("generated: \(Date.now)")
+                PSGPage(
+                    generationID: generationID,
+                    jsFiles: [
+                        "js/webcomponents.js?tsid=\(generationID)",
+                        "js/layout.js?tsid=\(generationID)",
+                        "js/slides.js?tsid=\(generationID)",
+                        "js/startup.js?tsid=\(generationID)",
+                    ],
+                    preloads: preloads
+                ) { [self] in
+                    SwiftHtml.Text(title)
+                    Br()
+                    getHTML(
+                        thumbImageName: thumbImageName, photos: photos,
+                        thumbPcts: thumbPcts)
+                }
+            }
+            _ = try renderer.render(document).write(
+                to:
+                    wsDestination.appendingPathComponent("\(genName).html"),
+                atomically: true,
+                encoding: String.Encoding.utf8)
+
+            let generatedGallery = GeneratedGallery(
+                favoritePhoto: try getFavoritePhoto(photos: photos),
+                categories: categories,
+                title: title,
+                name: genName,
+                sequenceNumber: sequenceNumber)
+
+            async let _ = generationStatus.completeGeneration()
+            return generatedGallery
+        } catch let error as CancellationError {
+            async let _ = generationStatus.cancelledGeneration()
+            throw error
+        } catch {
+            throw error
         }
-        _ = try renderer.render(document).write(
-            to:
-                wsDestination.appendingPathComponent("\(genName).html"),
-            atomically: true,
-            encoding: String.Encoding.utf8)
+    }
 
-        let generatedGallery = GeneratedGallery(
-            favoritePhoto: try getFavoritePhoto(photos: photos),
-            categories: categories,
-            title: title,
-            name: genName,
-            sequenceNumber: sequenceNumber)
-
-        async let _ = generationStatus.completeGeneration()
-        return generatedGallery
+    var sourceDirectory: URL {
+        wsSource
+            .appending(component: "galleries")
+            .appending(component: genName)
     }
 
     private func copyToDestination() async throws {
         try await copyDirectory(
-            from:
-                wsSource
-                .appending(component: "galleries")
-                .appending(component: genName),
+            from: sourceDirectory,
             to:
                 wsDestination
                 .appending(component: genName),
             logger: generationStatus,
             context: "Copying images for gallery; \(genName)",
             renamer: Photo.filteredFileNameWithExtension(_:),
-            directoryNameFilter: filterSubDirName
+            directoryNameFilter: filterSubDirName,
+            progressClosure: { _ in
+                async let _ = generationStatus.progressTick()
+            }
         )
     }
 
@@ -149,9 +167,9 @@ struct GalleryGenerator {
         return NSURL.fileURL(withPathComponents: pathComponents)!
     }
 
-    private func getPhotos() -> [Photo] {
+    private func getPhotos() async throws -> [Photo] {
         do {
-            return try FileManager.default.contentsOfDirectory(
+            let urls = try FileManager.default.contentsOfDirectory(
                 at: wsDestination.appendingPathComponent(genName),
                 includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
                 options: [.skipsHiddenFiles]
@@ -159,8 +177,25 @@ struct GalleryGenerator {
             .filter {
                 !$0.hasDirectoryPath && $0.pathExtension.lowercased() == "jpg"
             }
-            .map { try Photo(url: $0) }
-            .sorted { (p0: Photo, p1: Photo) in
+
+            let photos = try await withThrowingTaskGroup(of: Photo.self) {
+                group -> [Photo] in
+                var photos = [Photo]()
+                for url in urls {
+                    group.addTask {
+                        let photo = try Photo(url: url)
+                        async let _ = generationStatus.progressTick()
+                        return photo
+                    }
+                    try Task.checkCancellation()
+                    for try await photo in group {
+                        photos.append(photo)
+                    }
+                }
+                return photos
+            }
+
+            return photos.sorted { (p0: Photo, p1: Photo) in
                 if p0.filteredFileNameWithExtension() == titleImageFileName {
                     return true
                 }
@@ -169,7 +204,11 @@ struct GalleryGenerator {
                 }
                 return p0 < p1
             }
-
+        } catch is CancellationError {
+            Task {
+                async let _ = generationStatus.cancelledGeneration()
+            }
+            return []
         } catch {
             let nm = genName
             Task {
@@ -407,7 +446,6 @@ struct GalleryGenerator {
                     }.class("keywords")
                 }
                 if let exposureComp = md.exposureComp {
-//                    let _ = debugPrint("exposureComp: \(exposureComp)")
                     Div {
                         Text(exposureComp)
                     }.class("exposureComp")

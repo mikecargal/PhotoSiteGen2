@@ -7,7 +7,7 @@
 import SwiftUI
 
 @Observable @MainActor
-class WebsiteGenerationStatus: ErrorHandler {
+class WebsiteGenerationStatus: ErrorHandler, Identifiable {
     @MainActor
     enum Status: Int {
         case generatingWithErrors
@@ -15,27 +15,7 @@ class WebsiteGenerationStatus: ErrorHandler {
         case pending
         case completeWithErrors
         case completeNoErrors
-        
-        @ViewBuilder
-        var view: some View {
-            switch self {
-            case .pending: Image(systemName: "tray.and.arrow.down")
-            case .generatingNoErrors:
-                ProcessingView()
-            case .generatingWithErrors:
-                HStack {
-                    Image(systemName: "x.circle.fill")
-                        .foregroundStyle(.red)
-                    ProcessingView()
-                 }
-            case .completeNoErrors:
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
-            case .completeWithErrors:
-                Image(systemName: "x.circle.fill")
-                    .foregroundStyle(.red)
-            }
-        }
+        case cancelled
 
         var description: String {
             switch self {
@@ -44,13 +24,27 @@ class WebsiteGenerationStatus: ErrorHandler {
             case .generatingWithErrors: "Generating with errors"
             case .completeNoErrors: "Complete"
             case .completeWithErrors: "Complete with errors"
+            case .cancelled: "Cancelled"
             }
         }
     }
-    
+
+    let id = UUID()
+
     var status: Status = .pending
     var errors = [String]()
     var galleryStatuses: [GalleryGenerationStatus] = []
+
+    var percentComplete: Double {
+        let progressCounter = galleryStatuses.reduce(0) {
+            $0 + $1.progressCounter
+        }
+        let ticksToComplete = galleryStatuses.reduce(0) {
+            $0 + $1.progressTarget
+        }
+        return progressCounter > 0
+            ? Double(progressCounter) / Double(ticksToComplete) : 0.0
+    }
 
     func startGeneration() {
         status = .generatingNoErrors
@@ -58,19 +52,24 @@ class WebsiteGenerationStatus: ErrorHandler {
     }
 
     func completeGeneration() {
+        guard !(status == .cancelled) else { return }
         status = hasError ? .completeWithErrors : .completeNoErrors
     }
-    
+
     func logError(_ error: String) {
         status = .generatingWithErrors
         errors.append(error)
+    }
+
+    func cancelledGeneration() {
+        status = .cancelled
     }
 
     var hasError: Bool {
         return !errors.isEmpty
             || galleryStatuses.contains(where: { $0.hasError })
     }
-    
+
     func handleError(_ context: String, _ error: any Error) async {
         logError("Website generation error (\(context)): \(error)")
     }
@@ -79,19 +78,53 @@ class WebsiteGenerationStatus: ErrorHandler {
         status = .generatingWithErrors
     }
 
+    @ViewBuilder
+    var view: some View {
+        switch status {
+        case .pending: Image(systemName: "tray.and.arrow.down")
+        case .generatingNoErrors:
+            ProgressView(value: percentComplete)
+        case .generatingWithErrors:
+            HStack {
+                Image(systemName: "x.circle.fill")
+                    .foregroundStyle(.red)
+                ProgressView(value: percentComplete)
+            }
+        case .completeNoErrors:
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+        case .completeWithErrors:
+            Image(systemName: "x.circle.fill")
+                .foregroundStyle(.red)
+        case .cancelled:
+            Image(systemName: "circle.slash")
+                .foregroundStyle(.red)
+        }
+    }
 }
 
 @Observable @MainActor
 class GalleryGenerationStatus: Identifiable, ErrorHandler {
-
+    let TICKS_PER_IMAGE = 2
     let id: UUID = UUID()
     var galleryTitle: String
     var galleryName: String
     let websiteGenerationStatus: WebsiteGenerationStatus
     var status: WebsiteGenerationStatus.Status = .pending
     var errors = [String]()
+    var itemCount: Int = 0
+    var progressTarget: Int {
+        itemCount * TICKS_PER_IMAGE
+    }
+    var progressCounter = 0
+    var percentComplete: Double {
+        Double(progressCounter) / Double(progressTarget)
+    }
 
-    init(galleryTitle: String, galleryName: String,webSiteGenerationStatus: WebsiteGenerationStatus) {
+    init(
+        galleryTitle: String, galleryName: String,
+        webSiteGenerationStatus: WebsiteGenerationStatus
+    ) {
         self.galleryTitle = galleryTitle
         self.galleryName = galleryName
         self.websiteGenerationStatus = webSiteGenerationStatus
@@ -103,7 +136,16 @@ class GalleryGenerationStatus: Identifiable, ErrorHandler {
         errors.removeAll()
     }
 
+    func setItemCount(_ count: Int) {
+        itemCount = count
+    }
+
+    func progressTick() {
+        progressCounter += 1
+    }
+
     func completeGeneration() {
+        guard !(status == .cancelled) else { return }
         status = hasError ? .completeWithErrors : .completeNoErrors
     }
 
@@ -112,6 +154,9 @@ class GalleryGenerationStatus: Identifiable, ErrorHandler {
         errors.append(error)
         websiteGenerationStatus.galleryHasError()
     }
+    func cancelledGeneration() {
+        status = .cancelled
+    }
 
     var hasError: Bool {
         return !errors.isEmpty
@@ -119,6 +164,35 @@ class GalleryGenerationStatus: Identifiable, ErrorHandler {
 
     func handleError(_ context: String, _ error: any Error) async {
         logError("\(galleryName) (\(context)): \(error)")
+    }
+
+    @ViewBuilder
+    var view: some View {
+        let VIEW_WIDTH: CGFloat = 250
+        HStack {
+            switch status {
+            case .pending: Image(systemName: "tray.and.arrow.down")
+            case .generatingNoErrors:
+                ProgressView(value: percentComplete).frame(width: VIEW_WIDTH)
+            case .generatingWithErrors:
+                Image(systemName: "x.circle.fill")
+                    .foregroundStyle(.red)
+                ProgressView(value: percentComplete).frame(
+                    width: VIEW_WIDTH - 15)
+            case .completeNoErrors:
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                Spacer()
+            case .completeWithErrors:
+                Image(systemName: "x.circle.fill")
+                    .foregroundStyle(.red)
+                Spacer()
+            case .cancelled:
+                Image(systemName: "circle.slash")
+                    .foregroundStyle(.red)
+                Spacer()
+            }
+        }.frame(width: 300)
     }
 
 }

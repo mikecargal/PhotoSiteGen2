@@ -40,10 +40,12 @@ final class WebSiteGenerator: Sendable {
         self.generationStatus = generationStatus
     }
 
-    func generate(inlineWebComponentCSS: Bool,
-                  cleanBuild: Bool,
-                  minify: Bool,
-                  skipStaticContent: Bool)
+    func generate(
+        inlineWebComponentCSS: Bool,
+        cleanBuild: Bool,
+        minify: Bool,
+        skipStaticContent: Bool
+    )
         async
     {
         async let _ = generationStatus.startGeneration()
@@ -68,11 +70,12 @@ final class WebSiteGenerator: Sendable {
                 atomically: true,
                 encoding: String.Encoding.utf8)
 
+        } catch is CancellationError {
+            async let _ = generationStatus.cancelledGeneration()
+            return
         } catch {
-            Task {
-                async let _ = generationStatus.logError(
-                    "Error generating Website: (\(error))")
-            }
+            async let _ = generationStatus.logError(
+                "Error generating Website: (\(error))")
         }
         async let _ = generationStatus.completeGeneration()
     }
@@ -98,9 +101,11 @@ final class WebSiteGenerator: Sendable {
                 generatedGalleries.append(gallery)
             }
 
-            return generatedGalleries.sorted(by: {
-                $0.sequenceNumber < $1.sequenceNumber
-            })
+            return
+                generatedGalleries
+                .sorted(by: {
+                    $0.sequenceNumber < $1.sequenceNumber
+                })
         }
     }
 
@@ -112,7 +117,8 @@ final class WebSiteGenerator: Sendable {
             context: "Copying static content",
             filterFinder: {
                 inlineWebComponentCSS && $0 == "webcomponents.js"
-                    ? InlineStyleSheetFilter(staticFilesURL: self.staticSourceFolder)
+                    ? InlineStyleSheetFilter(
+                        staticFilesURL: self.staticSourceFolder)
                     : nil
             })
     }

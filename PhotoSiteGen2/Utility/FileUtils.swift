@@ -10,6 +10,7 @@ import Foundation
 typealias Renamer = (URL) -> String
 typealias FilterFinder = (String) -> FileFilter?
 typealias DirectoryNameFilter = (URL) -> URL
+typealias ProgressClosure = (String?) async -> Void
 
 func copyDirectory(
     from source: URL,
@@ -18,7 +19,8 @@ func copyDirectory(
     context: String,
     renamer: Renamer? = nil,
     filterFinder: FilterFinder? = nil,
-    directoryNameFilter: DirectoryNameFilter? = nil
+    directoryNameFilter: DirectoryNameFilter? = nil,
+    progressClosure: ProgressClosure? = nil
 ) async throws {
     try FileManager.default.createDirectory(
         at: directoryNameFilter?(dest) ?? dest,
@@ -56,9 +58,18 @@ func copyDirectory(
                     to: copyDest, atomically: true, encoding: .utf8)
             } else {
                 _ = try FileManager.default.copyItem(at: url, to: copyDest)
+                async let _ = progressClosure?(filename)
             }
         }
     }
+}
+
+func folderFileCount(at url: URL) throws -> Int {
+    let urls = try FileManager.default.contentsOfDirectory(
+        at: url,
+        includingPropertiesForKeys: [.isDirectoryKey,.isHiddenKey],
+        options: [.skipsHiddenFiles,.skipsSubdirectoryDescendants])
+    return urls.filter {!$0.hasDirectoryPath}.count
 }
 
 func deleteContentsOfFolder(from: URL) throws {
