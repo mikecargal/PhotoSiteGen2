@@ -18,6 +18,7 @@ function layout() {
 
     img.setAttribute("top", `${minY}`);
     img.setAttribute("left", `${imgWidth * minYIdx}`);
+    img.setAttribute("imgWidth", `${imgWidth}`);
 
     const newMinY = minY + img.getHeight();
     columnYIndices[minYIdx] = newMinY;

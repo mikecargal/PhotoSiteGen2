@@ -13,6 +13,7 @@ struct GeneratedGallery: Sendable {
     let title: String
     let name: String
     let sequenceNumber: Int
+    let imageNames: [String]
     
     func galleryLink(_ index: Int, thumbPct: Double) -> Tag {
         return GalleryLink()
@@ -20,10 +21,10 @@ struct GeneratedGallery: Sendable {
             .attribute("gallery", name)
             .attribute("categories", categories?.joined(separator: "|") ?? "")
             .attribute("imagesrc", favoritePhoto.filteredFileNameWithExtension())
-            .attribute("ar", String(favoritePhoto.aspectRatio))
+            .attribute("ar", String(Float(favoritePhoto.aspectRatio)))
             .attribute("top", String((index / 3) * 200))
             .attribute("left", String((index % 3) * 200))
-            .attribute("thumbPct", String("\(thumbPct)%"))
+            .attribute("thumbPct", String("\(Float(thumbPct))%"))
             .class("brick")
     }
 }

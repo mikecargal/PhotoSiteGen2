@@ -74,33 +74,47 @@ class FadeInImage extends HTMLElement {
     this.background.style.backgroundImage = `url("${this.thumbsrc}")`;
   }
 
+  getSrcForWidth() {
+    let imgWidth = parseInt(this.imgwidth);
+    if (imgWidth <= 512) {
+      return this.src.replace("/", "/w0512/");
+    } else if (imgWidth <= 1024) {
+      return this.src.replace("/", "/w1024/");
+    } else if (imgWidth <= 2048) {
+      return this.src.replace("/", "/w2048/");
+    }
+    return this.src;
+  }
+
+  checkForLoadSrc() {
+    if (this.src && this.imgwidth) {
+      this.img.src = this.getSrcForWidth();
+    }
+  }
+
   static get observedAttributes() {
     return [
       "src",
       "alt",
       "ar",
-      "srcset",
       "thumbpct",
       "w",
       "thumbsrc",
       "explicitSizing",
+      "imgwidth",
     ];
   }
 
-  // attribute change
   attributeChangedCallback(property, oldValue, newValue) {
     if (oldValue === newValue) return;
     this[property] = newValue;
     if (this.shadowRoot) {
       if (this.img) {
         if (property === "src") {
-          this.img.src = this.src;
+          this.checkForLoadSrc();
         }
         if (property === "alt") {
           this.img.alt = this.alt;
-        }
-        if (property === "srcset") {
-          this.img.srcset = this.srcset;
         }
         if (property === "ar") {
           this.ar = parseFloat(this.ar);
@@ -110,6 +124,9 @@ class FadeInImage extends HTMLElement {
         if (property === "w") {
           const w = parseFloat(newValue);
           this.img.style.width = `${w}px`;
+        }
+        if (property === "imgwidth") {
+          this.checkForLoadSrc();
         }
       }
     }
@@ -137,17 +154,10 @@ class GalleryBase extends HTMLElement {
     this.thumbsrc = this.getThumbSrc();
     this.altText = this.caption || this.imagesrc;
 
-    this.srcset =
-      `${this.galleryName}/w0512/${this.imagesrc} 512w, ` +
-      `${this.galleryName}/w1024/${this.imagesrc} 1024w, ` +
-      `${this.galleryName}/w2048/${this.imagesrc} 2048w, ` +
-      `${this.galleryName}/${this.imagesrc}`;
-
     this.img = this.div.querySelector("fade-in-image");
     this.src = `${this.galleryName}/${this.imagesrc}`;
     this.setAttribute("src", this.src);
     this.img.setAttribute("src", this.src);
-    this.img.setAttribute("srcset", this.srcset);
     this.img.setAttribute("alt", this.altText);
     this.img.setAttribute("thumbsrc", this.thumbsrc);
   }
@@ -168,7 +178,16 @@ class GalleryBase extends HTMLElement {
 
   // component attributes
   static get observedAttributes() {
-    return ["imagesrc", "alt", "top", "left", "caption", "idx", "thumbpct"];
+    return [
+      "imagesrc",
+      "alt",
+      "top",
+      "left",
+      "caption",
+      "idx",
+      "thumbpct",
+      "imgwidth",
+    ];
   }
 
   // attribute change
@@ -182,6 +201,9 @@ class GalleryBase extends HTMLElement {
       }
       if (property === "left") {
         div.style.left = `${newValue}px`;
+      }
+      if (property === "imgwidth") {
+        this.fadeInImage.setAttribute("imgwidth", newValue);
       }
     }
   }
@@ -217,6 +239,7 @@ class GalleryLink extends GalleryBase {
          </div>
        </a>
     </div>`;
+    this.fadeInImage = this.shadowRoot.querySelector("fade-in-image");
   }
 
   getGalleryName() {
@@ -231,7 +254,7 @@ customElements.define("gallery-link", GalleryLink);
 class GalleryImage extends GalleryBase {
   constructor() {
     super();
-    this.ar = this.getAttribute("ar"); //this.attributes["ar"].nodeValue;
+    this.ar = this.getAttribute("ar");
     this.thumbpct = this.getAttribute("thumbpct");
 
     const caption = this.getAttribute("caption");
@@ -243,6 +266,8 @@ class GalleryImage extends GalleryBase {
         <fade-in-image ar="${this.ar}" thumbpct="${this.thumbpct}" masonrySizing></fade-in-image>
         ${captionDiv}
     </div>`;
+
+    this.fadeInImage = this.shadowRoot.querySelector("fade-in-image");
   }
 }
 

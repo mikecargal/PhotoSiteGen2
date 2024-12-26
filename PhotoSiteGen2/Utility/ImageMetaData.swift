@@ -133,7 +133,6 @@ final class ImageMetaData: Sendable {
             .replacingOccurrences(
                 of: Self.SUFFIX_REGEX, with: "", options: .regularExpression
             )
-//        debugPrint("cleanUpFilename:  \(res)      -> \(filename)")
         if res.isEmpty {
             debugPrint(
                 "============= uh oh =============\n\\(filename)\n=================="

@@ -72,38 +72,20 @@ struct GalleryGenerator {
                     .appendingPathComponent("thumbs")
                     .appendingPathComponent("\(genName).jpg"),
                 errorHandler: generationStatus)
-            var preloads = [PreLoad(src: thumbImageName)]
-
-            if let first = photos.first {
-
-                preloads.append(
-                    PreLoad(
-                        src:
-                            "/\(genName)/\(first.filteredFileNameWithExtension())",
-                        srcset: first.srcset(genName: genName)))
-                preloads.append(
-                    PreLoad(
-                        src:
-                            "/\(genName)/w0512/\(first.filteredFileNameWithExtension())"
-                    ))
-                preloads.append(
-                    PreLoad(
-                        src:
-                            "/\(genName)/\(first.filteredFileName().appending(".html"))",
-                        asType: .fetch))
-            }
+            //            let preloads = [PreLoad /*PreLoad(src: thumbImageName)*/]()
 
             let document = Document(.html) {
                 Comment("generated: \(Date.now)")
                 PSGPage(
                     generationID: generationID,
                     jsFiles: [
+                        //                        "js/priorityFetcher.js?tsid=\(generationID)",
                         "js/webcomponents.js?tsid=\(generationID)",
                         "js/layout.js?tsid=\(generationID)",
                         "js/slides.js?tsid=\(generationID)",
                         "js/startup.js?tsid=\(generationID)",
-                    ],
-                    preloads: preloads
+                    ]  //,
+                    //                    preloads: preloads
                 ) { [self] in
                     SwiftHtml.Text(title)
                     Br()
@@ -123,7 +105,9 @@ struct GalleryGenerator {
                 categories: categories,
                 title: title,
                 name: genName,
-                sequenceNumber: sequenceNumber)
+                sequenceNumber: sequenceNumber,
+                imageNames: photos.map { $0.filteredFileNameWithExtension() }
+            )
 
             async let _ = generationStatus.completeGeneration()
             return generatedGallery
@@ -243,38 +227,54 @@ struct GalleryGenerator {
             } ?? 0]
     }
 
+    fileprivate func slideShowDiv(
+        thumbImageName: String, photos: [Photo], thumbPcts: [Double]
+    ) -> Tag {
+        return Div {
+            FadeInImage().id("current")
+                .attribute("explicitSizing", "true")
+                .attribute(
+                    "thumbsrc", "\(thumbImageName)?tsid=\(generationID)"
+                )
+                .attribute(
+                    "imagesrc",
+                    photos.first?.filteredFileNameWithExtension()
+                )
+                .attribute("thumbPct", "\(Float(thumbPcts.first!))%")
+                .attribute(
+                    "ar", String(Float(photos.first!.aspectRatio)))
+            Div().id("infoContainer")
+            Div {
+                Button { Text("X") }
+                    .onClick("window.slideShow.hide()")
+                    .id("hideSS")
+                Div { Div().id("prevIcon") }.id("gotoPrev")
+                Div { Div().id("nextIcon") }.id("gotoNext")
+                Button {
+                    Img(
+                        src: "images/info-circle.svg",
+                        alt: "show picture info"
+                    )
+                }
+                .onClick("window.slideShow.toggleInfo()")
+                .id("showInfo")
+            }.class("ssControls")
+            Img(src: "", alt: "prev").id("prev")
+            Img(src: "", alt: "prev").id("prevSmall")
+            Img(src: "", alt: "next").id("next")
+            Img(src: "", alt: "next").id("nextSmall")
+        }.class("ssContainer")
+    }
+
     private func getHTML(
         thumbImageName: String, photos: [Photo], thumbPcts: [Double]
     ) -> Tag {
         GroupTag {
             Div {
-                Div {
-                    FadeInImage().id("current")
-                        .attribute("explicitSizing", "true")
-                        .attribute(
-                            "thumbsrc", "\(thumbImageName)?tsid=\(generationID)"
-                        )
-                    Div().id("infoContainer")
-                    Div {
-                        Button { Text("X") }
-                            .onClick("window.slideShow.hide()")
-                            .id("hideSS")
-                        Div { Div().id("prevIcon") }.id("gotoPrev")
-                        Div { Div().id("nextIcon") }.id("gotoNext")
-                        Button {
-                            Img(
-                                src: "images/info-circle.svg",
-                                alt: "show picture info"
-                            )
-                        }
-                        .onClick("window.slideShow.toggleInfo()")
-                        .id("showInfo")
-                    }.class("ssControls")
-                    Img(src: "", alt: "prev").id("prev")
-                    Img(src: "", alt: "prev").id("prevSmall")
-                    Img(src: "", alt: "next").id("next")
-                    Img(src: "", alt: "next").id("nextSmall")
-                }.class("ssContainer")
+                slideShowDiv(
+                    thumbImageName: thumbImageName,
+                    photos: photos,
+                    thumbPcts: thumbPcts)
             }
             .id("slideShow")
             .class("slideShowHidden")
@@ -297,10 +297,10 @@ struct GalleryGenerator {
         return GalleryImage()
             .attribute("imagesrc", photo.filteredFileNameWithExtension())
             .attribute("caption", md.caption, md.caption != nil)
-            .attribute("ar", String(photo.aspectRatio))
+            .attribute("ar", String(Float(photo.aspectRatio)))
             .attribute("top", String((index / 3) * 200))
             .attribute("left", String((index % 3) * 200))
-            .attribute("thumbPct", "\(thumbPct)%")
+            .attribute("thumbPct", "\(Float(thumbPct))%")
             .attribute("stars", String(photo.metadata.starRating))
             .attribute("tm", photo.metadata.captureTime)
             .class("brick")
@@ -409,7 +409,8 @@ struct GalleryGenerator {
                         Text("\(focalLength)mm")
                     }.class("focalLength")
                 }
-                if let subjectDistance = md.subjectDistance {
+                if let subjectDistance = md.subjectDistance, subjectDistance > 0
+                {
                     Div {
                         Text(  // TODO: have decimal count adjust for distance ranges
                             "\(String(format: "%.1f" ,subjectDistance*3.28084)) ft (\(String(format: "%.1f" ,subjectDistance)) m)"

@@ -11,7 +11,18 @@
 		277953C32D0C7ABB006B1796 /* XMP.xml in Resources */ = {isa = PBXBuildFile; fileRef = 277953C22D0C7ABB006B1796 /* XMP.xml */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		272E52CC2D1DAC330025932F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 279629A32CE147D4008F2CE2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 279629AA2CE147D4008F2CE2;
+			remoteInfo = PhotoSiteGen2;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		272E52C82D1DAC330025932F /* PhotoSiteGen2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoSiteGen2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		277953C22D0C7ABB006B1796 /* XMP.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = XMP.xml; sourceTree = "<group>"; };
 		279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoSiteGen2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -27,6 +38,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		272E52C92D1DAC330025932F /* PhotoSiteGen2Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PhotoSiteGen2Tests;
+			sourceTree = "<group>";
+		};
 		279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -41,6 +57,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		272E52C52D1DAC330025932F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		279629A82CE147D4008F2CE2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -57,6 +80,7 @@
 			children = (
 				277953C22D0C7ABB006B1796 /* XMP.xml */,
 				279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */,
+				272E52C92D1DAC330025932F /* PhotoSiteGen2Tests */,
 				279629AC2CE147D4008F2CE2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */,
+				272E52C82D1DAC330025932F /* PhotoSiteGen2Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,6 +97,30 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		272E52C72D1DAC330025932F /* PhotoSiteGen2Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 272E52D02D1DAC330025932F /* Build configuration list for PBXNativeTarget "PhotoSiteGen2Tests" */;
+			buildPhases = (
+				272E52C42D1DAC330025932F /* Sources */,
+				272E52C52D1DAC330025932F /* Frameworks */,
+				272E52C62D1DAC330025932F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				272E52CD2D1DAC330025932F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				272E52C92D1DAC330025932F /* PhotoSiteGen2Tests */,
+				279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */,
+			);
+			name = PhotoSiteGen2Tests;
+			packageProductDependencies = (
+			);
+			productName = PhotoSiteGen2Tests;
+			productReference = 272E52C82D1DAC330025932F /* PhotoSiteGen2Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		279629AA2CE147D4008F2CE2 /* PhotoSiteGen2 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 279629BA2CE147D5008F2CE2 /* Build configuration list for PBXNativeTarget "PhotoSiteGen2" */;
@@ -105,6 +154,10 @@
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					272E52C72D1DAC330025932F = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 279629AA2CE147D4008F2CE2;
+					};
 					279629AA2CE147D4008F2CE2 = {
 						CreatedOnToolsVersion = 16.0;
 					};
@@ -128,11 +181,19 @@
 			projectRoot = "";
 			targets = (
 				279629AA2CE147D4008F2CE2 /* PhotoSiteGen2 */,
+				272E52C72D1DAC330025932F /* PhotoSiteGen2Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		272E52C62D1DAC330025932F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		279629A92CE147D4008F2CE2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -144,6 +205,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		272E52C42D1DAC330025932F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		279629A72CE147D4008F2CE2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -153,7 +221,49 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		272E52CD2D1DAC330025932F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 279629AA2CE147D4008F2CE2 /* PhotoSiteGen2 */;
+			targetProxy = 272E52CC2D1DAC330025932F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		272E52CE2D1DAC330025932F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V4JGHQ2JFJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.cargal.PhotoSiteGen2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoSiteGen2.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoSiteGen2";
+			};
+			name = Debug;
+		};
+		272E52CF2D1DAC330025932F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V4JGHQ2JFJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.cargal.PhotoSiteGen2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoSiteGen2.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoSiteGen2";
+			};
+			name = Release;
+		};
 		279629B82CE147D5008F2CE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -335,6 +445,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		272E52D02D1DAC330025932F /* Build configuration list for PBXNativeTarget "PhotoSiteGen2Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				272E52CE2D1DAC330025932F /* Debug */,
+				272E52CF2D1DAC330025932F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		279629A62CE147D4008F2CE2 /* Build configuration list for PBXProject "PhotoSiteGen2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

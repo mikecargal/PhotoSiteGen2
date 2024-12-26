@@ -15,6 +15,7 @@ class SlideShow {
     this.prevSmallImg = document.querySelector("#prevSmall");
     this.nextImg = document.querySelector("#next");
     this.nextSmallImg = document.querySelector("#nextSmall");
+
     document
       .querySelector("#gotoPrev")
       .addEventListener("click", () => this.prevSlide());
@@ -107,7 +108,6 @@ class SlideShow {
     const currentGalleryImage = this.images[this.currentIdx];
     this.currentImg.blur();
     this.currentImg.setAttribute("src", currentGalleryImage.src);
-    this.currentImg.setAttribute("srcset", currentGalleryImage.srcset);
     this.currentImg.setAttribute("thumbpct", currentGalleryImage.thumbpct);
     this.currentImg.setAttribute("ar", currentGalleryImage.ar);
 
@@ -116,22 +116,29 @@ class SlideShow {
     document.getElementById("infoContainer").classList.add("hide");
 
     const nextImage = this.images[this.nextIdx];
-    this.nextImg.setAttribute("src", nextImage.src);
-    this.nextImg.setAttribute("srcset", nextImage.srcset);
     this.nextSmallImg.setAttribute(
       "src",
       nextImage.src.replace("/", "/w0512/")
     );
-    fetch(this.nextImg.src.replace(".jpg", ".html"));
+    fetch(nextImage.src.replace(".jpg", ".html"));
+    let nextSrc = this.getSrcForWidth(
+      nextImage.src,
+      this.widthFromAR(window.innerWidth, window.innerHeight, nextImage.ar)
+    );
+    fetch(nextSrc);
 
     const prevImage = this.images[this.prevIdx];
-    this.prevImg.setAttribute("src", prevImage.src);
-    this.prevImg.setAttribute("srcset", prevImage.srcset);
+    this.prevImg.setAttribute("src", prevImage.fadeInImage.getSrcForWidth());
     this.prevSmallImg.setAttribute(
       "src",
       prevImage.src.replace("/", "/w0512/")
     );
-    fetch(this.prevImg.src.replace(".jpg", ".html"));
+    fetch(prevImage.src.replace(".jpg", ".html"));
+    let prevSrc = this.getSrcForWidth(
+      prevImage.src,
+      this.widthFromAR(window.innerWidth, window.innerHeight, prevImage.ar)
+    );
+    fetch(prevSrc);
 
     this.setSSIdx();
     this.moveCurrentImgIntoView();
@@ -153,7 +160,20 @@ class SlideShow {
     } else {
       width = this.widthFromAR(window.innerWidth, window.innerHeight, ar);
     }
+    this.currentImg.setAttribute("imgwidth", width);
     this.currentImg.setAttribute("w", width);
+    return width;
+  }
+
+  getSrcForWidth(src, imgWidth) {
+    if (imgWidth <= 512) {
+      return src.replace("/", "/w0512/");
+    } else if (imgWidth <= 1024) {
+      return src.replace("/", "/w1024/");
+    } else if (imgWidth <= 2048) {
+      return src.replace("/", "/w2048/");
+    }
+    return this.src;
   }
 
   widthFromAR(w, h, ar) {

@@ -60,8 +60,9 @@ final class WebSiteGenerator: Sendable {
             }
             let thumbPcts = await generateIndexThumb(
                 galleries: generatedGalleries)
+
             try getHTMLSource(
-                GeneratedGalleries: generatedGalleries,
+                generatedGalleries: generatedGalleries,
                 thumbPcts: thumbPcts,
                 minify: minify
             )
@@ -69,6 +70,8 @@ final class WebSiteGenerator: Sendable {
                 to: filename,
                 atomically: true,
                 encoding: String.Encoding.utf8)
+
+            try writeSiteMap(generatedGalleries: generatedGalleries)
 
         } catch is CancellationError {
             async let _ = generationStatus.cancelledGeneration()
@@ -109,6 +112,23 @@ final class WebSiteGenerator: Sendable {
         }
     }
 
+    private func writeSiteMap(generatedGalleries: [GeneratedGallery]) throws {
+        let siteMap = SiteMap(
+            rootURL: URL(string: "https://photos.mikecargal.com")!,
+            galleries: generatedGalleries.map { gGen in
+                SiteMapGallery(
+                    genName: gGen.name,
+                    images: gGen.imageNames.map {
+                        SiteMapImage(name: $0)
+
+                    }
+                )
+            }
+        )
+
+        try siteMap.getXMLDocument().xmlData().write(to: siteMapFilename)
+    }
+
     private func copyStaticContent(inlineWebComponentCSS: Bool) async throws {
         try await copyDirectory(
             from: staticSourceFolder,
@@ -138,7 +158,8 @@ final class WebSiteGenerator: Sendable {
     }
 
     private func getHTMLSource(
-        GeneratedGalleries: [GeneratedGallery], thumbPcts: [Double],
+        generatedGalleries: [GeneratedGallery],
+        thumbPcts: [Double],
         minify: Bool
     ) -> String {
         let document = Document(.html) {
@@ -146,6 +167,7 @@ final class WebSiteGenerator: Sendable {
             PSGPage(
                 generationID: generationID,
                 jsFiles: [
+                    "js/priorityFetcher.js?tsid=\(generationID)",
                     "js/webcomponents.js?tsid=\(generationID)",
                     "js/layout.js?tsid=\(generationID)",
                     "js/slides.js?tsid=\(generationID)",
@@ -153,7 +175,7 @@ final class WebSiteGenerator: Sendable {
                 ]
             ) {
                 Div {
-                    for (index, gallery) in GeneratedGalleries.enumerated() {
+                    for (index, gallery) in generatedGalleries.enumerated() {
                         gallery.galleryLink(index, thumbPct: thumbPcts[index])
                     }
                 }
@@ -169,6 +191,10 @@ final class WebSiteGenerator: Sendable {
 
     private var filename: URL {
         destinationFolder.appendingPathComponent("index.html")
+    }
+
+    private var siteMapFilename: URL {
+        destinationFolder.appendingPathComponent("sitemap.xml")
     }
 
 }
