@@ -19,6 +19,8 @@ final class WebSiteGenerator: Sendable {
     let sourceFolder: URL
     let staticSourceFolder: URL
     let destinationFolder: URL
+    
+    let siteRootURL: URL
 
     let generationID: TSID
     let galleryGenerators: [GalleryGenerator]
@@ -30,6 +32,7 @@ final class WebSiteGenerator: Sendable {
         destinationFolder: URL,
         galleryGenerators: [GalleryGenerator],
         generationStatus: WebsiteGenerationStatus,
+        siteRootURL: URL,
         generationID: TSID = TSID()
     ) {
         self.sourceFolder = sourceFolder
@@ -38,6 +41,7 @@ final class WebSiteGenerator: Sendable {
         self.galleryGenerators = galleryGenerators
         self.generationID = generationID
         self.generationStatus = generationStatus
+        self.siteRootURL = siteRootURL
     }
 
     func generate(
@@ -114,7 +118,7 @@ final class WebSiteGenerator: Sendable {
 
     private func writeSiteMap(generatedGalleries: [GeneratedGallery]) throws {
         let siteMap = SiteMap(
-            rootURL: URL(string: "https://photos.mikecargal.com")!,
+            rootURL: siteRootURL,
             galleries: generatedGalleries.map { gGen in
                 SiteMapGallery(
                     genName: gGen.name,

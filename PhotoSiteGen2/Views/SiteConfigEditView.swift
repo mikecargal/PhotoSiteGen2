@@ -9,7 +9,11 @@ import SwiftUI
 
 struct SiteConfigEditView: View {
     @Binding var websiteDocument: WebSiteDocument
-
+    var rootURLIsValid: Bool  {
+        websiteDocument.siteRootURL != nil
+    }
+    
+    
     var body: some View {
         Form {
             FolderSelector(
@@ -26,6 +30,22 @@ struct SiteConfigEditView: View {
                 label: "DestinationFolder",
                 selectedFolder: $websiteDocument.destinationFolder
             )
+
+            TextField(
+                "Site Root URL",
+                text:
+                    Binding(
+                        get: {
+                            websiteDocument.siteRootURL?.absoluteString
+                                ?? "https://"
+                        },
+                        set: { websiteDocument.siteRootURL = URL(string: $0) }
+                    )
+                )
+            if !rootURLIsValid {
+                Text("Site Root URL must be a valid URL")
+            }
+
         }
         .padding()
     }
