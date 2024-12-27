@@ -57,5 +57,4 @@ struct WebsiteGenStatusView: View {
         }
         return errors
     }
-
 }

@@ -12,5 +12,3 @@ open class FadeInImage: Tag {
         Node(type: .standard, name: "fade-in-image")
     }
 }
-
-

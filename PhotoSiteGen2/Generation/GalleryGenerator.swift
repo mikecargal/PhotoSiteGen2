@@ -72,20 +72,17 @@ struct GalleryGenerator {
                     .appendingPathComponent("thumbs")
                     .appendingPathComponent("\(genName).jpg"),
                 errorHandler: generationStatus)
-            //            let preloads = [PreLoad /*PreLoad(src: thumbImageName)*/]()
 
             let document = Document(.html) {
                 Comment("generated: \(Date.now)")
                 PSGPage(
                     generationID: generationID,
                     jsFiles: [
-                        //                        "js/priorityFetcher.js?tsid=\(generationID)",
                         "js/webcomponents.js?tsid=\(generationID)",
                         "js/layout.js?tsid=\(generationID)",
                         "js/slides.js?tsid=\(generationID)",
                         "js/startup.js?tsid=\(generationID)",
-                    ]  //,
-                    //                    preloads: preloads
+                    ]
                 ) { [self] in
                     SwiftHtml.Text(title)
                     Br()
@@ -319,6 +316,8 @@ struct GalleryGenerator {
         }
     }
 
+    let FT_PER_METER = 3.28084
+    
     private func generateInfoHtmlFile(
         photo: Photo,
         imageSrc: String,
@@ -413,7 +412,7 @@ struct GalleryGenerator {
                 {
                     Div {
                         Text(  // TODO: have decimal count adjust for distance ranges
-                            "\(String(format: "%.1f" ,subjectDistance*3.28084)) ft (\(String(format: "%.1f" ,subjectDistance)) m)"
+                            "\(String(format: "%.1f" ,subjectDistance*FT_PER_METER)) ft (\(String(format: "%.1f" ,subjectDistance)) m)"
                         )
                     }.class("focalDistance")
                 }

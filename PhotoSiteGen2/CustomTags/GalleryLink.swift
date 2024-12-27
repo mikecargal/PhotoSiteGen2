@@ -13,5 +13,3 @@ open class GalleryLink: Tag {
         Node(type: .standard, name: "gallery-link")
     }
 }
-
-

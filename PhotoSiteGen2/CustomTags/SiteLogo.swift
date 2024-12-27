@@ -12,4 +12,3 @@ open class SiteLogo: Tag {
         Node(type: .standard, name: "site-logo")
     }
 }
-

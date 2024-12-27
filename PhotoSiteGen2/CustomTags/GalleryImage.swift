@@ -13,4 +13,3 @@ open class GalleryImage: Tag {
         Node(type: .standard, name: "gallery-image")
     }
 }
-
