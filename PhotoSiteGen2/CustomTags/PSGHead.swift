@@ -19,10 +19,7 @@ class PSGHead: GroupTag {
                 Link(rel: .icon).href("/images/favicon.svg?tsid=\(generationID)").type("image/svg+xml")
                 Link(rel: .manifest).href("/manifest.webmanifest?tsid=\(generationID)")
                 for preload in preloads {
-                    Link(rel: .preload).href("\(preload.src)?tsid=\(generationID)") 
-                        .attribute("imagesrcset", preload.srcset)
-                        .attribute("imagesizes",  preload.srcset != nil ? "100vw" : nil)
-                        .attribute("as", preload.asType.rawValue)
+                    preload.link(generationID: generationID)
                 }
             },
         ]

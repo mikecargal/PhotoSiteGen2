@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftHtml
 
 enum PreloadType: String {
     case image, fetch, script, style, track, font
@@ -20,5 +21,12 @@ struct PreLoad {
         self.src = src
         self.srcset = srcset
         self.asType = asType
+    }
+    
+    func link(generationID:TSID) -> Tag {
+        Link(rel: .preload).href("\(src)?tsid=\(generationID)")
+            .attribute("imagesrcset", srcset)
+            .attribute("imagesizes",  srcset != nil ? "100vw" : nil)
+            .attribute("as", asType.rawValue)
     }
 }

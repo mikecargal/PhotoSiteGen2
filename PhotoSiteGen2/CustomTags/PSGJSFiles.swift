@@ -9,7 +9,11 @@ import Foundation
 import SwiftHtml
 
 class PSGJSFiles: GroupTag {
-    public init(_ jsFiles: [String]) {
-        super.init(jsFiles.map { Script().src($0) })
+    public init(_ jsFiles: [String], generationID: TSID) {
+        super.init(
+            jsFiles
+                .map {
+                    Script().src("\($0)?tsid=\(generationID)")
+                })
     }
 }

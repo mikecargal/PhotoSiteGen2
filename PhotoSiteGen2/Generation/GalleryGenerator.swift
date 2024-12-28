@@ -76,17 +76,17 @@ struct GalleryGenerator {
                     .appendingPathComponent("thumbs")
                     .appendingPathComponent("\(genName).jpg"),
                 errorHandler: generationStatus,
-                statustracker:  generationStatus)
+                generationStatus: generationStatus)
 
             let document = Document(.html) {
                 Comment("generated: \(Date.now)")
                 PSGPage(
                     generationID: generationID,
                     jsFiles: [
-                        "js/webcomponents.js?tsid=\(generationID)",
-                        "js/layout.js?tsid=\(generationID)",
-                        "js/slides.js?tsid=\(generationID)",
-                        "js/startup.js?tsid=\(generationID)",
+                        "js/webcomponents.js",
+                        "js/layout.js",
+                        "js/slides.js",
+                        "js/startup.js",
                     ]
                 ) { [self] in
                     SwiftHtml.Text(title)
@@ -171,16 +171,10 @@ struct GalleryGenerator {
                 group -> [Photo] in
                 var photos = [Photo]()
                 for url in urls {
-                    if let cachedPhoto = photoCache?[url],
-                        let modDate = try? url.resourceValues(forKeys: [
-                            .contentModificationDateKey
-                        ])
-                        .contentModificationDate,
-                        cachedPhoto.modDate == modDate
-                    {
+                    try Task.checkCancellation()
+                    if let cachedPhoto = cachedPhotoFor(url: url) {
                         group.addTask {
-                            async let _ =
-                                generationStatus.progressTick()
+                            async let _ = generationStatus.progressTick()
                             return cachedPhoto
                         }
                     } else {
@@ -222,6 +216,21 @@ struct GalleryGenerator {
         }
     }
 
+    private func cachedPhotoFor(url: URL) -> Photo? {
+        if let cachedPhoto = photoCache?[url] {
+            if let modDate =
+                try? url
+                .resourceValues(forKeys: [.contentModificationDateKey])
+                .contentModificationDate
+            {
+                if cachedPhoto.modDate == modDate {
+                    return cachedPhoto
+                }
+            }
+        }
+        return nil
+    }
+
     private func getFavoritePhoto(photos: [Photo]) throws -> Photo {
         guard photos.count > 0 else {
             throw GalleryGenerationError.NoPhotos
@@ -249,7 +258,7 @@ struct GalleryGenerator {
     fileprivate func slideShowDiv(
         thumbImageName: String, photos: [Photo], thumbPcts: [Double]
     ) -> Tag {
-        return Div {
+        Div {
             FadeInImage().id("current")
                 .attribute("explicitSizing", "true")
                 .attribute(

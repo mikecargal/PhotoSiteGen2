@@ -9,7 +9,7 @@ import Foundation
 import RegexBuilder
 
 class XMPFields: NSObject, XMLParserDelegate {
-    static let xmpMatcher = Regex {
+    let xmpMatcher = Regex {
         "<x:xmpmeta"
         OneOrMore {
             NegativeLookahead { "</x:xmpmeta>" }

@@ -19,71 +19,103 @@ struct SiteMapGallery {
 struct SiteMap {
     let rootURL: URL
     let galleries: [SiteMapGallery]
-
+    let siteMapNameSpaceURI = "http://www.sitemaps.org/schemas/sitemap/0.9"
+    let imageNameSpaceURI = "http://www.google.com/schemas/sitemap-image/1.1"
 
     func getXMLDocument() -> XMLDocument {
-        let siteMapNameSpaceURI = "http://www.sitemaps.org/schemas/sitemap/0.9"
-        let imageNameSpaceURI = "http://www.google.com/schemas/sitemap-image/1.1"
+        let rootElement = getRootElement()
 
+        let document = XMLDocument(rootElement: rootElement)
+        rootElement.addChild(getIndexUrlNode())
+
+        let imageNSPrefix = rootElement.resolvePrefix(
+            forNamespaceURI: imageNameSpaceURI)
+        for gallery in galleries {
+            rootElement.addChild(
+                getGalleryUrlNode(
+                    gallery: gallery, imageNSPrefix: imageNSPrefix!))
+        }
+
+        return document
+    }
+
+    func getRootElement() -> XMLElement {
         let rootElement = XMLElement(name: "urlset", uri: siteMapNameSpaceURI)
-
         rootElement.addNamespace(
             XMLNode.namespace(withName: "", stringValue: siteMapNameSpaceURI)
                 as! XMLNode)
         rootElement.addNamespace(
             XMLNode.namespace(withName: "image", stringValue: imageNameSpaceURI)
                 as! XMLNode)
-        let document = XMLDocument(rootElement: rootElement)
+        return rootElement
+    }
 
+    func getIndexUrlNode() -> XMLNode {
         let urlNode = XMLElement(name: "url", uri: siteMapNameSpaceURI)
-        rootElement.addChild(urlNode)
-
         let locNode = XMLElement(name: "loc", uri: siteMapNameSpaceURI)
-        locNode.addChild(
+        urlNode.addChild(locNode)
+        let textNode =
             XMLNode.text(
                 withStringValue:
                     rootURL
                     .appendingPathComponent("index.html")
-                    .absoluteString) as! XMLNode)
+                    .absoluteString) as! XMLNode
+        locNode.addChild(textNode)
+        return urlNode
+    }
+
+    func getGalleryUrlNode(
+        gallery: SiteMapGallery,
+        imageNSPrefix: String
+    )
+        -> XMLElement
+    {
+        let urlNode = XMLElement(name: "url", uri: siteMapNameSpaceURI)
+        let locNode = XMLElement(name: "loc", uri: siteMapNameSpaceURI)
         urlNode.addChild(locNode)
 
-        for gallery in galleries {
-            let galleryNode = XMLElement(name: "url", uri: siteMapNameSpaceURI)
-            rootElement.addChild(galleryNode)
+        let textNode =
+            XMLNode.text(
+                withStringValue:
+                    rootURL
+                    .appendingPathComponent("\(gallery.genName).html")
+                    .absoluteString) as! XMLNode
+        locNode.addChild(textNode)
 
-            let locNode = XMLElement(name: "loc", uri: siteMapNameSpaceURI)
-            locNode.addChild(
-                XMLNode.text(
-                    withStringValue:
-                        rootURL
-                        .appendingPathComponent("\(gallery.genName).html")
-                        .absoluteString) as! XMLNode)
-            galleryNode.addChild(locNode)
-
-            let imageNSPrefix = rootElement.resolvePrefix(
-                forNamespaceURI: imageNameSpaceURI)!
-            for image in gallery.images {
-
-                let imageNode = XMLElement(
-                    name: "\(imageNSPrefix):image",
-                    uri: imageNameSpaceURI)
-                galleryNode.addChild(imageNode)
-
-                let locNode = XMLElement(
-                    name: "\(imageNSPrefix):loc",
-                    uri: imageNameSpaceURI)
-                locNode.addChild(
-                    XMLNode.text(
-                        withStringValue:
-                            rootURL
-                            .appendingPathComponent(
-                                "\(gallery.genName)/\(image.name)"
-                            )
-                            .absoluteString) as! XMLNode)
-                imageNode.addChild(locNode)
-            }
+        for image in gallery.images {
+            urlNode.addChild(
+                getGalleryImageNode(
+                    gallery: gallery,
+                    image: image,
+                    imageNSPrefix: imageNSPrefix
+                ))
         }
+        return urlNode
+    }
 
-        return document
+    private func getGalleryImageNode(
+        gallery: SiteMapGallery,
+        image: SiteMapImage,
+        imageNSPrefix: String
+    ) -> XMLElement {
+        let imageNode = XMLElement(
+            name: "\(imageNSPrefix):image",
+            uri: imageNameSpaceURI)
+
+        let locNode = XMLElement(
+            name: "\(imageNSPrefix):loc",
+            uri: imageNameSpaceURI)
+        imageNode.addChild(locNode)
+
+        locNode.addChild(
+            XMLNode.text(
+                withStringValue:
+                    rootURL
+                    .appendingPathComponent(
+                        "\(gallery.genName)/\(image.name)"
+                    )
+                    .absoluteString) as! XMLNode)
+
+        return imageNode
     }
 }

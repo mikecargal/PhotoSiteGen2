@@ -10,7 +10,7 @@ import Foundation
 typealias Renamer = (URL) -> String
 typealias FilterFinder = (String) -> FileFilter?
 typealias DirectoryNameFilter = (URL) -> URL
-typealias ProgressClosure = (String?) async -> Void
+typealias ProgressClosure = @MainActor (String?) async -> Void
 
 func copyDirectory(
     from source: URL,
@@ -32,6 +32,7 @@ func copyDirectory(
 
     var fileNameSet = Set<String>()
     for url in urls {
+        try Task.checkCancellation()
         if url.hasDirectoryPath {
             try await copyDirectory(
                 from: url,

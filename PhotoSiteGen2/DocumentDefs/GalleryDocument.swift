@@ -33,7 +33,7 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, title, directory, titleImageName, categories
+        case id, title, directory, titleImageName, categories, genNameOverride
     }
 
     var gallerySourceUrl: URL {

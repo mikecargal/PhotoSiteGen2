@@ -17,7 +17,7 @@ func generateSpritesImage(
     width: Int,
     filename: URL,
     errorHandler: ErrorHandler,
-    statustracker:GenerationStatusTracker
+    generationStatus: GalleryGenerationStatus?
 ) async -> [Double] {
     var percentages = [Double]()
     let totalHeight = thumbPhotos.reduce(0) {
@@ -54,7 +54,7 @@ func generateSpritesImage(
                 in: CGRect(x: 0, y: top, width: width, height: height),
                 byTiling: false)
         }
-       async let _ = statustracker.progressTick()
+       async let _ = generationStatus?.progressTick()
     }
     writeJpegFromContext(context: context, filename: filename)
     return percentages

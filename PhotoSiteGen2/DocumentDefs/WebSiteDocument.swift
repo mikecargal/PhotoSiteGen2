@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct WebSiteDocument: FileDocument, Codable {
-    static var readableContentTypes = [
+    static let readableContentTypes = [
         UTType(exportedAs: "com.mikecargal.photositegen2.website")
     ]
 
@@ -52,8 +52,7 @@ struct WebSiteDocument: FileDocument, Codable {
             sourceFolder: sourceFolder,
             staticSourceFolder: staticSiteFolder,
             destinationFolder: destinationFolder,
-            galleryGenerators: galleries.enumerated().map {
-                (idx, galleryDocument) in
+            galleryGenerators: galleries.enumerated().map { (idx, galleryDocument) in
                 let galleryGenStatus = GalleryGenerationStatus(
                     galleryTitle: galleryDocument.title,
                     galleryName: galleryDocument.genName,

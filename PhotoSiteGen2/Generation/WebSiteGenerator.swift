@@ -169,7 +169,7 @@ final class WebSiteGenerator: Sendable {
                 .appendingPathComponent("thumbs")
                 .appendingPathComponent("index.jpg"),
             errorHandler: generationStatus,
-            statustracker: generationStatus)
+            generationStatus: nil)
     }
 
     private func getHTMLSource(
@@ -182,11 +182,11 @@ final class WebSiteGenerator: Sendable {
             PSGPage(
                 generationID: generationID,
                 jsFiles: [
-                    "js/priorityFetcher.js?tsid=\(generationID)",
-                    "js/webcomponents.js?tsid=\(generationID)",
-                    "js/layout.js?tsid=\(generationID)",
-                    "js/slides.js?tsid=\(generationID)",
-                    "js/startup.js?tsid=\(generationID)",
+                    "js/priorityFetcher.js",
+                    "js/webcomponents.js",
+                    "js/layout.js",
+                    "js/slides.js",
+                    "js/startup.js",
                 ]
             ) {
                 Div {

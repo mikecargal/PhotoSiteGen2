@@ -27,12 +27,8 @@ enum GenerationStatus: Int {
     }
 }
 
-protocol GenerationStatusTracker {
-    func progressTick() async
-}
-
 @Observable @MainActor
-class WebsiteGenerationStatus: GenerationStatusTracker, ErrorHandler,
+class WebsiteGenerationStatus: ErrorHandler,
     Identifiable
 {
 
@@ -115,7 +111,7 @@ class WebsiteGenerationStatus: GenerationStatusTracker, ErrorHandler,
 }
 
 @Observable @MainActor
-class GalleryGenerationStatus: GenerationStatusTracker, Identifiable,
+class GalleryGenerationStatus: Identifiable,
     ErrorHandler
 {
     let TICKS_PER_IMAGE = 3
