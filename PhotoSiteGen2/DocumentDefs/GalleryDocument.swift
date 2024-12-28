@@ -15,6 +15,7 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     var titleImageName: String = ""
     var categories = [String]()
     var webSite: Binding<WebSiteDocument>?
+
     private var genNameOverride: String?
 
     init(
@@ -46,16 +47,25 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
         return gallerySourceUrl.appendingPathComponent(titleImageName)
     }
 
-    func getGalleryGenerationInfo(_ sequenceNumber: Int)
+    func getGalleryGenerationInfo(_ sequenceNumber: Int, cleanBuild: Bool)
         -> GalleryGenerationInfo
     {
+        let photoCache: [URL: Photo] =
+            cleanBuild
+            ? [:]
+            : webSite?.wrappedValue.generationCache?.galleryPhotosCache[id]
+                ?? [:]
+
         return .init(
+            galleryUUID: id,
             sequenceNumber: sequenceNumber,
             titleImageFileName: Photo.filteredFileNameWithExtension(
                 titleImageUrl),
             title: title,
             genName: genName,
-            categories: categories)
+            categories: categories,
+            photosCache: photoCache
+        )
     }
 
     var genName: String {

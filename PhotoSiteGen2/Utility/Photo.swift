@@ -9,41 +9,31 @@ import AppKit
 import Foundation
 
 enum PhotoReadError: Error {
+    case ImageSourceUnreachable(url: URL)
     case ImageSourceReadError(url: URL)
 }
 
-final class Photo: Identifiable, Comparable, Sendable {
+struct Photo: Identifiable, Comparable, Sendable, Codable {
+    let modDate: Date?
     let url: URL
-    let image: CGImage
-    let smallImage: CGImage
+
     let aspectRatio: Double
     let metadata: ImageMetaData
 
-    init(url: URL) throws {
-        self.url = url
-        let smallImageURL =
-            url.deletingLastPathComponent()
+    var id: String { url.absoluteString }
+
+    var smallImageURL: URL {
+        url.deletingLastPathComponent()
             .appendingPathComponent("w0512")
             .appendingPathComponent(url.lastPathComponent)
+    }
 
-        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil)
-        else {
-            debugPrint("Couldn't create image source for \(url)")
-            throw PhotoReadError.ImageSourceReadError(url: url)
-        }
+    var smallImage: CGImage? {
         guard
             let smallImageSource = CGImageSourceCreateWithURL(
                 smallImageURL as CFURL, nil)
-        else {
-            debugPrint("Couldn't create image source for \(smallImageURL)")
-            throw PhotoReadError.ImageSourceReadError(url: url)
-        }
-        metadata = ImageMetaData(url: url)
-        aspectRatio = Double(metadata.pixelWidth) / Double(metadata.pixelHeight)
-
-        let img = CGImageSourceCreateImageAtIndex(imageSource, 0, nil)
-        image = img!
-        smallImage = CGImageSourceCreateImageAtIndex(smallImageSource, 0, nil)!
+        else { return nil }
+        return CGImageSourceCreateImageAtIndex(smallImageSource, 0, nil)!
     }
 
     static func == (lhs: Photo, rhs: Photo) -> Bool {
@@ -115,5 +105,35 @@ final class Photo: Identifiable, Comparable, Sendable {
 
     func heightOfImage(ofWidth width: Int) -> Int {
         return Int(ceil(Double(width) / aspectRatio))
+    }
+}
+
+extension Photo {
+    init(url: URL) throws {
+        self.url = url
+
+        do {
+            guard try url.checkResourceIsReachable() else {
+                throw PhotoReadError.ImageSourceUnreachable(url: url)
+            }
+        } catch {
+            throw PhotoReadError.ImageSourceReadError(url: url)
+        }
+
+        modDate =
+            try url.resourceValues(forKeys: [.contentModificationDateKey])
+            .contentModificationDate as Date?
+        metadata = ImageMetaData(url: url)
+        aspectRatio = Double(metadata.pixelWidth) / Double(metadata.pixelHeight)
+
+        do {
+            let siURL = smallImageURL
+            guard try siURL.checkResourceIsReachable() else {
+                throw PhotoReadError.ImageSourceUnreachable(url: url)
+            }
+        } catch {
+            throw PhotoReadError.ImageSourceReadError(url: url)
+        }
+
     }
 }

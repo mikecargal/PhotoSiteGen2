@@ -9,7 +9,7 @@ import AVKit
 import SwiftUI
 
 struct GenerationSheetView: View {
-    var websiteDocument: WebSiteDocument
+    @Binding var websiteDocument: WebSiteDocument
     @Binding var showSheet: Bool
 
     @State private var generating = false
@@ -61,7 +61,8 @@ struct GenerationSheetView: View {
         .padding()
         .onAppear {
             if let path = Bundle.main.path(
-                forResource: "notification.mp3", ofType: nil) {
+                forResource: "notification.mp3", ofType: nil)
+            {
                 let url = URL(fileURLWithPath: path)
                 audioPlayer = try? AVAudioPlayer(contentsOf: url)
             }
@@ -72,18 +73,19 @@ struct GenerationSheetView: View {
         generating = true
         generationTask = Task {
             debugPrint(Date(), "Generating website")
-            generator = websiteDocument.getWebsiteGenerator()
+            generator = websiteDocument.getWebsiteGenerator(cleanBuild:cleanBuild)
             guard
                 let generator
             else {
                 debugPrint("No generator")
                 return
             }
-            await generator.generate(
-                inlineWebComponentCSS: inlineWebComponentCSS,
-                cleanBuild: cleanBuild,
-                minify: minify,
-                skipStaticContent: skipStaticContent)
+            websiteDocument.generationCache =
+                await generator.generate(
+                    inlineWebComponentCSS: inlineWebComponentCSS,
+                    cleanBuild: cleanBuild,
+                    minify: minify,
+                    skipStaticContent: skipStaticContent)
             generating = false
             debugPrint(Date(), "Generation complete")
             audioPlayer?.play()
@@ -94,5 +96,6 @@ struct GenerationSheetView: View {
 
 #Preview {
     GenerationSheetView(
-        websiteDocument: WebSiteDocument.mock, showSheet: .constant(true))
+        websiteDocument: .constant(WebSiteDocument.mock),
+        showSheet: .constant(true))
 }

@@ -18,6 +18,7 @@ struct GalleryGenerator {
     let generationID: TSID
     let wsDestination: URL
     let wsSource: URL
+    let galleryID: UUID
 
     let genName: String
     let sequenceNumber: Int
@@ -26,6 +27,7 @@ struct GalleryGenerator {
     let categories: [String]
     let destinationFolder: URL
     let generationStatus: GalleryGenerationStatus
+    let photoCache: [URL: Photo]?
 
     init(
         generationID: TSID,
@@ -37,6 +39,8 @@ struct GalleryGenerator {
         self.generationID = generationID
         self.wsSource = wsSource
         self.wsDestination = wsDestination
+        self.galleryID = galleryInfo.galleryUUID
+        self.photoCache = galleryInfo.photosCache
 
         genName = galleryInfo.genName
         sequenceNumber = galleryInfo.sequenceNumber
@@ -71,7 +75,8 @@ struct GalleryGenerator {
                     wsDestination
                     .appendingPathComponent("thumbs")
                     .appendingPathComponent("\(genName).jpg"),
-                errorHandler: generationStatus)
+                errorHandler: generationStatus,
+                statustracker:  generationStatus)
 
             let document = Document(.html) {
                 Comment("generated: \(Date.now)")
@@ -103,7 +108,8 @@ struct GalleryGenerator {
                 title: title,
                 name: genName,
                 sequenceNumber: sequenceNumber,
-                imageNames: photos.map { $0.filteredFileNameWithExtension() }
+                galleryID: galleryID,
+                photos: photos
             )
 
             async let _ = generationStatus.completeGeneration()
@@ -152,7 +158,9 @@ struct GalleryGenerator {
         do {
             let urls = try FileManager.default.contentsOfDirectory(
                 at: wsDestination.appendingPathComponent(genName),
-                includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
+                includingPropertiesForKeys: [
+                    .isDirectoryKey, .nameKey, .contentModificationDateKey,
+                ],
                 options: [.skipsHiddenFiles]
             )
             .filter {
@@ -163,15 +171,29 @@ struct GalleryGenerator {
                 group -> [Photo] in
                 var photos = [Photo]()
                 for url in urls {
-                    group.addTask {
-                        let photo = try Photo(url: url)
-                        async let _ = generationStatus.progressTick()
-                        return photo
+                    if let cachedPhoto = photoCache?[url],
+                        let modDate = try? url.resourceValues(forKeys: [
+                            .contentModificationDateKey
+                        ])
+                        .contentModificationDate,
+                        cachedPhoto.modDate == modDate
+                    {
+                        group.addTask {
+                            async let _ =
+                                generationStatus.progressTick()
+                            return cachedPhoto
+                        }
+                    } else {
+                        group.addTask {
+                            let photo = try Photo(url: url)
+                            async let _ = generationStatus.progressTick()
+                            return photo
+                        }
                     }
-                    try Task.checkCancellation()
-                    for try await photo in group {
-                        photos.append(photo)
-                    }
+                }
+                try Task.checkCancellation()
+                for try await photo in group {
+                    photos.append(photo)
                 }
                 return photos
             }
@@ -317,7 +339,7 @@ struct GalleryGenerator {
     }
 
     let FT_PER_METER = 3.28084
-    
+
     private func generateInfoHtmlFile(
         photo: Photo,
         imageSrc: String,

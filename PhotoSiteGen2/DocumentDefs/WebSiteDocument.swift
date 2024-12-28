@@ -21,6 +21,7 @@ struct WebSiteDocument: FileDocument, Codable {
     var siteRootURL: URL? = URL(string:"https://")
     var categories = [String]()
     var galleries = [GalleryDocument]()
+    var generationCache: GenerationCache?
 
     init(configuration: ReadConfiguration) throws {
         if let data = configuration.file.regularFileContents {
@@ -42,7 +43,7 @@ struct WebSiteDocument: FileDocument, Codable {
     }
 
     @MainActor
-    func getWebsiteGenerator() -> WebSiteGenerator? {
+    func getWebsiteGenerator(cleanBuild: Bool) -> WebSiteGenerator? {
         guard let sourceFolder, let staticSiteFolder, let destinationFolder, let siteRootURL
         else { return nil }
         let tsid = TSID()
@@ -62,7 +63,7 @@ struct WebSiteDocument: FileDocument, Codable {
                     wsSource: sourceFolder,
                     wsDestination: destinationFolder,
                     generationStatus: galleryGenStatus,
-                    galleryInfo: galleryDocument.getGalleryGenerationInfo(idx))
+                    galleryInfo: galleryDocument.getGalleryGenerationInfo(idx, cleanBuild: cleanBuild))
             },
             generationStatus: generationStatus,
             siteRootURL: siteRootURL,

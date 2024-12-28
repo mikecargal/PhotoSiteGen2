@@ -19,7 +19,7 @@ final class WebSiteGenerator: Sendable {
     let sourceFolder: URL
     let staticSourceFolder: URL
     let destinationFolder: URL
-    
+
     let siteRootURL: URL
 
     let generationID: TSID
@@ -50,9 +50,10 @@ final class WebSiteGenerator: Sendable {
         minify: Bool,
         skipStaticContent: Bool
     )
-        async
+        async -> GenerationCache?
     {
         async let _ = generationStatus.startGeneration()
+        var generationCache: GenerationCache?
         do {
             if cleanBuild {
                 try deleteContentsOfFolder(from: destinationFolder)
@@ -77,14 +78,23 @@ final class WebSiteGenerator: Sendable {
 
             try writeSiteMap(generatedGalleries: generatedGalleries)
 
+            var photoCache = [UUID: [URL: Photo]]()
+            for generatedGallery in generatedGalleries {
+                photoCache[generatedGallery.galleryID] =
+                    generatedGallery.photoCache
+            }
+            generationCache = GenerationCache(galleryPhotosCache: photoCache)
+
         } catch is CancellationError {
             async let _ = generationStatus.cancelledGeneration()
-            return
+            return nil
         } catch {
             async let _ = generationStatus.logError(
                 "Error generating Website: (\(error))")
         }
+
         async let _ = generationStatus.completeGeneration()
+        return generationCache
     }
 
     private func generateGalleries(minify: Bool) async throws
@@ -158,7 +168,8 @@ final class WebSiteGenerator: Sendable {
                 destinationFolder
                 .appendingPathComponent("thumbs")
                 .appendingPathComponent("index.jpg"),
-            errorHandler: generationStatus)
+            errorHandler: generationStatus,
+            statustracker: generationStatus)
     }
 
     private func getHTMLSource(

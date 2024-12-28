@@ -6,14 +6,26 @@
 //
 
 import SwiftHtml
+import Foundation
 
-struct GeneratedGallery: Sendable {
+struct GeneratedGallery: Sendable, Codable {
     let favoritePhoto: Photo
     let categories: [String]?
     let title: String
     let name: String
     let sequenceNumber: Int
-    let imageNames: [String]
+    let galleryID: UUID
+    let photos: [Photo]
+    
+    var photoCache: [URL:Photo] {
+        var cache: [URL:Photo] = [:]
+        photos.forEach { cache[$0.url] = $0 }
+        return cache
+    }
+
+    var imageNames: [String] {
+        photos.map { $0.filteredFileNameWithExtension() }
+    }
     
     func galleryLink(_ index: Int, thumbPct: Double) -> Tag {
         return GalleryLink()

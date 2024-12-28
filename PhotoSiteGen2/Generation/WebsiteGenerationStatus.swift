@@ -6,32 +6,39 @@
 //
 import SwiftUI
 
-@Observable @MainActor
-class WebsiteGenerationStatus: ErrorHandler, Identifiable {
-    @MainActor
-    enum Status: Int {
-        case generatingWithErrors
-        case generatingNoErrors
-        case pending
-        case completeWithErrors
-        case completeNoErrors
-        case cancelled
+@MainActor
+enum GenerationStatus: Int {
+    case generatingWithErrors
+    case generatingNoErrors
+    case pending
+    case completeWithErrors
+    case completeNoErrors
+    case cancelled
 
-        var description: String {
-            switch self {
-            case .pending: "Pending"
-            case .generatingNoErrors: "Generating"
-            case .generatingWithErrors: "Generating with errors"
-            case .completeNoErrors: "Complete"
-            case .completeWithErrors: "Complete with errors"
-            case .cancelled: "Cancelled"
-            }
+    var description: String {
+        switch self {
+        case .pending: "Pending"
+        case .generatingNoErrors: "Generating"
+        case .generatingWithErrors: "Generating with errors"
+        case .completeNoErrors: "Complete"
+        case .completeWithErrors: "Complete with errors"
+        case .cancelled: "Cancelled"
         }
     }
+}
+
+protocol GenerationStatusTracker {
+    func progressTick() async
+}
+
+@Observable @MainActor
+class WebsiteGenerationStatus: GenerationStatusTracker, ErrorHandler,
+    Identifiable
+{
 
     let id = UUID()
 
-    var status: Status = .pending
+    var status: GenerationStatus = .pending
     var errors = [String]()
     var galleryStatuses: [GalleryGenerationStatus] = []
 
@@ -78,6 +85,10 @@ class WebsiteGenerationStatus: ErrorHandler, Identifiable {
         status = .generatingWithErrors
     }
 
+    func progressTick() {
+        // nothing to do here
+    }
+
     @ViewBuilder
     var view: some View {
         switch status {
@@ -104,13 +115,15 @@ class WebsiteGenerationStatus: ErrorHandler, Identifiable {
 }
 
 @Observable @MainActor
-class GalleryGenerationStatus: Identifiable, ErrorHandler {
-    let TICKS_PER_IMAGE = 2
+class GalleryGenerationStatus: GenerationStatusTracker, Identifiable,
+    ErrorHandler
+{
+    let TICKS_PER_IMAGE = 3
     let id: UUID = UUID()
     var galleryTitle: String
     var galleryName: String
     let websiteGenerationStatus: WebsiteGenerationStatus
-    var status: WebsiteGenerationStatus.Status = .pending
+    var status: GenerationStatus = .pending
     var errors = [String]()
     var itemCount: Int = 0
     var progressTarget: Int {

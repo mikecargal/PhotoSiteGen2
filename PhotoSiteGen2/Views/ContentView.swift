@@ -39,7 +39,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showGenerationSheet) {
             GenerationSheetView(
-                websiteDocument: websiteDocument,
+                websiteDocument: $websiteDocument,
                 showSheet: $showGenerationSheet)
         }
     }

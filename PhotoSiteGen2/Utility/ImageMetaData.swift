@@ -10,7 +10,7 @@ import CoreImage
 import Foundation
 import RegexBuilder
 
-final class ImageMetaData: Sendable {
+struct ImageMetaData: Sendable, Codable {
 
     let pixelHeight: Int
     let pixelWidth: Int

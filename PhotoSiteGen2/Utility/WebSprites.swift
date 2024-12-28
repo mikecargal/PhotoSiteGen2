@@ -13,7 +13,11 @@ enum SpriteGenerationError: Error {
 }
 
 func generateSpritesImage(
-    thumbPhotos: [Photo], width: Int, filename: URL, errorHandler: ErrorHandler
+    thumbPhotos: [Photo],
+    width: Int,
+    filename: URL,
+    errorHandler: ErrorHandler,
+    statustracker:GenerationStatusTracker
 ) async -> [Double] {
     var percentages = [Double]()
     let totalHeight = thumbPhotos.reduce(0) {
@@ -44,10 +48,13 @@ func generateSpritesImage(
                 top: Double(top), totalHeight: Double(totalHeight),
                 imgHeight: Double(height)))
         top -= height
-        context.draw(
-            photo.smallImage,
-            in: CGRect(x: 0, y: top, width: width, height: height),
-            byTiling: false)
+        if let smallImage = photo.smallImage {
+            context.draw(
+                smallImage,
+                in: CGRect(x: 0, y: top, width: width, height: height),
+                byTiling: false)
+        }
+       async let _ = statustracker.progressTick()
     }
     writeJpegFromContext(context: context, filename: filename)
     return percentages
