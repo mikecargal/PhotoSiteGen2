@@ -173,7 +173,7 @@ class SlideShow {
     } else if (imgWidth <= 2048) {
       return src.replace("/", "/w2048/");
     }
-    return this.src;
+    return src;
   }
 
   widthFromAR(w, h, ar) {
