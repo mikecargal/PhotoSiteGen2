@@ -25,6 +25,7 @@ class XMPFields: NSObject, XMLParserDelegate {
     var hasCrop: Bool = false
     var preservedFileName: String? = nil
     var rawFileName: String? = nil
+    var subjectDistance: Double? = nil
 
     let RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 
@@ -76,12 +77,22 @@ class XMPFields: NSObject, XMLParserDelegate {
                     attributeDict["crs:CropBottom"] ?? "-1")
                 cropRight = Double(
                     attributeDict["crs:CropRight"] ?? "-1")
-                cropAngle = Double(
-                    attributeDict["crs:CropAngle"] ?? "-1")
             }
+            cropAngle = Double(
+                attributeDict["crs:CropAngle"] ?? "0")
+
             preservedFileName =
                 preservedFileName ?? attributeDict["xmpMM:PreservedFileName"]
             rawFileName = rawFileName ?? attributeDict["crs:RawFileName"]
+            if let focusDistance = attributeDict["aux:ApproximateFocusDistance"]
+            {
+                let parts = focusDistance.split(separator: "/")
+                if let numerator = Double(parts[0]),
+                    let denominator = Double(parts[1])
+                {
+                    subjectDistance = numerator / denominator
+                }
+            }
         }
     }
 }
