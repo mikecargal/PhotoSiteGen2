@@ -78,6 +78,11 @@ struct Photo: Identifiable, Comparable, Sendable, Codable {
             "\(genName)\\w0512\\\(imgName) 512w, \(genName)\\w1024\\\(imgName) 1024w, \(genName)\\w2048\\\(imgName) 2048w, \(genName)\\\(imgName)"
     }
 
+    func smallImageSrc(genName: String) -> String {
+        let imgName = filteredFileNameWithExtension()
+        return "\(genName)\\w0512\\\(imgName)"
+    }
+
     static func filteredFileName(_ url: URL) -> String {
         let inParts = url.deletingPathExtension().lastPathComponent.split(
             separator: "-")
@@ -99,7 +104,6 @@ struct Photo: Identifiable, Comparable, Sendable, Codable {
     }
 
     static func filteredFileNameWithExtension(_ url: URL) -> String {
-
         return "\(Self.filteredFileName(url)).\(url.pathExtension)"
     }
 
@@ -109,7 +113,7 @@ struct Photo: Identifiable, Comparable, Sendable, Codable {
 }
 
 extension Photo {
-    init(url: URL) throws {
+    init(url: URL, genName: String) throws {
         self.url = url
 
         do {
@@ -123,7 +127,8 @@ extension Photo {
         modDate =
             try url.resourceValues(forKeys: [.contentModificationDateKey])
             .contentModificationDate as Date?
-        metadata = ImageMetaData(url: url)
+        metadata = ImageMetaData(
+            url: url, imgSrc: "\(genName)\\w0512\\\(Self.filteredFileNameWithExtension(url))")
         aspectRatio = Double(metadata.pixelWidth) / Double(metadata.pixelHeight)
 
         do {

@@ -179,7 +179,7 @@ struct GalleryGenerator {
                         }
                     } else {
                         group.addTask {
-                            let photo = try Photo(url: url)
+                            let photo = try Photo(url: url,genName: genName)
                             async let _ = generationStatus.progressTick()
                             return photo
                         }
@@ -354,47 +354,17 @@ struct GalleryGenerator {
         imageSrc: String,
         renderer: DocumentRenderer
     ) throws {
-        struct CropData {
-            var imageSrc: String
-            var top: Int
-            var bottom: Int
-            var left: Int
-            var right: Int
-            var angle: Float
-            var canvasWidth: Int
-            var canvasHeight: Int
-
-            init(md: ImageMetaData, imageSrc: String) {
-                var w: Double
-                var h: Double
-                let pw = Double(md.pixelWidth)
-                let ph = Double(md.pixelHeight)
-                let originalWidth = pw / (md.cropRight! - md.cropLeft!)
-                let originalHeight = ph / (md.cropBottom! - md.cropTop!)
-                if originalWidth > originalHeight {
-                    w = 200.0
-                    h = 200 * originalHeight / originalWidth
-                } else {
-                    h = 200.0
-                    w = 200 * originalWidth / originalHeight
-                }
-                top = Int(h * md.cropTop!)
-                bottom = Int(h * md.cropBottom!)
-                left = Int(w * md.cropLeft!)
-                right = Int(w * md.cropRight!)
-                angle = Float(md.cropAngle!)
-                canvasWidth = Int(w)
-                canvasHeight = Int(h)
-                self.imageSrc = imageSrc
-            }
-        }
         let md = photo.metadata
-
-        let cropData =
-            md.hasCrop ? CropData(md: md, imageSrc: imageSrc) : nil
 
         let html = Document(.unspecified) {
             Comment(" tsID=\(generationID) ")
+            if let cropRenderInfo = md.cropRenderInfo {
+                Script {
+                    Text(String(data: try! JSONEncoder().encode(cropRenderInfo), encoding: .utf8)!)
+                }.type("application/json")
+                    .id("cropInfo")
+            }
+        
             Div {
                 if let caption = md.caption {
                     Div {
@@ -481,27 +451,11 @@ struct GalleryGenerator {
                         Text(exposureComp)
                     }.class("exposureComp")
                 }
-                if let cropData {
+                if md.cropRenderInfo != nil {
                     Div {
                         Canvas().id("cropCanvas")
-                            .attribute("height", String(cropData.canvasHeight))
-                            .attribute("width", String(cropData.canvasWidth))
-                            .attribute(
-                                "data-height", String(cropData.canvasHeight)
-                            )
-                            .attribute(
-                                "data-width", String(cropData.canvasWidth)
-                            )
-                            .attribute("data-cropTop", String(cropData.top))
-                            .attribute("data-cropLeft", String(cropData.left))
-                            .attribute(
-                                "data-cropbottom", String(cropData.bottom)
-                            )
-                            .attribute("data-cropright", String(cropData.right))
-                            .attribute(
-                                "data-cropangle ", String(cropData.angle)
-                            )
-                            .attribute("data-imageSrc", imageSrc)
+                            .attribute("height", "200")
+                            .attribute("width", "200")
                     }.class("crop")
                 }
                 if md.preservedFileName != nil || md.rawFileName != nil {

@@ -5,44 +5,117 @@
 //  Created by Mike Cargal on 12/26/24.
 //
 
-import Testing
 import Foundation
+import Testing
 
 struct PhotoSiteGen2Tests {
 
     @Test func encodeDecodePhoto() async throws {
-        let photo = try Photo(url: URL(string: "file:///Users/mike/Sites/photos.mikecargal.com/2024Jaguars/_CR57613.jpg")!)
+        let photo = try Photo(
+            url: URL(
+                string:
+                    "file:///Users/mike/Sites/photos.mikecargal.com/2024Jaguars/_CR57613.jpg"
+            )!, genName: "2024Jaguars")
         #expect(photo != nil)
-        
+
         let encoded = try JSONEncoder().encode(photo)
         #expect(encoded != nil)
-        
+
         let decoded = try JSONDecoder().decode(Photo.self, from: encoded)
         #expect(decoded != nil)
     }
-    
+
     @Test func encodeDecodeURLPhotoDirctionary() async throws {
-        let url = URL(string: "file:///Users/mike/Sites/photos.mikecargal.com/2024Jaguars/_CR57613.jpg")!
-        let dict = [url:try Photo(url: url)]
-        
+        let url = URL(
+            string:
+                "file:///Users/mike/Sites/photos.mikecargal.com/2024Jaguars/_CR57613.jpg"
+        )!
+        let dict = [url: try Photo(url: url, genName: "2024Jaguars")]
+
         let encoded = try JSONEncoder().encode(dict)
         #expect(encoded != nil)
-        
-        let decoded = try JSONDecoder().decode([URL:Photo].self, from: encoded)
+
+        let decoded = try JSONDecoder().decode([URL: Photo].self, from: encoded)
         #expect(decoded != nil)
-        
+
     }
-    
+
     @Test func encodeDecodeUUIDURLPhotoDictionary() async throws {
         let uuid = UUID()
-        let url = URL(string: "file:///Users/mike/Sites/photos.mikecargal.com/2024Jaguars/_CR57613.jpg")!
-        let dict: [UUID:[URL:Photo]] = [uuid: [url:try Photo(url: url)]]
-        
-       let encoded = try JSONEncoder().encode(dict)
+        let url = URL(
+            string:
+                "file:///Users/mike/Sites/photos.mikecargal.com/2024Jaguars/_CR57613.jpg"
+        )!
+        let dict: [UUID: [URL: Photo]] = [uuid: [url: try Photo(url: url, genName: "2024Jaguars")]]
+
+        let encoded = try JSONEncoder().encode(dict)
         #expect(encoded != nil)
-        
-        let decoded = try JSONDecoder().decode([UUID:[URL:Photo]].self, from: encoded)
+
+        let decoded = try JSONDecoder().decode(
+            [UUID: [URL: Photo]].self, from: encoded)
         #expect(decoded != nil)
     }
 
+    @Test func cropInfoGeneration() async throws {
+        /*
+         PhotoSiteGen2.CropRenderer(imageW: 4870, imageH: 3247, angle: 2.49, cropTop: 0.00012, cropBottom: 0.99988, cropLeft: 0.044335, cropRight: 0.955665, imageSrc: "_MG_8665")
+         */
+        let cropRenderer = CropRenderer(
+            imageW: 4870,
+            imageH: 3247,
+            angle: 2.49,
+            cropTop: 0.00012,
+            cropBottom: 0.99988,
+            cropLeft: 0.044335,
+            cropRight: 0.955665,
+            imageSrc: "2011MachuPicchu/w0512/_MG_8665.jpg")
+
+        let cropInfo = cropRenderer.getCropInfo(maxWH: 200)
+        print( String(data:try! JSONEncoder().encode(cropInfo) , encoding: .utf8)!)
+        
+        #expect(cropInfo != nil)
+        #expect(floor(cropInfo.br.v1.x) == 0)
+        #expect(floor(cropInfo.br.v1.y) == 40)
+        #expect(floor(cropInfo.br.v2.x) == 194)
+        #expect(floor(cropInfo.br.v2.y) == 31)
+        #expect(floor(cropInfo.br.v3.x) == 200)
+        #expect(floor(cropInfo.br.v3.y) == 161)
+        #expect(floor(cropInfo.br.v4.x) == 5)
+        #expect(floor(cropInfo.br.v4.y) == 169)
+        #expect(floor(cropInfo.img.pos.x) == 8)
+        #expect(floor(cropInfo.img.pos.y) == 39)
+        #expect(floor(cropInfo.img.wh.w) == 182)
+        #expect(floor(cropInfo.img.wh.h) == 121)
+
+    }
+
+    @Test func cropInfoGenerationNoAngle() async throws {
+        /*
+         PhotoSiteGen2.CropRenderer(imageW: 4870, imageH: 3247, angle: 0.0, cropTop: 0.00012, cropBottom: 0.99988, cropLeft: 0.044335, cropRight: 0.955665, imageSrc: "_MG_8665")
+         */
+        let cropRenderer = CropRenderer(
+            imageW: 4870,
+            imageH: 3247,
+            angle: 0,
+            cropTop: 0.00012,
+            cropBottom: 0.99988,
+            cropLeft: 0.044335,
+            cropRight: 0.955665,
+            imageSrc: "2011MachuPicchu/w0512/_MG_8665.jpg")
+
+        let cropInfo = cropRenderer.getCropInfo(maxWH: 500)
+        #expect(cropInfo != nil)
+        #expect(floor(cropInfo.br.v1.x) == 0)
+        #expect(floor(cropInfo.br.v1.y) == 98)
+        #expect(floor(cropInfo.br.v2.x) == 500)
+        #expect(floor(cropInfo.br.v2.y) == 98)
+        #expect(floor(cropInfo.br.v3.x) == 500)
+        #expect(floor(cropInfo.br.v3.y) == 401)
+        #expect(floor(cropInfo.br.v4.x) == 0)
+        #expect(floor(cropInfo.br.v4.y) == 401)
+        #expect(floor(cropInfo.img.pos.x) == 22)
+        #expect(floor(cropInfo.img.pos.y) == 98)
+        #expect(floor(cropInfo.img.wh.w) == 455)
+        #expect(floor(cropInfo.img.wh.h) == 303)
+    }
 }

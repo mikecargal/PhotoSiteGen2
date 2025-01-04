@@ -10,8 +10,9 @@ import CoreImage
 import Foundation
 import RegexBuilder
 
-struct ImageMetaData: Sendable, Codable {
+typealias Resolution = (w: Int, h: Int)
 
+struct ImageMetaData: Sendable, Codable {
     let pixelHeight: Int
     let pixelWidth: Int
     let caption: String?
@@ -26,17 +27,14 @@ struct ImageMetaData: Sendable, Codable {
     let aperture: String?
     let keywords: [String]
     let hasCrop: Bool
-    let cropTop: Double?
-    let cropLeft: Double?
-    let cropBottom: Double?
-    let cropRight: Double?
-    let cropAngle: Double?
     let preservedFileName: String?
     let rawFileName: String?
     let copyright: String?
     let exposureComp: String?
+    let cropRenderInfo: CropRenderInfo?
 
-    init(url: URL) {
+    init(url: URL, imgSrc: String) {
+        var subjectDistance: Double?
         let data = try! Data(contentsOf: url)
         let imageSource = CGImageSourceCreateWithData(data as CFData, nil)!
         let imageProperties =
@@ -109,15 +107,41 @@ struct ImageMetaData: Sendable, Codable {
 
         let xmpFields = XMPFields(
             data: data, dump: false)  // url.lastPathComponent.contains("9777"))
-        hasCrop = xmpFields.hasCrop
-        cropTop = xmpFields.cropTop
-        cropLeft = xmpFields.cropLeft
-        cropBottom = xmpFields.cropBottom
-        cropRight = xmpFields.cropRight
-        cropAngle = xmpFields.cropAngle
+
         preservedFileName = Self.cleanUpFilename(
             filename: xmpFields.preservedFileName)
         rawFileName = Self.cleanUpFilename(filename: xmpFields.rawFileName)
+        if subjectDistance == nil {
+            subjectDistance = xmpFields.subjectDistance
+        }
+        self.subjectDistance = subjectDistance
+        //        if url.lastPathComponent.contains("59067") {
+
+        hasCrop = xmpFields.hasCrop
+        let cropTop = xmpFields.cropTop
+        let cropLeft = xmpFields.cropLeft
+        let cropBottom = xmpFields.cropBottom
+        let cropRight = xmpFields.cropRight
+        let cropAngle = xmpFields.cropAngle
+        if let cropAngle, let cropTop, let cropBottom, let cropLeft,
+            let cropRight
+        {
+            cropRenderInfo =
+                CropRenderer(
+                    imageW: pixelWidth,
+                    imageH: pixelHeight,
+                    angle: cropAngle,
+                    cropTop: cropTop,
+                    cropBottom: cropBottom,
+                    cropLeft: cropLeft,
+                    cropRight: cropRight,
+                    imageSrc: imgSrc
+                )
+                .getCropInfo(maxWH: 200)
+            //        }
+        } else {
+            cropRenderInfo = nil
+        }
     }
 
     static private let REM_REGEX =

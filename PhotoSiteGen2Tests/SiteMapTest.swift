@@ -24,11 +24,11 @@ struct SiteMapTests {
                 images: [
                     .init(name: "image3.jpg"),
                     .init(name: "imag42.jpg"),
-                ])
+                ]),
         ]
-        let siteMap = SiteMap(rootURL: mySite,galleries: galleries )
+        let siteMap = SiteMap(rootURL: mySite, galleries: galleries)
         let doc = siteMap.getXMLDocument()
-        print(doc.xmlString)
+        //        print(doc.xmlString)
         let xmlString = doc.xmlString
         #expect(
             xmlString.starts(
@@ -45,12 +45,15 @@ struct SiteMapTests {
             xmlString.contains(
                 "<url><loc>https://photos.mikecargal.com/gallery1.html</loc>"
             ))
-        
+
         #expect(
             xmlString.contains(
                 "<image:image><image:loc>https://photos.mikecargal.com/gallery1/image1.jpg</image:loc></image:image>"
             ))
-        
-        #expect(xmlString.contains("<image:image><image:loc>https://photos.mikecargal.com/gallery1/image2.jpg</image:loc></image:image>"))
+
+        #expect(
+            xmlString.contains(
+                "<image:image><image:loc>https://photos.mikecargal.com/gallery1/image2.jpg</image:loc></image:image>"
+            ))
     }
 }

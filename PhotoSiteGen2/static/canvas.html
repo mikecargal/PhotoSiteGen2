@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<!-- generated: 2024-12-30 18:46:06 +0000 -->
+<html lang="en-US">
+
+<head>
+
+</head>
+
+<body>
+    <canvas id="canvas" onclick="doit()"></canvas>
+</body>
+<script lang="javascript">
+
+    var radPerDeg = (Math.PI) / 180
+    function d2r(deg) {
+        return deg * radPerDeg
+    }
+
+    function scaled(v) {
+        return v / 10
+    }
+
+    function boundingBox(w, h, angle) {
+        const normalizedAngle = ((angle > 90 && angle < 180) || (angle > 270 && angle < 360))
+            ? 180 - angle
+            : angle;
+        const radAngle = d2r(normalizedAngle)
+        const sinA = Math.sin(radAngle)
+        const cosA = Math.cos(radAngle)
+        return {
+            width: sinA * h + cosA * w,
+            height: sinA * w + cosA * h
+        }
+    }
+
+    function drawRotatedRect(ctx, width, height, angle, fill) {
+        ctx.save()
+        if (angle) { ctx.rotate(d2r(angle)) }
+        ctx.fillStyle = fill
+        ctx.fillRect(-(width / 2), -(height / 2), width, height)
+        ctx.restore()
+    }
+
+    function doit() {
+        const pixelHeight = 3249
+        const pixelWidth = 4873
+
+        const cropTop = 0.0
+        const cropLeft = 0.043891
+        const cropBottom = 1.0
+        const cropRight = 0.956109
+        const cropAngle = 2.47
+
+        // cropAngle = 5 // TEMP
+
+        const ph = pixelHeight / 10
+        const pw = pixelWidth / 10
+        const cropT = cropTop * ph
+        const cropB = cropBottom * ph
+        const cropL = cropLeft * pw
+        const cropR = cropRight * pw
+        const cropW = cropR - cropL
+        const cropH = cropB - cropT
+
+
+        const w = 519
+        const h = 346
+
+        const bb = boundingBox(w, h, cropAngle)
+
+        const cw = bb.width
+        const ch = bb.height
+
+        console.log({ w, h, cw, ch })
+
+        var canvas = document.getElementById("canvas")
+        canvas.width = cw //scaled(cw)
+        canvas.height = ch //scaled(ch)
+        const ctx = canvas.getContext("2d")
+
+        ctx.translate(cw / 2, ch / 2)
+        // drawRotatedRect(ctx, cw, ch, 0, "grey")
+        drawRotatedRect(ctx, w, h, -cropAngle, "grey")
+        // drawRotatedRect(ctx, w, h, 0, "red")
+
+        ctx.translate(-(cw / 2), -(ch / 2))
+        ctx.translate((cw - w), (ch - h))
+        ctx.fillStyle = "blue"
+        ctx.fillRect(cropL, cropT, cropW, cropH)
+    }
+
+</script>
+
+</html>
