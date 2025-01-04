@@ -41,6 +41,9 @@ class SlideShow {
             this.nextSlide();
             event.stopPropagation();
             break;
+          case "i":
+            this.toggleInfo();
+            break;
           case "ArrowUp":
           case "Escape":
           case "x":
@@ -231,17 +234,7 @@ class SlideShow {
           if (!canvas) {
             return;
           }
-          const parms = {
-            width: parseInt(canvas.getAttribute("data-width")),
-            height: parseInt(canvas.getAttribute("data-height")),
-            top: parseInt(canvas.getAttribute("data-croptop")),
-            bottom: parseInt(canvas.getAttribute("data-cropbottom")),
-            left: parseInt(canvas.getAttribute("data-cropleft")),
-            right: parseInt(canvas.getAttribute("data-cropright")),
-            angle: parseInt(canvas.getAttribute("data-cropangle")),
-            imageSrc: canvas.getAttribute("data-imagesrc"),
-          };
-          this.drawCrop(canvas, parms);
+          this.drawCrop(canvas);
         });
       });
     } catch (error) {
@@ -249,20 +242,28 @@ class SlideShow {
     }
   }
 
-  drawCrop(canvas, crop) {
-    const { width, height, top, bottom, left, right, angle, imageSrc } = crop;
-    const cropW = right - left;
-    const cropH = bottom - top;
+  drawCrop(canvas) {
+    const ctx = canvas.getContext("2d");
+
+    const cropData = JSON.parse(document.getElementById("cropInfo").innerHTML);
+    ctx.fillStyle = "grey"
+    ctx.beginPath()
+    console.log({ moveTo: [cropData.br.v1.x, cropData.br.v1.y] })
+    ctx.moveTo(cropData.br.v1.x, cropData.br.v1.y)
+    console.log({ lineTo: [cropData.br.v2.x, cropData.br.v2.y] })
+    ctx.lineTo(cropData.br.v2.x, cropData.br.v2.y)
+    console.log({ lineTo: [cropData.br.v3.x, cropData.br.v3.y] })
+    ctx.lineTo(cropData.br.v3.x, cropData.br.v3.y)
+    console.log({ lineTo: [cropData.br.v4.x, cropData.br.v4.y] })
+    ctx.lineTo(cropData.br.v4.x, cropData.br.v4.y)
+    console.log({ lineTo: [cropData.br.v1.x, cropData.br.v1.y] })
+    ctx.lineTo(cropData.br.v1.x, cropData.br.v1.y)
+    ctx.fill()
+
     const img = new Image();
     img.onload = function () {
-      if (canvas.getContext) {
-        const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "rgb(100,100,100)";
-        ctx.fillRect(0, 0, width, height);
-        ctx.clearRect(left, top, cropW, cropH);
-        ctx.drawImage(img, left, top, cropW, cropH);
-      }
-    };
-    img.src = imageSrc;
+      ctx.drawImage(img, cropData.img.pos.x, cropData.img.pos.y, cropData.img.wh.w, cropData.img.wh.h);
+    }
+    img.src = cropData.img.src;
   }
 }
