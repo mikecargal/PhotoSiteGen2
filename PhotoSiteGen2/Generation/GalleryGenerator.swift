@@ -134,7 +134,7 @@ struct GalleryGenerator {
             to:
                 wsDestination
                 .appending(component: genName),
-            logger: generationStatus,
+            statusLogger: generationStatus,
             context: "Copying images for gallery; \(genName)",
             renamer: Photo.filteredFileNameWithExtension(_:),
             directoryNameFilter: filterSubDirName,
@@ -179,7 +179,7 @@ struct GalleryGenerator {
                         }
                     } else {
                         group.addTask {
-                            let photo = try Photo(url: url,genName: genName)
+                            let photo = try Photo(url: url, genName: genName)
                             async let _ = generationStatus.progressTick()
                             return photo
                         }
@@ -360,11 +360,14 @@ struct GalleryGenerator {
             Comment(" tsID=\(generationID) ")
             if let cropRenderInfo = md.cropRenderInfo {
                 Script {
-                    Text(String(data: try! JSONEncoder().encode(cropRenderInfo), encoding: .utf8)!)
+                    Text(
+                        String(
+                            data: try! JSONEncoder().encode(cropRenderInfo),
+                            encoding: .utf8)!)
                 }.type("application/json")
                     .id("cropInfo")
             }
-        
+
             Div {
                 if let caption = md.caption {
                     Div {

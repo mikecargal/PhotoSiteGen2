@@ -6,10 +6,15 @@
 //
 
 import Foundation
+import OSLog
 import Testing
 
 struct SiteMapTests {
-
+    private static let logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: String(describing: Self.self)
+        )
+    
     @Test func testSiteMap() throws {
         let mySite = URL(string: "https://photos.mikecargal.com")!
         let galleries: [SiteMapGallery] = [
@@ -28,7 +33,7 @@ struct SiteMapTests {
         ]
         let siteMap = SiteMap(rootURL: mySite, galleries: galleries)
         let doc = siteMap.getXMLDocument()
-        //        print(doc.xmlString)
+        Self.logger.debug("\(doc.xmlString)")
         let xmlString = doc.xmlString
         #expect(
             xmlString.starts(

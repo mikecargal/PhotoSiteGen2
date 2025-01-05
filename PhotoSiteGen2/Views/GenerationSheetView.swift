@@ -6,9 +6,15 @@
 //
 
 import AVKit
+import OSLog
 import SwiftUI
 
 struct GenerationSheetView: View {
+    private static let logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: String(describing: Self.self)
+        )
+
     @Binding var websiteDocument: WebSiteDocument
     @Binding var showSheet: Bool
 
@@ -72,12 +78,13 @@ struct GenerationSheetView: View {
     func generate() {
         generating = true
         generationTask = Task {
-            debugPrint(Date(), "Generating website")
-            generator = websiteDocument.getWebsiteGenerator(cleanBuild:cleanBuild)
+            Self.logger.info("\(Date()) - Generating website")
+            generator = websiteDocument.getWebsiteGenerator(
+                cleanBuild: cleanBuild)
             guard
                 let generator
             else {
-                debugPrint("No generator")
+                Self.logger.error("No generator")
                 return
             }
             websiteDocument.generationCache =
@@ -87,7 +94,7 @@ struct GenerationSheetView: View {
                     minify: minify,
                     skipStaticContent: skipStaticContent)
             generating = false
-            debugPrint(Date(), "Generation complete")
+            Self.logger.info("\(Date()) - Generation complete")
             audioPlayer?.play()
         }
 

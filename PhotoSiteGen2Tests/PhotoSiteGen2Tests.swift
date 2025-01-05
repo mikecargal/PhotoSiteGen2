@@ -7,9 +7,16 @@
 
 import Foundation
 import Testing
+import OSLog
+
+
 
 struct PhotoSiteGen2Tests {
-
+    private static let logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: String(describing: Self.self)
+        )
+    
     @Test func encodeDecodePhoto() async throws {
         let photo = try Photo(
             url: URL(
@@ -57,9 +64,6 @@ struct PhotoSiteGen2Tests {
     }
 
     @Test func cropInfoGeneration() async throws {
-        /*
-         PhotoSiteGen2.CropRenderer(imageW: 4870, imageH: 3247, angle: 2.49, cropTop: 0.00012, cropBottom: 0.99988, cropLeft: 0.044335, cropRight: 0.955665, imageSrc: "_MG_8665")
-         */
         let cropRenderer = CropRenderer(
             imageW: 4870,
             imageH: 3247,
@@ -71,7 +75,7 @@ struct PhotoSiteGen2Tests {
             imageSrc: "2011MachuPicchu/w0512/_MG_8665.jpg")
 
         let cropInfo = cropRenderer.getCropInfo(maxWH: 200)
-        print( String(data:try! JSONEncoder().encode(cropInfo) , encoding: .utf8)!)
+        Self.logger.debug( "\(try! JSONEncoder().encode(cropInfo))")
         
         #expect(cropInfo != nil)
         #expect(floor(cropInfo.br.v1.x) == 0)
@@ -90,9 +94,6 @@ struct PhotoSiteGen2Tests {
     }
 
     @Test func cropInfoGenerationNoAngle() async throws {
-        /*
-         PhotoSiteGen2.CropRenderer(imageW: 4870, imageH: 3247, angle: 0.0, cropTop: 0.00012, cropBottom: 0.99988, cropLeft: 0.044335, cropRight: 0.955665, imageSrc: "_MG_8665")
-         */
         let cropRenderer = CropRenderer(
             imageW: 4870,
             imageH: 3247,
@@ -104,6 +105,38 @@ struct PhotoSiteGen2Tests {
             imageSrc: "2011MachuPicchu/w0512/_MG_8665.jpg")
 
         let cropInfo = cropRenderer.getCropInfo(maxWH: 500)
+
+        Self.logger.debug( "\(try! JSONEncoder().encode(cropInfo))")
+        
+        #expect(cropInfo != nil)
+        #expect(floor(cropInfo.br.v1.x) == 0)
+        #expect(floor(cropInfo.br.v1.y) == 98)
+        #expect(floor(cropInfo.br.v2.x) == 500)
+        #expect(floor(cropInfo.br.v2.y) == 98)
+        #expect(floor(cropInfo.br.v3.x) == 500)
+        #expect(floor(cropInfo.br.v3.y) == 401)
+        #expect(floor(cropInfo.br.v4.x) == 0)
+        #expect(floor(cropInfo.br.v4.y) == 401)
+        #expect(floor(cropInfo.img.pos.x) == 22)
+        #expect(floor(cropInfo.img.pos.y) == 98)
+        #expect(floor(cropInfo.img.wh.w) == 455)
+        #expect(floor(cropInfo.img.wh.h) == 303)
+    }
+    
+    @Test func cropInfoGenerationPortrait() async throws {
+        let cropRenderer = CropRenderer(
+            imageW: 2823,
+            imageH: 3384,
+            angle: 0,
+            cropTop: 0.0,
+            cropBottom: 1.0,
+            cropLeft: 0.113932,
+            cropRight: 0.913612,
+            imageSrc: "2023Delhi\\w0512\\_CR56970.jpg")
+        
+        let cropInfo = cropRenderer.getCropInfo(maxWH: 200)
+        Self.logger.debug( "\(try! JSONEncoder().encode(cropInfo))")
+        
         #expect(cropInfo != nil)
         #expect(floor(cropInfo.br.v1.x) == 0)
         #expect(floor(cropInfo.br.v1.y) == 98)

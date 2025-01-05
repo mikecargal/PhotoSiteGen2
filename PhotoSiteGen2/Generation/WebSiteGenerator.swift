@@ -147,7 +147,7 @@ final class WebSiteGenerator: Sendable {
         try await copyDirectory(
             from: staticSourceFolder,
             to: destinationFolder,
-            logger: generationStatus,
+            statusLogger: generationStatus,
             context: "Copying static content",
             filterFinder: {
                 inlineWebComponentCSS && $0 == "webcomponents.js"

@@ -15,7 +15,7 @@ typealias ProgressClosure = @MainActor (String?) async -> Void
 func copyDirectory(
     from source: URL,
     to dest: URL,
-    logger: ErrorHandler,
+    statusLogger: ErrorHandler,
     context: String,
     renamer: Renamer? = nil,
     filterFinder: FilterFinder? = nil,
@@ -37,7 +37,7 @@ func copyDirectory(
             try await copyDirectory(
                 from: url,
                 to: dest.appending(component: url.lastPathComponent),
-                logger: logger,
+                statusLogger: statusLogger,
                 context: context,
                 renamer: renamer,
                 filterFinder: filterFinder,
@@ -46,7 +46,7 @@ func copyDirectory(
             let filename = renamer?(url) ?? url.lastPathComponent
             let copyDest = dest.appending(component: filename)
             if fileNameSet.contains(filename) {
-                async let _ = logger.handleError(
+                async let _ = statusLogger.handleError(
                     context, GalleryGenerationError.DuplicateName(filename))
             }
             fileNameSet.insert(filename)
@@ -68,9 +68,9 @@ func copyDirectory(
 func folderFileCount(at url: URL) throws -> Int {
     let urls = try FileManager.default.contentsOfDirectory(
         at: url,
-        includingPropertiesForKeys: [.isDirectoryKey,.isHiddenKey],
-        options: [.skipsHiddenFiles,.skipsSubdirectoryDescendants])
-    return urls.filter {!$0.hasDirectoryPath}.count
+        includingPropertiesForKeys: [.isDirectoryKey, .isHiddenKey],
+        options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
+    return urls.filter { !$0.hasDirectoryPath }.count
 }
 
 func deleteContentsOfFolder(from: URL) throws {

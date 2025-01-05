@@ -8,11 +8,16 @@
 import CoreGraphics
 import CoreImage
 import Foundation
+import OSLog
 import RegexBuilder
 
 typealias Resolution = (w: Int, h: Int)
 
 struct ImageMetaData: Sendable, Codable {
+    private static let logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: String(describing: Self.self)
+        )
     let pixelHeight: Int
     let pixelWidth: Int
     let caption: String?
@@ -115,7 +120,6 @@ struct ImageMetaData: Sendable, Codable {
             subjectDistance = xmpFields.subjectDistance
         }
         self.subjectDistance = subjectDistance
-        //        if url.lastPathComponent.contains("59067") {
 
         hasCrop = xmpFields.hasCrop
         let cropTop = xmpFields.cropTop
@@ -158,7 +162,7 @@ struct ImageMetaData: Sendable, Codable {
                 of: Self.SUFFIX_REGEX, with: "", options: .regularExpression
             )
         if res.isEmpty {
-            debugPrint(
+            logger.error(
                 "============= uh oh =============\n\\(filename)\n=================="
             )
         }

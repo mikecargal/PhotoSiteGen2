@@ -6,9 +6,15 @@
 //
 
 import Foundation
+import OSLog
 import RegexBuilder
 
 class XMPFields: NSObject, XMLParserDelegate {
+    private static let logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: String(describing: XMPFields.self)
+        )
+
     let xmpMatcher = Regex {
         "<x:xmpmeta"
         OneOrMore {
@@ -39,7 +45,7 @@ class XMPFields: NSObject, XMLParserDelegate {
             let endIndex = match.upperBound
             let xmlString = dataString[startIndex..<endIndex]
             if dump {
-                print("===============\n\(xmlString)\n===============")
+                Self.logger.debug("===============\n\(xmlString)\n===============")
             }
             let xmlParser = XMLParser(data: Data(xmlString.utf8))
             xmlParser.delegate = self
