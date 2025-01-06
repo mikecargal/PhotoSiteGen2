@@ -7,32 +7,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "386BE995-8D61-4B63-AD8E-46C24A268D45"
-            shouldBeEnabled = "Yes"
+            uuid = "924C563A-40FB-4F8C-A7A3-4F2997BCFE94"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PhotoSiteGen2/Utility/ImageMetaData.swift"
+            filePath = "PhotoSiteGen2/Generation/CropRenderInfo.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
-            landmarkName = "init(url:imgSrc:)"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "ImageInfo"
+            landmarkType = "14">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9699151D-7177-4AE8-8789-92ADD37EB2F1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhotoSiteGen2/Generation/CropRenderInfo.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "getCropInfo(maxWH:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "146BF43C-BB7E-47EB-A28B-A16426577E60"
+            uuid = "2287B0EA-3C33-4F11-9204-068D0D8E70E1"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PhotoSiteGen2/Utility/ImageMetaData.swift"
+            filePath = "PhotoSiteGen2/Generation/CropRenderInfo.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "63"
-            endingLineNumber = "63"
-            landmarkName = "init(url:imgSrc:)"
+            startingLineNumber = "240"
+            endingLineNumber = "240"
+            landmarkName = "uncroppedWH(imageW:imageH:cropTop:cropBottom:cropLeft:cropRight:radAngle:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
