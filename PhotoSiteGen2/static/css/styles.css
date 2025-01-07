@@ -81,34 +81,34 @@ body {
 }
 
 #slideShow button {
+    color: white;
     background-color: rgba(0, 0, 0, 0.1);
-    ;
     border: none;
     cursor: pointer;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    padding: 2rem;
+    z-index: 110;
 }
 
 #hideSS {
-    color: #EEE;
     position: absolute;
     top: 0;
     right: 0;
-    margin: 1.2rem;
-    border-radius: 1.5rem;
-    font-size: 1.5rem;
+    font-weight: lighter;
+    font-size: 0.8rem;
 }
 
 #showInfo {
     position: absolute;
-    /* background-color: rgba(0, 0, 0, 0.2); */
-    border-radius: 1.5rem;
     top: 0;
     left: 0;
-    margin: 1.2rem;
 }
 
 #showInfo img {
     height: 1.5rem;
     width: 1.5rem;
+    color: rgba(250, 250, 250, 0.5);
 }
 
 #slideShow>button:hover {
