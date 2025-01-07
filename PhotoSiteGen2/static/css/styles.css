@@ -233,6 +233,7 @@ body {
         font-size: 1.2em;
         text-wrap: balance;
         max-width: 25rem;
+        text-align: center;
     }
 
     .keywords {
