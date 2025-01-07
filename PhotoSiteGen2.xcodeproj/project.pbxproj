@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		270777922D2C870F008CDA04 /* SwiftSvg in Frameworks */ = {isa = PBXBuildFile; productRef = 270777912D2C870F008CDA04 /* SwiftSvg */; };
 		2724100D2CEBC00D00161602 /* SwiftHtml in Frameworks */ = {isa = PBXBuildFile; productRef = 2724100C2CEBC00D00161602 /* SwiftHtml */; };
 		277953C32D0C7ABB006B1796 /* XMP.xml in Resources */ = {isa = PBXBuildFile; fileRef = 277953C22D0C7ABB006B1796 /* XMP.xml */; };
 /* End PBXBuildFile section */
@@ -69,6 +70,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2724100D2CEBC00D00161602 /* SwiftHtml in Frameworks */,
+				270777922D2C870F008CDA04 /* SwiftSvg in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +141,7 @@
 			name = PhotoSiteGen2;
 			packageProductDependencies = (
 				2724100C2CEBC00D00161602 /* SwiftHtml */,
+				270777912D2C870F008CDA04 /* SwiftSvg */,
 			);
 			productName = PhotoSiteGen2;
 			productReference = 279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */;
@@ -486,6 +489,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		270777912D2C870F008CDA04 /* SwiftSvg */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2724100B2CEBC00D00161602 /* XCRemoteSwiftPackageReference "swift-html" */;
+			productName = SwiftSvg;
+		};
 		2724100C2CEBC00D00161602 /* SwiftHtml */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2724100B2CEBC00D00161602 /* XCRemoteSwiftPackageReference "swift-html" */;

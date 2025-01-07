@@ -246,24 +246,26 @@ class SlideShow {
     const ctx = canvas.getContext("2d");
 
     const cropData = JSON.parse(document.getElementById("cropInfo").innerHTML);
-    ctx.fillStyle = "grey"
-    ctx.beginPath()
-    console.log({ moveTo: [cropData.br.v1.x, cropData.br.v1.y] })
-    ctx.moveTo(cropData.br.v1.x, cropData.br.v1.y)
-    console.log({ lineTo: [cropData.br.v2.x, cropData.br.v2.y] })
-    ctx.lineTo(cropData.br.v2.x, cropData.br.v2.y)
-    console.log({ lineTo: [cropData.br.v3.x, cropData.br.v3.y] })
-    ctx.lineTo(cropData.br.v3.x, cropData.br.v3.y)
-    console.log({ lineTo: [cropData.br.v4.x, cropData.br.v4.y] })
-    ctx.lineTo(cropData.br.v4.x, cropData.br.v4.y)
-    console.log({ lineTo: [cropData.br.v1.x, cropData.br.v1.y] })
-    ctx.lineTo(cropData.br.v1.x, cropData.br.v1.y)
-    ctx.fill()
+    ctx.fillStyle = "grey";
+    ctx.beginPath();
+    const original = cropData.original;
+    ctx.moveTo(original.v1.x, original.v1.y);
+    ctx.lineTo(original.v2.x, original.v2.y);
+    ctx.lineTo(original.v3.x, original.v3.y);
+    ctx.lineTo(original.v4.x, original.v4.y);
+    ctx.lineTo(original.v1.x, original.v1.y);
+    ctx.fill();
 
     const img = new Image();
     img.onload = function () {
-      ctx.drawImage(img, cropData.img.pos.x, cropData.img.pos.y, cropData.img.wh.w, cropData.img.wh.h);
-    }
+      ctx.drawImage(
+        img,
+        cropData.img.pos.x,
+        cropData.img.pos.y,
+        cropData.img.wh.w,
+        cropData.img.wh.h
+      );
+    };
     img.src = cropData.img.src;
   }
 }

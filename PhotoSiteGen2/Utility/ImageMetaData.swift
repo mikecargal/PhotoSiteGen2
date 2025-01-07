@@ -110,9 +110,6 @@ struct ImageMetaData: Sendable, Codable {
 
         directives = kw.filter { $0.starts(with: "#") }
         keywords = kw.filter { !$0.starts(with: "#") }
-        //            Self.getStringArray(
-        //                key: kCGImagePropertyIPTCKeywords,
-        //                from: iptcProperties) ?? []
         exposureComp = Self.getString(
             key: kCGImagePropertyExifExposureBiasValue,
             from: exifProperties)
@@ -137,30 +134,14 @@ struct ImageMetaData: Sendable, Codable {
         if let cropAngle, let cropTop, let cropBottom, let cropLeft,
             let cropRight
         {
-            //            var top: Double
-            //            var bottom: Double
-            //            var left: Double
-            //            var right: Double
-            //
-            //            if directives.contains("#rotate90") {
-            //                (top, bottom, left, right) = (
-            //                    cropLeft, cropRight, cropTop, cropBottom
-            //                )
-            //            } else {
-            //                (top, bottom, left, right) = (
-            //                    cropTop, cropBottom, cropLeft, cropRight
-            //                )
-            //            }
-            var orientation: CropRenderer.Orientation =
+            let orientation: CropRenderer.Orientation =
                 switch true {
                 case directives.contains("#rotate90"): .orient90
                 case directives.contains("#rotate180"): .orient180
                 case directives.contains("#rotate270"): .orient270
                 default: .orient0
                 }
-            if imgSrc.contains("IMG_0088") {
-//                orientation = .orient270
-            }
+
             cropRenderInfo =
                 CropRenderer(
                     imageW: pixelWidth,

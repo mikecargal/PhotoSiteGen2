@@ -79,14 +79,14 @@ struct PhotoSiteGen2Tests {
         Self.logger.debug( "\(try! JSONEncoder().encode(cropInfo))")
         
         #expect(cropInfo != nil)
-        #expect(floor(cropInfo.br.v1.x) == 0)
-        #expect(floor(cropInfo.br.v1.y) == 40)
-        #expect(floor(cropInfo.br.v2.x) == 194)
-        #expect(floor(cropInfo.br.v2.y) == 31)
-        #expect(floor(cropInfo.br.v3.x) == 200)
-        #expect(floor(cropInfo.br.v3.y) == 161)
-        #expect(floor(cropInfo.br.v4.x) == 5)
-        #expect(floor(cropInfo.br.v4.y) == 169)
+        #expect(floor(cropInfo.original.v1.x) == 0)
+        #expect(floor(cropInfo.original.v1.y) == 39)
+        #expect(floor(cropInfo.original.v2.x) == 194)
+        #expect(floor(cropInfo.original.v2.y) == 30)
+        #expect(floor(cropInfo.original.v3.x) == 200)
+        #expect(floor(cropInfo.original.v3.y) == 160)
+        #expect(floor(cropInfo.original.v4.x) == 5)
+        #expect(floor(cropInfo.original.v4.y) == 169)
         #expect(floor(cropInfo.img.pos.x) == 8)
         #expect(floor(cropInfo.img.pos.y) == 39)
         #expect(floor(cropInfo.img.wh.w) == 182)
@@ -111,14 +111,14 @@ struct PhotoSiteGen2Tests {
         Self.logger.debug( "\(try! JSONEncoder().encode(cropInfo))")
         
         #expect(cropInfo != nil)
-        #expect(floor(cropInfo.br.v1.x) == 0)
-        #expect(floor(cropInfo.br.v1.y) == 98)
-        #expect(floor(cropInfo.br.v2.x) == 500)
-        #expect(floor(cropInfo.br.v2.y) == 98)
-        #expect(floor(cropInfo.br.v3.x) == 500)
-        #expect(floor(cropInfo.br.v3.y) == 401)
-        #expect(floor(cropInfo.br.v4.x) == 0)
-        #expect(floor(cropInfo.br.v4.y) == 401)
+        #expect(floor(cropInfo.original.v1.x) == 0)
+        #expect(floor(cropInfo.original.v1.y) == 98)
+        #expect(floor(cropInfo.original.v2.x) == 500)
+        #expect(floor(cropInfo.original.v2.y) == 98)
+        #expect(floor(cropInfo.original.v3.x) == 500)
+        #expect(floor(cropInfo.original.v3.y) == 401)
+        #expect(floor(cropInfo.original.v4.x) == 0)
+        #expect(floor(cropInfo.original.v4.y) == 401)
         #expect(floor(cropInfo.img.pos.x) == 22)
         #expect(floor(cropInfo.img.pos.y) == 98)
         #expect(floor(cropInfo.img.wh.w) == 455)
@@ -142,17 +142,30 @@ struct PhotoSiteGen2Tests {
         Self.logger.debug( "\(try! JSONEncoder().encode(cropInfo))")
         
         #expect(cropInfo != nil)
-        #expect(floor(cropInfo.br.v1.x) == 0)
-        #expect(floor(cropInfo.br.v1.y) == 98)
-        #expect(floor(cropInfo.br.v2.x) == 500)
-        #expect(floor(cropInfo.br.v2.y) == 98)
-        #expect(floor(cropInfo.br.v3.x) == 500)
-        #expect(floor(cropInfo.br.v3.y) == 401)
-        #expect(floor(cropInfo.br.v4.x) == 0)
-        #expect(floor(cropInfo.br.v4.y) == 401)
+        #expect(floor(cropInfo.original.v1.x) == 0)
+        #expect(floor(cropInfo.original.v1.y) == 98)
+        #expect(floor(cropInfo.original.v2.x) == 500)
+        #expect(floor(cropInfo.original.v2.y) == 98)
+        #expect(floor(cropInfo.original.v3.x) == 500)
+        #expect(floor(cropInfo.original.v3.y) == 401)
+        #expect(floor(cropInfo.original.v4.x) == 0)
+        #expect(floor(cropInfo.original.v4.y) == 401)
         #expect(floor(cropInfo.img.pos.x) == 22)
         #expect(floor(cropInfo.img.pos.y) == 98)
         #expect(floor(cropInfo.img.wh.w) == 455)
         #expect(floor(cropInfo.img.wh.h) == 303)
     }
+    
+    /* example
+     ▿ CropRenderer
+       - imageW : 2196
+       - imageH : 1460
+       - angle : -45.0
+       - cropTop : 0.600649
+       - cropBottom : 0.399351
+       - cropLeft : 0.167567
+       - cropRight : 0.832433
+       - imageSrc : "2011Amazon\\w0512\\IMG_0088.jpg"
+       - orientation : PhotoSiteGen2.CropRenderer.Orientation.orient0
+     */
 }

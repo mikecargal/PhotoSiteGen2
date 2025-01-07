@@ -5,98 +5,216 @@
 //  Created by Mike Cargal on 1/2/25.
 //
 import Foundation
+import OSLog
+import SwiftSvg
 
-typealias Translate = (Point) -> (Point)
-typealias Scale = (Double) -> Double
+struct CropRepresentation: Codable {
+    struct Point: Codable {
+        var x, y: Double
 
-struct WH: Codable {
-    var w, h: Double
-    func center() -> Point {
-        Point(x: w / 2, y: h / 2)
+        func scaled(xScale: Double, yScale: Double) -> Point {
+            Point(x: x * xScale, y: y * yScale)
+        }
+
+        func translated(xTranslation: Double, yTranslation: Double) -> Point {
+            Point(x: x + xTranslation, y: y + yTranslation)
+        }
+
+        // https://stackoverflow.com/questions/35683376/rotating-a-cgpoint-around-another-cgpoint/35683523
+        func rotated(aroundOrigin origin: Point, byRadians: Double) -> Point {
+            let dx = self.x - origin.x
+            let dy = self.y - origin.y
+            let radius = sqrt(dx * dx + dy * dy)
+            let azimuth = atan2(dy, dx)  // in radians
+            let newAzimuth = azimuth + byRadians
+            let x = origin.x + radius * cos(newAzimuth)
+            let y = origin.y + radius * sin(newAzimuth)
+            return Point(x: x, y: y)
+        }
     }
-    func corners() -> [Point] {
-        [
-            Point(x: 0, y: 0),
-            Point(x: w, y: 0),
-            Point(x: w, y: h),
-            Point(x: 0, y: h),
-        ]
+
+    struct Rect: Codable {
+        var v1, v2, v3, v4: Point
+        var center: Point {
+            Point(
+                x: (v1.x + v2.x + v3.x + v4.x) / 4,
+                y: (v1.y + v2.y + v3.y + v4.y) / 4)
+        }
+
+        init(v1: Point, v2: Point, v3: Point, v4: Point) {
+            self.v1 = v1
+            self.v2 = v2
+            self.v3 = v3
+            self.v4 = v4
+        }
+
+        init(tl: Point, br: Point) {
+            self.v1 = tl
+            self.v2 = Point(x: br.x, y: tl.y)
+            self.v3 = br
+            self.v4 = Point(x: tl.x, y: br.y)
+        }
+
+        var tl: Point { v1 }
+        var br: Point { v3 }
+        var width: Double { v3.x - v1.x }
+        var height: Double { v3.y - v1.y }
+        var minX: Double {
+            [v1, v2, v3, v4].reduce(Double(Int.max)) {
+                Double.minimum($0, $1.x)
+            }
+        }
+        var maxX: Double {
+            [v1, v2, v3, v4].reduce(Double(Int.min)) {
+                Double.maximum($0, $1.x)
+            }
+        }
+        var minY: Double {
+            [v1, v2, v3, v4].reduce(Double(Int.max)) {
+                Double.minimum($0, $1.y)
+            }
+        }
+        var maxY: Double {
+            [v1, v2, v3, v4].reduce(Double(Int.min)) {
+                Double.maximum($0, $1.y)
+            }
+        }
+
+        var rWidth: Double { maxX - minX }
+        var rHeight: Double { maxY - minY }
+
+        func scaled(xScale: Double, yScale: Double) -> Rect {
+            Rect(
+                v1: v1.scaled(xScale: xScale, yScale: yScale),
+                v2: v2.scaled(xScale: xScale, yScale: yScale),
+                v3: v3.scaled(xScale: xScale, yScale: yScale),
+                v4: v4.scaled(xScale: xScale, yScale: yScale))
+        }
+
+        func translated(xTranslation: Double, yTranslation: Double) -> Rect {
+            Rect(
+                v1: v1.translated(
+                    xTranslation: xTranslation, yTranslation: yTranslation),
+                v2: v2.translated(
+                    xTranslation: xTranslation, yTranslation: yTranslation),
+                v3: v3.translated(
+                    xTranslation: xTranslation, yTranslation: yTranslation),
+                v4: v4.translated(
+                    xTranslation: xTranslation, yTranslation: yTranslation))
+        }
+
+        // https://stackoverflow.com/questions/35683376/rotating-a-cgpoint-around-another-cgpoint/35683523
+        func rotated(aroundOrigin origin: Point, byRadians: Double) -> Rect {
+            Rect(
+                v1: v1.rotated(aroundOrigin: origin, byRadians: byRadians),
+                v2: v2.rotated(aroundOrigin: origin, byRadians: byRadians),
+                v3: v3.rotated(aroundOrigin: origin, byRadians: byRadians),
+                v4: v4.rotated(aroundOrigin: origin, byRadians: byRadians))
+        }
     }
-    func normalized(scaler: Scale) -> WH {
-        WH(w: scaler(w), h: scaler(h))
+
+    var originalRect: Rect
+    var croppedRect: Rect
+    let src: String
+    func scaled(scale: Double) -> CropRepresentation {
+        CropRepresentation(
+            originalRect: originalRect.scaled(xScale: scale, yScale: scale),
+            croppedRect: croppedRect.scaled(xScale: scale, yScale: scale),
+            src: src)
+    }
+
+    func translated(xOffset: Double, yOffset: Double) -> CropRepresentation {
+        CropRepresentation(
+            originalRect: originalRect.translated(
+                xTranslation: xOffset, yTranslation: yOffset),
+            croppedRect: croppedRect.translated(
+                xTranslation: xOffset, yTranslation: yOffset),
+            src: src)
+    }
+    // https://stackoverflow.com/questions/35683376/rotating-a-cgpoint-around-another-cgpoint/35683523
+    func rotated(aroundOrigin origin: Point, byRadians: Double)
+        -> CropRepresentation
+    {
+        CropRepresentation(
+            originalRect: originalRect.rotated(
+                aroundOrigin: origin, byRadians: byRadians),
+            croppedRect: croppedRect.rotated(
+                aroundOrigin: origin, byRadians: byRadians),
+            src: src)
+    }
+
+    func getSVG() -> String {
+        func int(_ dbl: Double) -> Int {
+            Int(ceil(dbl))
+        }
+        let doc = Document {
+            Svg {
+                Polygon([
+                    originalRect.v1.x, originalRect.v1.y,
+                    originalRect.v2.x, originalRect.v2.y,
+                    originalRect.v3.x, originalRect.v3.y,
+                    originalRect.v4.x, originalRect.v4.y,
+                ])
+                Polygon([
+                    croppedRect.v1.x, croppedRect.v1.y,
+                    croppedRect.v2.x, croppedRect.v2.y,
+                    croppedRect.v3.x, croppedRect.v3.y,
+                    croppedRect.v4.x, croppedRect.v4.y,
+                ])
+            }.width(int(originalRect.rWidth))
+                .height(int(originalRect.rHeight))
+                .viewBox(
+                    minX: int(originalRect.minX), minY: int(originalRect.minY),
+                    width: int(originalRect.rWidth),
+                    height: int(originalRect.rHeight)
+                )
+                .fill("none")
+                .stroke("black")
+                .strokeWidth(1)
+        }
+        let renderer = DocumentRenderer(minify: false, indent: 4)
+
+        return renderer.render(doc)
     }
 }
 
-struct Point: Codable {
-    var x, y: Double
-    func scaled(scale: Scale) -> Point {
-        Point(x: scale(x), y: scale(y))
-    }
-
-    func normalized(translate: Translate, scale: Scale) -> Point {
-        translate(self).scaled(scale: scale)
-    }
-}
+typealias Rect = CropRepresentation.Rect
+typealias Point = CropRepresentation.Point
 
 struct CropRenderInfo: Codable {
-    struct RotRect: Codable {
-        var v1, v2, v3, v4: Point
-        init(corners: [Point]) {
-            v1 = corners[0]
-            v2 = corners[1]
-            v3 = corners[2]
-            v4 = corners[3]
-        }
-        func normalized(translater: Translate, scaler: Scale)
-            -> RotRect
-        {
-            RotRect(corners: [
-                v1.normalized(translate: translater, scale: scaler),
-                v2.normalized(translate: translater, scale: scaler),
-                v3.normalized(translate: translater, scale: scaler),
-                v4.normalized(translate: translater, scale: scaler),
-            ])
 
-        }
-        func rotated(angle: Double, aroundOrigin: Point) -> RotRect {
-            RotRect(corners: [
-                CropRenderer.rotatePoint(
-                    target: v1, aroundOrigin: aroundOrigin, byRadians: angle),
-                CropRenderer.rotatePoint(
-                    target: v2, aroundOrigin: aroundOrigin, byRadians: angle),
-                CropRenderer.rotatePoint(
-                    target: v3, aroundOrigin: aroundOrigin, byRadians: angle),
-                CropRenderer.rotatePoint(
-                    target: v4, aroundOrigin: aroundOrigin, byRadians: angle),
-            ])
-
-        }
+    struct WH: Codable {
+        var w: Double
+        var h: Double
     }
+
     struct ImageInfo: Codable {
         var src: String
-        var pos: Point
+        var pos: CropRepresentation.Point
         var wh: WH
-        func normalized(translater: Translate, scaler: Scale)
-            -> ImageInfo
-        {
-            ImageInfo(
-                src: src,
-                pos: pos.normalized(translate: translater, scale: scaler),
-                wh: wh.normalized(scaler: scaler))
-        }
     }
 
-    var br: RotRect  // br == Big Rect (i.e. uncropped image representation)
+    var original: CropRepresentation.Rect
     var img: ImageInfo
-    func normalized(translater: Translate, scaler: Scale) -> CropRenderInfo {
-        CropRenderInfo(
-            br: br.normalized(translater: translater, scaler: scaler),
-            img: img.normalized(translater: translater, scaler: scaler))
+}
+
+extension CropRenderInfo {
+    init(croppedRepresentation cr: CropRepresentation) {
+        // TODO:
+        self.original = cr.originalRect
+        self.img = .init(
+            src: cr.src,
+            pos: cr.croppedRect.tl,
+            wh: .init(
+                w: cr.croppedRect.width,
+                h: cr.croppedRect.height))
     }
 }
 
 struct CropRenderer {
-
+    private static let logger = Logger(
+        subsystem: "com.mikecargal.photositegen2", category: "CropRenderer")
+    
     enum Orientation: Int {
         case orient0 = 0
         case orient90 = 90
@@ -109,204 +227,105 @@ struct CropRenderer {
     var orientation: Orientation
 
     func getCropInfo(maxWH: Double) -> CropRenderInfo {
-        let radAngle = deg2rad(-angle)
 
-        let (w, h) =
+        let radAngle = deg2rad(angle)
+
+        let (top, right, bottom, left) =
             switch orientation {
-            case .orient0: (imageW, imageH)
-            case .orient90: (imageH, imageW)
-            case .orient180: (imageW, imageH)
-            case .orient270: (imageH, imageW)
+            case .orient0: (cropTop, cropRight, cropBottom, cropLeft)
+            case .orient90: (cropRight, cropTop, cropLeft, cropBottom)
+            case .orient180: (cropBottom, cropRight, cropTop, cropLeft)
+            case .orient270: (cropLeft, cropBottom, cropRight, cropTop)
             }
 
-        let uncroppedWH = uncroppedWH(
-            imageW: imageW, imageH: imageH,
-            cropTop: cropTop, cropBottom: cropBottom, cropLeft: cropLeft, cropRight: cropRight,
-//            cropWPct: cropRight - cropLeft,
-//            cropHPct: cropBottom - cropTop,
-            radAngle: radAngle)
+        // calculate the original (uncropped) width and height
+        let (unCroppedW, unCroppedH) = getUncroppedWH(
+            top: top, bottom: bottom, left: left, right: right)
 
-        var rotatedCorners = uncroppedWH.corners().map {
-            Self.rotatePoint(
-                target: $0, aroundOrigin: uncroppedWH.center(),
-                byRadians: radAngle)
-        }
+        // build representation prior to rotation
+        var croppedRepresentation = CropRepresentation(
+            originalRect: Rect(
+                tl: Point(x: 0, y: 0), br: Point(x: unCroppedW, y: unCroppedH)),
+            croppedRect: Rect(
+                tl: Point(x: left * unCroppedW, y: top * unCroppedH),
+                br: Point(x: right * unCroppedW, y: bottom * unCroppedH)
+            ),
+            src: imageSrc)
+        Self.logger.debug("\(croppedRepresentation.getSVG())")
 
-        // get rotated coordinates of crop TL & BR
-        let unrotatedCropTopLeft = Point(
-            x: cropLeft * uncroppedWH.w, y: cropTop * uncroppedWH.h)
-        let unrotatedCropBottomRight = Point(
-            x: cropRight * uncroppedWH.w, y: cropBottom * uncroppedWH.h)
-        var actualCropTopLeft = Self.rotatePoint(
-            target: unrotatedCropTopLeft,
-            aroundOrigin: uncroppedWH.center(), byRadians: radAngle)
-        var actualCropBottomRight = Self.rotatePoint(
-            target: unrotatedCropBottomRight,
-            aroundOrigin: uncroppedWH.center(), byRadians: radAngle)
-        
-        switch orientation {
-        case .orient90:
-            let tr = Self.rotatePoint(
-                target: actualCropTopLeft, aroundOrigin: uncroppedWH.center(),
-                byRadians: deg2rad(90))
-            let bl = Self.rotatePoint(
-                target: actualCropBottomRight,
-                aroundOrigin: uncroppedWH.center(), byRadians: deg2rad(90))
-            actualCropTopLeft = Point(x: bl.x, y: tr.y)
-            actualCropBottomRight = Point(x: tr.x, y: bl.y)
-            rotatedCorners = rotatedCorners.map {
-                Self.rotatePoint(
-                    target: $0, aroundOrigin: uncroppedWH.center(),
-                    byRadians: deg2rad(90))
-            }
-        case .orient180:
-            actualCropBottomRight = Self.rotatePoint(
-                target: actualCropTopLeft, aroundOrigin: uncroppedWH.center(),
-                byRadians: deg2rad(180))
-            actualCropTopLeft = Self.rotatePoint(
-                target: actualCropBottomRight,
-                aroundOrigin: uncroppedWH.center(), byRadians: deg2rad(180))
-            rotatedCorners = rotatedCorners.map {
-                Self.rotatePoint(
-                    target: $0, aroundOrigin: uncroppedWH.center(),
-                    byRadians: deg2rad(180))
-            }
-        case .orient270:
-            let bl = Self.rotatePoint(
-                target: actualCropTopLeft, aroundOrigin: uncroppedWH.center(),
-                byRadians: deg2rad(270))
-            let tr = Self.rotatePoint(
-                target: actualCropBottomRight,
-                aroundOrigin: uncroppedWH.center(), byRadians: deg2rad(270))
-            actualCropTopLeft = Point(x: bl.x, y: tr.y)
-            actualCropBottomRight = Point(x: tr.x, y: bl.y)
-            rotatedCorners = rotatedCorners.map {
-                Self.rotatePoint(
-                    target: $0, aroundOrigin: uncroppedWH.center(),
-                    byRadians: deg2rad(270))
-            }
-        default: break
-        }
-        
-        let actualCropPosition = actualCropTopLeft
-        let actualCropWH =  // WH(w: Double(imageW), h: Double(imageH))
-            WH(  // should match input dimensions (approximately)
-                w: actualCropBottomRight.x - actualCropTopLeft.x,
-                h: actualCropBottomRight.y - actualCropTopLeft.y)
+        // rotate the crop representation
+        croppedRepresentation = croppedRepresentation.rotated(
+            aroundOrigin: croppedRepresentation.originalRect.center,
+            byRadians: -radAngle)
+        Self.logger.debug("\(croppedRepresentation.getSVG())")
 
-        let imageInfo = CropRenderInfo.ImageInfo(
-            src: imageSrc, pos: actualCropPosition, wh: actualCropWH)
-        let br = CropRenderInfo.RotRect(corners: rotatedCorners)
+        // with crop level, rebuild crop using top-left and bottom-right
+        let croppedRect: CropRepresentation.Rect =
+            Rect(
+                tl: croppedRepresentation.croppedRect.tl,
+                br: croppedRepresentation.croppedRect.br)
+        croppedRepresentation.croppedRect = croppedRect
+        Self.logger.debug("\(croppedRepresentation.getSVG())")
 
-        // Determine final translate and scale
-        let minX = rotatedCorners.reduce(Double(Int.max)) {
-            Double.minimum($0, $1.x)
-        }
-        let maxX = rotatedCorners.reduce(Double(Int.min)) {
-            Double.maximum($0, $1.x)
-        }
-        let minY = rotatedCorners.reduce(Double(Int.max)) {
-            Double.minimum($0, $1.y)
-        }
-        let maxY = rotatedCorners.reduce(Double(Int.min)) {
-            Double.maximum($0, $1.y)
-        }
+        var origRect = croppedRepresentation.originalRect
 
-        let scaler: Scale = { value in
-            let scale = maxWH / Double.maximum(maxX - minX, maxY - minY)
-            return value * scale
+        // translate to minX = minY = 0
+        let tx = -origRect.minX
+        let ty = -origRect.minY
+        croppedRepresentation =
+            croppedRepresentation
+            .translated(xOffset: tx, yOffset: ty)
+        Self.logger.debug("\(croppedRepresentation.getSVG())")
+
+        // scale to fit in 200 x 200 canvas
+        let scaleTo200 =
+            origRect.rWidth > origRect.rHeight
+            ? maxWH / origRect.rWidth : maxWH / origRect.rHeight
+        Self.logger.debug(
+            "origRect.rWidth: \(origRect.rWidth), origRect.rHeight: \(origRect.rHeight), scaleTo200: \(scaleTo200)"
+        )
+
+        croppedRepresentation =
+            croppedRepresentation
+            .scaled(scale: scaleTo200)
+        Self.logger.debug("\(croppedRepresentation.getSVG())")
+        // translate to center vertically and horizontally
+        origRect = croppedRepresentation.originalRect
+        if origRect.rWidth > origRect.rHeight {
+            croppedRepresentation =
+                croppedRepresentation
+                .translated(
+                    xOffset: 0,
+                    yOffset: (maxWH - origRect.rHeight) / 2)
+        } else {
+            croppedRepresentation =
+                croppedRepresentation
+                .translated(
+                    xOffset: (maxWH - origRect.rWidth) / 2,
+                    yOffset: 0)
         }
-        let translater: Translate = { point in
-            let maxMax = Double.maximum(maxX, maxY)
-            // adjust to center vertically & horizontally
-            let xAdjust = (maxMax - maxX) / 2
-            let yAdjust = (maxMax - maxY) / 2
-            return Point(
-                x: xAdjust + point.x - minX,
-                y: yAdjust + point.y - minY)
-        }
-        return CropRenderInfo(br: br, img: imageInfo).normalized(
-            translater: translater, scaler: scaler)
-    }
-    func uncroppedWH(
-        imageW: Int,
-        imageH: Int,
-        cropTop: Double,
-        cropBottom: Double,
-        cropLeft: Double,
-        cropRight: Double,
-        radAngle: Double
-    ) -> WH {
-        let tl = Point(x: cropLeft, y: cropTop)
-        let br = Point(x: cropRight, y: cropBottom)
-        let center = Point(x: 0.5, y: 0.5)
-        let rtl = Self.rotatePoint(
-            target: tl, aroundOrigin: center, byRadians: radAngle)
-        let rbr = Self.rotatePoint(
-            target: br, aroundOrigin: center, byRadians: radAngle)
-        // rtl and rbr should now be "square" o degrees and 90 degrees sides
-        let rtr = Point(x: rbr.x, y: rtl.y)
-        let rbl = Point(x: rtl.x, y: rbr.y)
-        // r* points refeclt actual square size (as a percent)
-        // rotate tr and bl back to relative positions
-        let tr = Self.rotatePoint(
-            target: rtr, aroundOrigin: center, byRadians: -radAngle)
-        let bl = Self.rotatePoint(
-            target: rbl, aroundOrigin: center, byRadians: -radAngle)
-        
-        let w_pct = abs(tr.x - tl.x)
-        let h_pct = abs(tl.y - bl.y)
-        return WH(w: sin(radAngle) * Double(imageW) / w_pct,
-                  h: sin(radAngle) *  Double(imageH) / h_pct)
-        //    let cosA = cos(-radAngle)
-        //    let secA = 1 / cosA
-        //    let tanA = tan(-radAngle)
+        Self.logger.debug("\(croppedRepresentation.getSVG())")
+        return CropRenderInfo(croppedRepresentation: croppedRepresentation)
     }
 
-    func uncroppedWH_old(
-        imageW: Int,
-        imageH: Int,
-        cropWPct: Double,
-        cropHPct: Double,
-        radAngle: Double
-    ) -> WH {
-        // reference diagram for vertex labels
-        // crop.svg (θ in diagram is -radAngle)
-        let cosA = cos(-radAngle)
-        let secA = 1 / cosA
-        let tanA = tan(-radAngle)
-        let fp = Double(imageW)
-        let jp = Double(imageH)
-
-        let rp = tanA * jp
-        let fr = fp - rp
-        let bc = cosA * fr
-        let ab = bc / cropWPct
-
-        let jr = secA * jp
-        let gr = tanA * fr
-        let gj = jr + gr
-        let cn = gj / cropHPct
-
-        return WH(w: ab, h: cn)
-    }
-
-    // https://stackoverflow.com/questions/35683376/rotating-a-cgpoint-around-another-cgpoint/35683523
-    static func rotatePoint(
-        target: Point, aroundOrigin origin: Point, byRadians: Double
-    ) -> Point {
-        let dx = target.x - origin.x
-        let dy = target.y - origin.y
-        let radius = sqrt(dx * dx + dy * dy)
-        let azimuth = atan2(dy, dx)  // in radians
-        let newAzimuth = azimuth + byRadians
-        let x = origin.x + radius * cos(newAzimuth)
-        let y = origin.y + radius * sin(newAzimuth)
-        return Point(x: x, y: y)
+    func getUncroppedWH(
+        top: Double, bottom: Double, left: Double, right: Double
+    ) -> (w: Double, h: Double) {
+        let rect = Rect(
+            tl: Point(x: 0, y: 0),
+            br: Point(x: Double(imageW), y: Double(imageH))
+        )
+        .rotated(aroundOrigin: Point(x: 0, y: 0), byRadians: deg2rad(angle))
+        let rw = rect.br.x - rect.tl.x
+        let rh = rect.br.y - rect.tl.y
+        let w_pct = right - left
+        let h_pct = bottom - top
+        let w = rw / w_pct
+        let h = rh / h_pct
+        return (w: w, h: h)
     }
 
     func deg2rad(_ number: Double) -> Double {
         return number * .pi / 180
     }
-
 }
