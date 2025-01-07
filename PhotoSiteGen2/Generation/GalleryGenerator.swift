@@ -416,7 +416,8 @@ struct GalleryGenerator {
                 {
                     Div {
                         Text(  // TODO: have decimal count adjust for distance ranges
-                            "\(String(format: "%.1f" ,subjectDistance*FT_PER_METER)) ft (\(String(format: "%.1f" ,subjectDistance)) m)"
+                            distanceAsText(subjectDistance: md.subjectDistance)
+//                            "\(String(format: "%.1f" ,subjectDistance*FT_PER_METER)) ft (\(String(format: "%.1f" ,subjectDistance)) m)"
                         )
                     }.class("focalDistance")
                 }
@@ -475,5 +476,22 @@ struct GalleryGenerator {
                     "\(genName)/\(photo.filteredFileName()).html"),
             atomically: true,
             encoding: String.Encoding.utf8)
+    }
+    func  distanceAsText(subjectDistance: Double?) -> String {
+        guard let subjectDistance else { return "" }
+        if subjectDistance ==  4294967295 || subjectDistance == 2147483647 {
+            return "∞"
+        }
+        let ft = subjectDistance*FT_PER_METER
+        if subjectDistance > 100 {
+            return "\(String(format: "%.0f", ft)) ft (\(String(format: "%.0f", subjectDistance)) m)"
+        }
+        if subjectDistance > 10 {
+            return "\(String(format: "%.1f", ft)) ft (\(String(format: "%.1f", subjectDistance)) m)"
+        }
+        if ft > 1 {
+            return "\(String(format: "%.2f", ft)) ft (\(String(format: "%.2f", subjectDistance)) m)"
+        }
+        return "\(String(format: "%.1f", ft*12)) in (\(String(format: "%.3f", subjectDistance)) m)"
     }
 }
