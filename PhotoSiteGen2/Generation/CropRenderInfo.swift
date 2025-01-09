@@ -144,6 +144,17 @@ struct CropRenderer {
         )
         .rotated(aroundOrigin: Point(x: 0, y: 0), byRadians: deg2rad(angle))
 
+        // NOTE: the top, and left are used to position the top-left vertex
+        // and the bottom and right are used to locate the bottom-right vertex
+        // depending upon the rotation, the y of top-left could actually be
+        // lower than the y of the bottom-right location of these vertices
+        // relative to the unrotated original image.  (And these values are plotted
+        // against the unrotated original image)
+        // This mean that either (or both) of the rotatedCropWidth and rotatedCropHeight
+        // may actually be negative.  When this occurs the croppedHeightAsPercentageOfOriginal
+        // (or the height), will also be negative (having something be a negative percentage
+        // of the whole, seems odd, but once we divide the negative cropWidth by the negative
+        // percentage, we get the correct, positive, width of the whole.
         let rotatedCropWidth = rect.br.x - rect.tl.x
         let rotatedCropHeight = rect.br.y - rect.tl.y
 
