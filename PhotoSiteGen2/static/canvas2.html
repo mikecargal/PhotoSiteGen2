@@ -27,10 +27,10 @@
             "src": "2011MachuPicchu/w0512/_MG_8665.jpg"
         },
         "br": {
-            "v1": { "x": 0, "y": 40.147362339238406 },
-            "v2": { "x": 194.364365991918, "y": 31.695218241550066 },
-            "v3": { "x": 200.00000000000003, "y": 161.29149798824025 },
-            "v4": { "x": 5.635634008082052, "y": 169.74364208592863 }
+            "tl": { "x": 0, "y": 40.147362339238406 },
+            "tr": { "x": 194.364365991918, "y": 31.695218241550066 },
+            "br": { "x": 200.00000000000003, "y": 161.29149798824025 },
+            "bl": { "x": 5.635634008082052, "y": 169.74364208592863 }
         }
     }
 
@@ -40,16 +40,16 @@
 
         ctx.fillStyle = "grey"
         ctx.beginPath()
-        console.log({ moveTo: [cropData.br.v1.x, cropData.br.v1.y] })
-        ctx.moveTo(cropData.br.v1.x, cropData.br.v1.y)
-        console.log({ lineTo: [cropData.br.v2.x, cropData.br.v2.y] })
-        ctx.lineTo(cropData.br.v2.x, cropData.br.v2.y)
-        console.log({ lineTo: [cropData.br.v3.x, cropData.br.v3.y] })
-        ctx.lineTo(cropData.br.v3.x, cropData.br.v3.y)
-        console.log({ lineTo: [cropData.br.v4.x, cropData.br.v4.y] })
-        ctx.lineTo(cropData.br.v4.x, cropData.br.v4.y)
-        console.log({ lineTo: [cropData.br.v1.x, cropData.br.v1.y] })
-        ctx.lineTo(cropData.br.v1.x, cropData.br.v1.y)
+        console.log({ moveTo: [cropData.br.tl.x, cropData.br.tl.y] })
+        ctx.moveTo(cropData.br.tl.x, cropData.br.tl.y)
+        console.log({ lineTo: [cropData.br.tr.x, cropData.br.tr.y] })
+        ctx.lineTo(cropData.br.tr.x, cropData.br.tr.y)
+        console.log({ lineTo: [cropData.br.br.x, cropData.br.br.y] })
+        ctx.lineTo(cropData.br.br.x, cropData.br.br.y)
+        console.log({ lineTo: [cropData.br.bl.x, cropData.br.bl.y] })
+        ctx.lineTo(cropData.br.bl.x, cropData.br.bl.y)
+        console.log({ lineTo: [cropData.br.tl.x, cropData.br.tl.y] })
+        ctx.lineTo(cropData.br.tl.x, cropData.br.tl.y)
         ctx.fill()
 
         const img = new Image();

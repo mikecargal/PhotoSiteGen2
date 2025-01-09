@@ -249,11 +249,11 @@ class SlideShow {
     ctx.fillStyle = "grey";
     ctx.beginPath();
     const original = cropData.original;
-    ctx.moveTo(original.v1.x, original.v1.y);
-    ctx.lineTo(original.v2.x, original.v2.y);
-    ctx.lineTo(original.v3.x, original.v3.y);
-    ctx.lineTo(original.v4.x, original.v4.y);
-    ctx.lineTo(original.v1.x, original.v1.y);
+    ctx.moveTo(original.tl.x, original.tl.y);
+    ctx.lineTo(original.tr.x, original.tr.y);
+    ctx.lineTo(original.br.x, original.br.y);
+    ctx.lineTo(original.bl.x, original.bl.y);
+    ctx.lineTo(original.tl.x, original.tl.y);
     ctx.fill();
 
     const img = new Image();
