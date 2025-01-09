@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "98C4B8DB-1A14-4081-A628-9C417EC095D0",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:PhotoSiteGen2.xcodeproj",
+      "identifier" : "279629AA2CE147D4008F2CE2",
+      "name" : "PhotoSiteGen2"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:PhotoSiteGen2.xcodeproj",
+        "identifier" : "272E52C72D1DAC330025932F",
+        "name" : "PhotoSiteGen2Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

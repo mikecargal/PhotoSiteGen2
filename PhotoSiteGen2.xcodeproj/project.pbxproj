@@ -23,6 +23,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27082A552D30836B004DA8FC /* PhotoSiteGen2.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = PhotoSiteGen2.xctestplan; sourceTree = "<group>"; };
 		272E52C82D1DAC330025932F /* PhotoSiteGen2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoSiteGen2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		277953C22D0C7ABB006B1796 /* XMP.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = XMP.xml; sourceTree = "<group>"; };
 		279629AB2CE147D4008F2CE2 /* PhotoSiteGen2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoSiteGen2.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +81,7 @@
 		279629A22CE147D4008F2CE2 = {
 			isa = PBXGroup;
 			children = (
+				27082A552D30836B004DA8FC /* PhotoSiteGen2.xctestplan */,
 				277953C22D0C7ABB006B1796 /* XMP.xml */,
 				279629AD2CE147D4008F2CE2 /* PhotoSiteGen2 */,
 				272E52C92D1DAC330025932F /* PhotoSiteGen2Tests */,
