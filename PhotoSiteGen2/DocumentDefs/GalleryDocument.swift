@@ -13,7 +13,7 @@ struct GalleryDocument: Codable, Identifiable, Equatable {
     var title: String
     var directory: String
     var titleImageName: String = ""
-    var categories = [String]()
+    var categories: [String]
     var webSite: Binding<WebSiteDocument>?
 
     private var genNameOverride: String?

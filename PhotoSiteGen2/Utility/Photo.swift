@@ -37,16 +37,6 @@ struct Photo: Identifiable, Comparable, Sendable, Codable {
     }
 
     static func == (lhs: Photo, rhs: Photo) -> Bool {
-        let lhStar = lhs.metadata.starRating
-        let rhStar = rhs.metadata.starRating
-        if lhStar != rhStar {
-            return false
-        }
-        let lhDate = lhs.metadata.captureTime ?? ""
-        let rhDate = rhs.metadata.captureTime ?? ""
-        if lhDate != rhDate {
-            return false
-        }
         return lhs.filteredFileName() == rhs.filteredFileName()
     }
 

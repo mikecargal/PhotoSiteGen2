@@ -285,11 +285,17 @@ class SiteLogo extends HTMLElement {
         <div id="logoicon"><img src="images/HummingBirdtransparentOnDarkGrey.svg" alt="HummingBirdLogo"></div>
         <div id="logotext"><img src="images/MikeCargalPhotography.svg" alt="Mike Cargal Photography"></div>
       </a>
-      <a id="igLink" href="https://www.instagram.com/mikecargal/"  target="_blank">
-        <img src="/images/instagramOnTransparent.svg" alt="instagram link"/> @mikecargal
-      </a>
+      <div class="socialLinks">
+        <a id="igLink" href="https://www.instagram.com/mikecargal/"  target="_blank">
+            <img src="/images/instagramOnTransparent.svg" alt="Instagram link"/> @mikecargal
+        </a>
+        <a id="pfLink" href="https://pixelfed.social/mikecargal"  target="_blank">
+            <img src="/images/pixelfed.svg" alt="PixelFed link"/> @mikecargal
+        </a>
+      </div>
     </header>`;
   }
+
   connectedCallback() {
     const logoImgLoaded = (e) => {
       e.target.parentNode.classList.add("loaded");

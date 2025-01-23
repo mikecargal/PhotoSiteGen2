@@ -79,6 +79,7 @@ final class WebSiteGenerator: Sendable {
             try writeSiteMap(generatedGalleries: generatedGalleries)
 
             var photoCache = [UUID: [URL: Photo]]()
+            photoCache.reserveCapacity(generatedGalleries.count)
             for generatedGallery in generatedGalleries {
                 photoCache[generatedGallery.galleryID] =
                     generatedGallery.photoCache
@@ -107,6 +108,7 @@ final class WebSiteGenerator: Sendable {
         return try await withThrowingTaskGroup(of: GeneratedGallery.self) {
             group -> [GeneratedGallery] in
             var generatedGalleries = [GeneratedGallery]()
+            generatedGalleries.reserveCapacity(galleryGenerators.count)
 
             for galleryGenerator in galleryGenerators {
                 group.addTask {

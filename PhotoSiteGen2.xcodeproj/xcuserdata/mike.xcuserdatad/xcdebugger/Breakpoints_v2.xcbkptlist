@@ -30,8 +30,8 @@
             filePath = "PhotoSiteGen2/Generation/GalleryGenerator.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "481"
-            endingLineNumber = "481"
+            startingLineNumber = "483"
+            endingLineNumber = "483"
             landmarkName = "distanceAsText(subjectDistance:)"
             landmarkType = "7">
          </BreakpointContent>

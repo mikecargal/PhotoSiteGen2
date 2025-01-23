@@ -20,6 +20,7 @@ func generateSpritesImage(
     generationStatus: GalleryGenerationStatus?
 ) async -> [Double] {
     var percentages = [Double]()
+    percentages.reserveCapacity(thumbPhotos.count)
     let totalHeight = thumbPhotos.reduce(0) {
         $0 + $1.heightOfImage(ofWidth: width)
     }

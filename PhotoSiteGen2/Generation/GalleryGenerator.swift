@@ -170,6 +170,7 @@ struct GalleryGenerator {
             let photos = try await withThrowingTaskGroup(of: Photo.self) {
                 group -> [Photo] in
                 var photos = [Photo]()
+                photos.reserveCapacity(urls.count)
                 for url in urls {
                     try Task.checkCancellation()
                     if let cachedPhoto = cachedPhotoFor(url: url) {
@@ -477,6 +478,7 @@ struct GalleryGenerator {
             atomically: true,
             encoding: String.Encoding.utf8)
     }
+    
     func  distanceAsText(subjectDistance: Double?) -> String {
         guard let subjectDistance else { return "" }
         if subjectDistance ==  4294967295 || subjectDistance == 2147483647 {
