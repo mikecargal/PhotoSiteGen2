@@ -280,34 +280,25 @@ class SiteLogo extends HTMLElement {
   constructor() {
     super().attachShadow({ mode: "open" }).innerHTML = `
     <link rel=stylesheet href="css/siteLogo.css">
-    <header>
-      <a id="homeLink" href="index.html">
-        <div id="logoicon"><img src="images/HummingBirdtransparentOnDarkGrey.svg" alt="HummingBirdLogo"></div>
-        <div id="logotext"><img src="images/MikeCargalPhotography.svg" alt="Mike Cargal Photography"></div>
-      </a>
-      <div class="socialLinks">
-        <a id="igLink" href="https://www.instagram.com/mikecargal/"  target="_blank">
-            <img src="/images/instagramOnTransparent.svg" alt="Instagram link"/> @mikecargal
-        </a>
-        <a id="pfLink" href="https://pixelfed.social/mikecargal"  target="_blank">
-            <img src="/images/pixelfed.svg" alt="PixelFed link"/> @mikecargal
-        </a>
-      </div>
-    </header>`;
+    <a id="homeLink" href="index.html">
+     <img src="images/HummingBirdTransparentOnDarkGrey.svg" alt="HummingBirdLogo" id="logoIcon">
+     <img src="images/MikeCargalPhotography.svg" alt="Mike Cargal Photography" id="logoText">
+    </a>`;
   }
 
   connectedCallback() {
     const logoImgLoaded = (e) => {
-      e.target.parentNode.classList.add("loaded");
+      e.target.classList.add("loaded");
     };
-    const icon = this.shadowRoot.querySelector("#logoicon img");
+    const icon = this.shadowRoot.querySelector("#logoIcon");
     if (icon.complete) logoImgLoaded({ target: icon });
     else icon.onload = logoImgLoaded;
 
-    const text = this.shadowRoot.querySelector("#logotext img");
+    const text = this.shadowRoot.querySelector("#logoText");
     if (text.complete) logoImgLoaded({ target: text });
     else text.onload = logoImgLoaded;
   }
 }
 
 customElements.define("site-logo", SiteLogo);
+

@@ -1,6 +1,12 @@
+:root {
+    --color-primary: #ee0979;
+    --color-secondary: #ff6a00;
+    --color-background: rgb(20, 20, 20);
+}
+
 body {
-    background-color: rgb(20, 20, 20);
-    color: #ee0979;
+    background-color: var(--color-background);
+    color: var(--color-primary);
     font-family: "open Sans", Helvetica, sans-serif;
 }
 
@@ -11,6 +17,66 @@ body {
 
 .hide {
     display: none;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    /*    outline: 1px solid green;*/
+}
+
+#socialLinks.hide {
+    display: inline-block;
+}
+
+#menu {
+    position: absolute;
+    border-radius: 0.5rem;
+    top: 3rem;
+    right: 3rem;
+    padding: 0.5rem;
+    z-index: 90;
+    background-color: rgba(30, 30, 30, 0.97);
+    color: var(--color-secondary);
+    border: 2px solid var(--color-primary);
+}
+
+#menuIcon {
+    height: 1.75rem;
+    width: 1.75rem;
+    align-self: center;
+    /*    outline: 1px solid yellow;*/
+}
+
+#igLink {
+    align-self: flex-start;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-secondary);
+    display: flex;
+    font-size: 1rem;
+    padding-right: 0.5rem;
+    padding-top: 0.5rem;
+
+    img {
+        height: 25px;
+    }
+}
+
+#pfLink {
+    align-self: flex-start;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-secondary);
+    display: flex;
+    font-size: 1rem;
+    padding-right: 0.5rem;
+
+    /*padding-top: 0.25rem;*/
+    img {
+        height: 15px;
+        padding: 5px;
+    }
 }
 
 #slideShow {
@@ -143,8 +209,8 @@ body {
     left: 3rem;
     z-index: 90;
     background-color: rgba(30, 30, 30, 0.97);
-    color: #ff6a00;
-    border: 2px solid #ee0979;
+    color: var(--color-secondary);
+    border: 2px solid var(--color-primary);
     padding: 1em;
     display: grid;
     grid-template-columns: auto auto auto;

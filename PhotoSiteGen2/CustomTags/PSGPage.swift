@@ -20,7 +20,7 @@ class PSGPage: GroupTag {
             Html {
                 PSGHead(preloads: preloads, generationID: generationID)
                 Body {
-                    SiteLogo()
+                    SiteHeader()
                     Main { content }
                 }
                 PSGJSFiles(jsFiles, generationID: generationID)

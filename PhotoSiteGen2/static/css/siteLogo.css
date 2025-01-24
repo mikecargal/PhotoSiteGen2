@@ -1,60 +1,24 @@
-header {
-    display: flex;
-    justify-content: space-between;
-}
-
 #homeLink {
     text-decoration: none;
 }
 
-#logoicon {
+#logoIcon {
     width: 4rem;
     height: 4rem;
 }
 
-#logotext {
-    width: 20rem;
-    height: 2rem;
+#logoText {
+    width: 18rem;
+    height: 1.8rem;
 }
 
-#logoicon,
-#logotext {
+img {
     background: linear-gradient(to left, #ff6a00, #ee0979);
     display: inline-block;
     opacity: 0;
 }
 
-#logoicon.loaded,
-#logotext.loaded {
+img.loaded {
     opacity: 1;
     transition: opacity 1000ms ease;
-}
-
-#igLink {
-    align-self: flex-start;
-    align-items: center;
-    text-decoration: none;
-    color: #ee0979;
-    display: flex;
-    font-size: 0.75rem;
-    padding-right: 0.25rem;
-    padding-top: 0.5rem;
-    img {
-        height: 25px;
-    }
-}
-
-#pfLink {
-    align-self: flex-start;
-    align-items: center;
-    text-decoration: none;
-    color: #ee0979;
-    display: flex;
-    font-size: 0.75rem;
-    padding-right: 0.25rem;
-    /*padding-top: 0.25rem;*/
-    img {
-        height: 15px;
-        padding: 5px;
-    }
 }
