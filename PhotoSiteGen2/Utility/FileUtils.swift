@@ -15,7 +15,7 @@ typealias ProgressClosure = @MainActor (String?) async -> Void
 func copyDirectory(
     from source: URL,
     to dest: URL,
-    statusLogger: ErrorHandler,
+    statusLogger: ErrorHandler? = nil,
     context: String,
     renamer: Renamer? = nil,
     filterFinder: FilterFinder? = nil,
@@ -45,7 +45,7 @@ func copyDirectory(
         } else {
             let filename = renamer?(url) ?? url.lastPathComponent
             let copyDest = dest.appending(component: filename)
-            if fileNameSet.contains(filename) {
+            if let statusLogger, fileNameSet.contains(filename) {
                 async let _ = statusLogger.handleError(
                     context, GalleryGenerationError.DuplicateName(filename))
             }
