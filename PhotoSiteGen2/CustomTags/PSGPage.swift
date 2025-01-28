@@ -11,6 +11,7 @@ import SwiftHtml
 class PSGPage: GroupTag {
     public init(
         generationID: TSID,
+        canShowCaptions: Bool,
         jsFiles: [String],
         preloads: [PreLoad] = [],
         @TagBuilder _ builder: @escaping () -> Tag
@@ -20,7 +21,7 @@ class PSGPage: GroupTag {
             Html {
                 PSGHead(preloads: preloads, generationID: generationID)
                 Body {
-                    SiteHeader()
+                    SiteHeader(canShowCaptions: canShowCaptions)
                     Main { content }
                 }
                 PSGJSFiles(jsFiles, generationID: generationID)

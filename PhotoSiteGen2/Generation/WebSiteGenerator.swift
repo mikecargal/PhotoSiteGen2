@@ -183,6 +183,7 @@ final class WebSiteGenerator: Sendable {
             Comment("generated: \(Date.now)")
             PSGPage(
                 generationID: generationID,
+                canShowCaptions: false,
                 jsFiles: [
                     "js/priorityFetcher.js",
                     "js/webcomponents.js",

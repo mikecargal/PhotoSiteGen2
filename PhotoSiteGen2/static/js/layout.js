@@ -25,6 +25,13 @@ function layout() {
   }
 }
 
+function showCaptions(showThem) {
+  Array.from(document.getElementsByTagName("gallery-image")).forEach((image) =>
+    image.setCaptionShow(showThem)
+  );
+  layout();
+}
+
 function getColumnsForWidth(viewWidth) {
   if (viewWidth > 2000) return 5;
   if (viewWidth > 1500) return 4;

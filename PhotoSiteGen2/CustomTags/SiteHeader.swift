@@ -9,15 +9,26 @@ import Foundation
 import SwiftHtml
 
 class SiteHeader: GroupTag {
-    public init() {
+    public init(canShowCaptions: Bool) {
         super.init([
             Header {
                 SiteLogo()
                 Img(src: "/images/burger.svg", alt: "menu")
                     .id("menuIcon")
-                    .onClick( "document.getElementById('menu').classList.toggle('hide')")
+                    .onClick(
+                        "document.getElementById('menu').classList.toggle('hide')"
+                    )
             },
             Div {
+                if canShowCaptions {
+                    Label {
+                        Input().type(.checkbox)
+                            .id("showCaptions")
+                            .onClick("showCaptions(this.checked)")
+                        Text("Show Captions")
+                    }
+                    Hr()
+                }
                 Div {
                     Self.instagramLink()
                     Self.pixelFedLink()
@@ -25,7 +36,7 @@ class SiteHeader: GroupTag {
                 .id("socialLinks")
             }
             .id("menu")
-            .class("hide")
+            .class("hide"),
         ])
     }
 

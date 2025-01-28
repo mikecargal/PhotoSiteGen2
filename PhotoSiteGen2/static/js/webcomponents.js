@@ -176,6 +176,16 @@ class GalleryBase extends HTMLElement {
     return this.closest("fade-in-image");
   }
 
+  setCaptionShow(showIt) {
+    if (this.captionDiv) {
+      if (showIt) {
+        this.captionDiv.classList.remove("hide");
+      } else {
+        this.captionDiv.classList.add("hide");
+      }
+    }
+  }
+
   // component attributes
   static get observedAttributes() {
     return [
@@ -192,6 +202,7 @@ class GalleryBase extends HTMLElement {
 
   // attribute change
   attributeChangedCallback(property, oldValue, newValue) {
+    // console.log({ property, oldValue, newValue });
     if (oldValue === newValue) return;
     this[property] = newValue;
     if (this.shadowRoot) {
@@ -258,7 +269,9 @@ class GalleryImage extends GalleryBase {
     this.thumbpct = this.getAttribute("thumbpct");
 
     const caption = this.getAttribute("caption");
-    let captionDiv = caption ? `<div class="caption">${caption}</div>` : "";
+    let captionDiv = caption
+      ? `<div class="caption hide">${caption}</div>`
+      : "";
 
     this.attachShadow({ mode: "open" }).innerHTML = `
     <link rel=stylesheet href="css/galleryImage.css">
@@ -268,6 +281,7 @@ class GalleryImage extends GalleryBase {
     </div>`;
 
     this.fadeInImage = this.shadowRoot.querySelector("fade-in-image");
+    this.captionDiv = this.shadowRoot.querySelector(".caption");
   }
 }
 
@@ -301,4 +315,3 @@ class SiteLogo extends HTMLElement {
 }
 
 customElements.define("site-logo", SiteLogo);
-

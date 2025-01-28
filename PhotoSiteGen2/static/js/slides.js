@@ -56,9 +56,24 @@ class SlideShow {
     });
   }
 
+  hideHeaderAndMenu() {
+    const menu = document.getElementById("menu");
+    this.menuWasVisible = !menu.classList.contains("hide");
+    document.getElementsByTagName("header")[0].classList.add("hide");
+    menu.classList.add("hide");
+  }
+
+  restoreHeaderAndMenu() {
+    if (this.menuWasVisible) {
+      document.getElementById("menu").classList.remove("hide");
+    }
+    document.getElementsByTagName("header")[0].classList.remove("hide");
+  }
+
   show(idx) {
     this.showing = true;
     this.setCurrentIdx(idx);
+    this.hideHeaderAndMenu();
     this.ssDiv.classList.remove("slideShowHidden");
     this.ssDiv.classList.add("slideShow");
   }
@@ -70,6 +85,7 @@ class SlideShow {
   hide() {
     this.showing = false;
     this.moveCurrentImgIntoView();
+    this.restoreHeaderAndMenu();
     this.ssDiv.classList.add("slideShowHidden");
     this.ssDiv.classList.remove("slideShow");
     this.deleteSSIdx();

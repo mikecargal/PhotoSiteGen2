@@ -22,7 +22,18 @@ body {
 header {
     display: flex;
     justify-content: space-between;
+
+    position: fixed;
+    width: calc(100vw - 2rem);
+    padding-right: 2rem;
+    top: 0;
+    z-index: 80;
+    background-color: var(--color-background);
     /*    outline: 1px solid green;*/
+}
+
+main {
+    padding-top: 4rem;
 }
 
 #socialLinks.hide {
@@ -30,7 +41,8 @@ header {
 }
 
 #menu {
-    position: absolute;
+    position: fixed;
+    width: fit-content;
     border-radius: 0.5rem;
     top: 3rem;
     right: 3rem;
@@ -39,6 +51,47 @@ header {
     background-color: rgba(30, 30, 30, 0.97);
     color: var(--color-secondary);
     border: 2px solid var(--color-primary);
+
+    /* https: //moderncss-test.vercel.app/pure-css-custom-checkbox-style/ */
+    label {
+        display: grid;
+        grid-template-columns: 1em auto;
+        gap: 0.5em;
+    }
+
+    input[type="checkbox"] {
+        appearance: none;
+        background-color: var(--color-background);
+        margin: 0;
+        font: inherit;
+        color: var(--color-primary);
+        width: 1.15em;
+        height: 1.15em;
+        border: 0.15em solid var(--color-secondary);
+        border-radius: 0.15em;
+        transform: translate(-0.075em);
+        display: grid;
+        place-content: center;
+
+        &::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--color-primary);
+        }
+
+        &:checked::before {
+            transform: scale(1);
+        }
+    }
+
+    hr {
+        border: none;
+        height: 2px;
+        background-color: var(--color-primary);
+    }
 }
 
 #menuIcon {
