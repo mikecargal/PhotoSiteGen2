@@ -13,11 +13,7 @@ class SiteHeader: GroupTag {
         super.init([
             Header {
                 SiteLogo()
-                Img(src: "/images/burger.svg", alt: "menu")
-                    .id("menuIcon")
-                    .onClick(
-                        "document.getElementById('menu').classList.toggle('hide')"
-                    )
+                Button().id("menuIcon").attribute("popovertarget", "menu")
             },
             Div {
                 if canShowCaptions {
@@ -35,8 +31,8 @@ class SiteHeader: GroupTag {
                 }
                 .id("socialLinks")
             }
-            .id("menu")
-            .class("hide"),
+                .id("menu")
+            .flagAttribute("popover"),
         ])
     }
 

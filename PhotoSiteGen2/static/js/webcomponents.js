@@ -295,8 +295,7 @@ class SiteLogo extends HTMLElement {
     super().attachShadow({ mode: "open" }).innerHTML = `
     <link rel=stylesheet href="css/siteLogo.css">
     <a id="homeLink" href="index.html">
-     <img src="images/HummingBirdTransparentOnDarkGrey.svg" alt="HummingBirdLogo" id="logoIcon">
-     <img src="images/MikeCargalPhotography.svg" alt="Mike Cargal Photography" id="logoText">
+     <img src="images/mikecargalphotographycombinedlogo.svg" alt="Mike Cargal Photography Logo" id="logo">
     </a>`;
   }
 
@@ -304,13 +303,9 @@ class SiteLogo extends HTMLElement {
     const logoImgLoaded = (e) => {
       e.target.classList.add("loaded");
     };
-    const icon = this.shadowRoot.querySelector("#logoIcon");
+    const icon = this.shadowRoot.querySelector("#logo");
     if (icon.complete) logoImgLoaded({ target: icon });
     else icon.onload = logoImgLoaded;
-
-    const text = this.shadowRoot.querySelector("#logoText");
-    if (text.complete) logoImgLoaded({ target: text });
-    else text.onload = logoImgLoaded;
   }
 }
 
