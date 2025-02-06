@@ -31,6 +31,14 @@ function showCaptions(showThem) {
   );
   layout();
 }
+function showQR() {
+  document.getElementById("QR").showPopover();
+  document.getElementById("menu").hidePopover();
+}
+
+function dismissQR() {
+  document.getElementById("QR").hidePopover();
+}
 
 function getColumnsForWidth(viewWidth) {
   if (viewWidth > 2000) return 5;

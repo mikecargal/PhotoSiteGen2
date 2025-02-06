@@ -102,6 +102,34 @@ main {
         height: 2px;
         background-color: var(--color-primary);
     }
+
+    img {
+        background-color: transparent;
+        border: none;
+        margin-top: 0.5rem;
+        float: right;
+        height: 1rem;
+    }
+}
+
+#QR:popover-open {
+    position: fixed;
+    inset: unset;
+    padding: 0;
+    border: none;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        width: 10rem;
+        height: 10rem;
+        border: 2px solid black;
+    }
 }
 
 #igLink {
@@ -113,7 +141,7 @@ main {
     font-size: 1rem;
     padding-right: 0.5rem;
     padding-top: 0.5rem;
-    
+
     img {
         height: 25px;
     }
@@ -127,7 +155,7 @@ main {
     display: flex;
     font-size: 1rem;
     padding-right: 0.5rem;
-    
+
     img {
         height: 15px;
         padding: 5px;
