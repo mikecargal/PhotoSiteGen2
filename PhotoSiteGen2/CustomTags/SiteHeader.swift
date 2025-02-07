@@ -28,7 +28,7 @@ class SiteHeader: GroupTag {
                 Div {
                     Self.instagramLink()
                     Self.pixelFedLink()
-                    Img(src: "/images/photositeqr.svg", alt: "show QR Code")
+                    Img(src: "images/photositeqr.svg", alt: "show QR Code")
                         .onClick("showQR()")
                 }
                 .id("socialLinks")
@@ -37,7 +37,7 @@ class SiteHeader: GroupTag {
             .flagAttribute("popover"),
             Div {
                 Img(
-                    src: "/images/photositeqr.svg",
+                    src: "images/photositeqr.svg",
                     alt: "QR Code for https://photos.mikecargal.com")
             }.id("QR").flagAttribute("popover").onClick("dismissQR()"),
         ])
@@ -46,7 +46,7 @@ class SiteHeader: GroupTag {
     private static func instagramLink() -> A {
         A {
             Img(
-                src: "/images/instagramOnTransparent.svg",
+                src: "images/instagramOnTransparent.svg",
                 alt: "link to Instagram @mikecargal")
             Text(" @mikecargal")
         }
@@ -58,7 +58,7 @@ class SiteHeader: GroupTag {
     private static func pixelFedLink() -> A {
         A {
             Img(
-                src: "/images/pixelfed.svg",
+                src: "images/pixelfed.svg",
                 alt:
                     "Link to PixelFed @mikecargal@pixelfed.social"
             )

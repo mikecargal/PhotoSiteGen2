@@ -33,7 +33,7 @@ header {
         background-color: var(--color-background);
         border: none;
         width: 2rem;
-        background: center / contain no-repeat url("/images/burger.svg");
+        background: center / contain no-repeat url("../images/burger.svg");
     }
 }
 
