@@ -52,5 +52,165 @@
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C679AC24-07DD-408C-8D4B-160982929FF3"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhotoSiteGen2/Utility/FileUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "copyDirectory(from:to:statusLogger:context:renamer:filterFinder:directoryNameFilter:progressClosure:)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - 11f3e1c5c6032d28"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - db8a114762dcd12a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - f8811907cf493367"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "47"
+                  endingLineNumber = "47">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - f8811907cf493325"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - 9d9c02c0bdf59524"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - 47963241d88f5926"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - 94bebbe9d37a17cb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "implicit closure #3 () async -&gt; () in PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - 3bc7b90d41064f6d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for implicit closure #3 () async -&gt; () in PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+               <Location
+                  uuid = "C679AC24-07DD-408C-8D4B-160982929FF3 - 1711230a41abf87c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for implicit closure #3 () async -&gt; () in PhotoSiteGen2.copyDirectory(from: Foundation.URL, to: Foundation.URL, statusLogger: Swift.Optional&lt;PhotoSiteGen2.ErrorHandler&gt;, context: Swift.String, renamer: Swift.Optional&lt;(Foundation.URL) -&gt; Swift.String&gt;, filterFinder: Swift.Optional&lt;(Swift.String) -&gt; Swift.Optional&lt;PhotoSiteGen2.FileFilter&gt;&gt;, directoryNameFilter: Swift.Optional&lt;(Foundation.URL) -&gt; Foundation.URL&gt;, progressClosure: Swift.Optional&lt;@Swift.MainActor @Sendable (Swift.Optional&lt;Swift.String&gt;) async -&gt; ()&gt;) async throws -&gt; ()"
+                  moduleName = "PhotoSiteGen2.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mike/Developer/PhotoSiteGen2/PhotoSiteGen2/Utility/FileUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BC1853D1-3E69-4579-B998-AACB84884B3E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhotoSiteGen2/Views/GenerationSheetView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

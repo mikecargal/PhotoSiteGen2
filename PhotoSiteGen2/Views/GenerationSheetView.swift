@@ -11,9 +11,9 @@ import SwiftUI
 
 struct GenerationSheetView: View {
     private static let logger = Logger(
-            subsystem: Bundle.main.bundleIdentifier!,
-            category: String(describing: Self.self)
-        )
+        subsystem: Bundle.main.bundleIdentifier!,
+        category: String(describing: Self.self)
+    )
 
     @Binding var websiteDocument: WebSiteDocument
     @Binding var showSheet: Bool
@@ -21,12 +21,13 @@ struct GenerationSheetView: View {
     @State private var generating = false
     @State private var audioPlayer: AVAudioPlayer?
     @State private var generationTask: Task<Void, Error>?
+    @State private var turningOffDevMode: Bool = false
 
     @AppStorage("Inline Web Component CSS") private var inlineWebComponentCSS =
         true
     @AppStorage("Clean Build") private var cleanBuild = false
     @AppStorage("Minify Build") private var minify = false
-    @AppStorage("Skip Static Content") private var skipStaticContent = false
+    @AppStorage("Dev Mode") private var devMode = false
 
     @State var generator: WebSiteGenerator?
 
@@ -38,7 +39,12 @@ struct GenerationSheetView: View {
                     isOn: $inlineWebComponentCSS)
                 Toggle("Clean Build", isOn: $cleanBuild)
                 Toggle("Minify", isOn: $minify)
-                Toggle("Skip Static Content", isOn: $skipStaticContent)
+                Toggle("Dev Mode", isOn: $devMode)
+                    .onChange(of: devMode) {
+                        if !devMode {
+                            turningOffDevMode = true
+                        }
+                    }
             }
             .disabled(generating)
             Button(action: generate) {
@@ -73,6 +79,12 @@ struct GenerationSheetView: View {
                 audioPlayer = try? AVAudioPlayer(contentsOf: url)
             }
         }
+        .sheet(isPresented: $turningOffDevMode) {
+            DevModeDeactivationView(
+                turningOffDevMode: $turningOffDevMode,
+                staticURL: websiteDocument.staticSiteFolder!,
+                destURL: websiteDocument.destinationFolder!)
+        }
     }
 
     func generate() {
@@ -92,13 +104,14 @@ struct GenerationSheetView: View {
                     inlineWebComponentCSS: inlineWebComponentCSS,
                     cleanBuild: cleanBuild,
                     minify: minify,
-                    skipStaticContent: skipStaticContent)
+                    skipStaticContent: devMode)
             generating = false
             Self.logger.info("\(Date()) - Generation complete")
             audioPlayer?.play()
         }
 
     }
+
 }
 
 #Preview {

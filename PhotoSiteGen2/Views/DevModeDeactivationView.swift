@@ -12,53 +12,65 @@ struct DevModeDeactivationView: View {
         subsystem: "com.mikecargal.photositegen2",
         category: "DevModeDeactivationView")
 
-    @Binding var turningOffDevMode: Bool
-  var  staticURL: URL
-  var  destURL: URL
-    let sLogger = SaveErrorHandler()
     enum StaticSaveStatus {
-        case saving, success, failure
+        case pending, saving, success, failure
     }
 
-    var saveStatus: StaticSaveStatus
+    @Binding var turningOffDevMode: Bool
+    var staticURL: URL
+    var destURL: URL
+
+    let sLogger = SaveErrorHandler()
+
+    @State var saveStatus: StaticSaveStatus = .pending
     var body: some View {
         VStack {
             Text("Save or Discard changes?")
             HStack {
-                Button("Save" {
-                     saveStaticResources(staticURL: staticURL,
-                                         destURL: destURL,errorHandler:  sLogger )
+                Button("Save") {
+                    saveStaticResources(
+                        staticURL: staticURL,
+                        destURL: destURL, errorHandler: sLogger)
                 }
                 Button("Discard") {
                     turningOffDevMode = false
                 }
             }
 
-        HStack {
-            switch saveStatus {
-            case .saving:
-                Text("Saving...")
-            case .success:
-                Text("Saved!")
-            case .failure:
-                Text("Save Failed!")
+            HStack {
+                switch saveStatus {
+                case .saving:
+                    Text("Saving...")
+                case .success:
+                    Text("Saved!")
+                case .failure:
+                    Text("Save Failed!")
+                case .pending:
+                    Text("")
+                }
             }
-        }        }
+            
+            if saveStatus == .success || saveStatus == .failure  {
+                Button("Dismiss") {
+                    turningOffDevMode = false
+                }
+            }
+        }
         .padding()
-
-        .frame(minWidth: 500, minHeight: 500)
         if saveStatus == .failure {
-            TextEditor(text: .constant(gatherErrors().joined(separator: "\n")))
+            TextEditor(text: .constant(sLogger.errors.joined(separator: "\n")))
                 .frame(height: 100)
                 .padding()
         }
     }
 
-    func saveStaticResources(staticURL: URL, destURL: URL, errorHandler: ErrorHandler) {
-        
-       Task {
+    func saveStaticResources(
+        staticURL: URL, destURL: URL, errorHandler: ErrorHandler
+    ) {
+        saveStatus = .saving
+        Task {
             var context = "copying static content back to source"
-           
+
             do {
                 context = "copying static css content back to source"
                 try await copyDirectory(
@@ -84,8 +96,10 @@ struct DevModeDeactivationView: View {
                         path: "images"),
                     statusLogger: sLogger,
                     context: context)
+                saveStatus = .success
             } catch {
-               await sLogger.handleError(context, error)
+                saveStatus = .failure
+                await sLogger.handleError(context, error)
             }
             Self.logger.info(
                 "Finished copying static content back to source")
@@ -95,9 +109,11 @@ struct DevModeDeactivationView: View {
     @Observable @MainActor
     class SaveErrorHandler: ErrorHandler {
 
-        private var errors: [String]
+        private(set) var errors: [String]
 
-        init() {}
+        init() {
+            errors = []
+        }
 
         func handleError(_ context: String, _ error: any Error) async {
             errors.append("\(context): \(error)")
