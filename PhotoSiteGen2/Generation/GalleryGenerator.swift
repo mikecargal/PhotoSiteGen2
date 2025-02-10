@@ -67,7 +67,7 @@ struct GalleryGenerator {
             let renderer = DocumentRenderer(minify: minify, indent: 2)
             try generateInfoHtmlFiles(photos: photos, renderer: renderer)
 
-            let thumbImageName = "/thumbs/\(genName).jpg"
+            let thumbImageName = "thumbs/\(genName).jpg"
 
             let thumbPcts = await generateSpritesImage(
                 thumbPhotos: photos, width: THUMBNAIL_WIDTH,

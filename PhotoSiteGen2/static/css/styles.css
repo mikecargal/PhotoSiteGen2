@@ -103,12 +103,14 @@ main {
         background-color: var(--color-primary);
     }
 
-    img {
-        background-color: transparent;
-        border: none;
+    button.qr {
         margin-top: 0.5rem;
+        background-color: var(--color-background);
+        border: none;
+        width: 1rem;
         float: right;
         height: 1rem;
+        background: center / contain no-repeat url("../images/photositeqr.svg");
     }
 }
 

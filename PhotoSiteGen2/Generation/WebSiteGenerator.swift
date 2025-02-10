@@ -201,7 +201,7 @@ final class WebSiteGenerator: Sendable {
                 .class("wall")
                 .attribute(
                     "data-thumbsrc",
-                    "/thumbs/index.jpg?tsid=\(self.generationID)")
+                    "thumbs/index.jpg?tsid=\(self.generationID)")
             }
         }
         return DocumentRenderer(minify: minify, indent: 2).render(document)
