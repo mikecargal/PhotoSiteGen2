@@ -28,14 +28,13 @@ class SiteHeader: GroupTag {
                 Div {
                     Self.instagramLink()
                     Self.pixelFedLink()
-                    Img(src: "images/photositeqr.svg", alt: "show QR Code")
-                        .onClick("showQR()")
+                    Button().class("qr").onClick("showQR()")
                 }
                 .id("socialLinks")
             }
             .id("menu")
             .flagAttribute("popover"),
-            Div {
+            Button {
                 Img(
                     src: "images/photositeqr.svg",
                     alt: "QR Code for https://photos.mikecargal.com")
