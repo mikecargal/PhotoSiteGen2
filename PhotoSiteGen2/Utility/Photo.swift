@@ -74,8 +74,8 @@ struct Photo: Identifiable, Comparable, Sendable, Codable {
     }
 
     static func filteredFileName(_ url: URL) -> String {
-        let inParts = url.deletingPathExtension().lastPathComponent.split(
-            separator: "-")
+        let inParts = url.deletingPathExtension().lastPathComponent.components(
+            separatedBy: CharacterSet(charactersIn: "- "))
 
         var rest = inParts[1..<inParts.endIndex]
             .filter {
@@ -118,7 +118,9 @@ extension Photo {
             try url.resourceValues(forKeys: [.contentModificationDateKey])
             .contentModificationDate as Date?
         metadata = ImageMetaData(
-            url: url, imgSrc: "\(genName)\\w0512\\\(Self.filteredFileNameWithExtension(url))")
+            url: url,
+            imgSrc:
+                "\(genName)\\w0512\\\(Self.filteredFileNameWithExtension(url))")
         aspectRatio = Double(metadata.pixelWidth) / Double(metadata.pixelHeight)
 
         do {
