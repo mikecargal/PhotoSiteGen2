@@ -168,9 +168,12 @@ class GalleryBase extends HTMLElement {
     );
   }
 
-  getThumbSrc() {
-    return this.closest("[thumbsrc]")?.getAttribute("thumbsrc");
-  }
+    getThumbSrc() {
+      return (
+        this.closest("[thumbsrc]")?.getAttribute("thumbsrc") ||
+        this.closest("[data-thumbsrc]")?.getAttribute("data-thumbsrc")
+      );
+    }
 
   getImage() {
     return this.closest("fade-in-image");
