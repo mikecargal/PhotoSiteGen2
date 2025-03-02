@@ -31,7 +31,7 @@ class FadeInImage extends HTMLElement {
     this.explicitSizing = this.hasAttribute("explicitSizing");
     const [additionalSizing, sizes] = this.hasAttribute("masonrySizing")
       ? this.masonrySizing(parseFloat(this.getAttribute("ar")))
-      : ["", ""];
+      : ["", 'sizes="100vw"'];
 
     this.attachShadow({ mode: "open" }).innerHTML = `
      <link rel=stylesheet href="css/fadeIn.css">
@@ -74,21 +74,37 @@ class FadeInImage extends HTMLElement {
     this.background.style.backgroundImage = `url("${this.thumbsrc}")`;
   }
 
-  getSrcForWidth() {
-    let imgWidth = parseInt(this.imgwidth);
-    if (imgWidth <= 512) {
-      return this.src.replace("/", "/w0512/");
-    } else if (imgWidth <= 1024) {
-      return this.src.replace("/", "/w1024/");
-    } else if (imgWidth <= 2048) {
-      return this.src.replace("/", "/w2048/");
+  imageSrcAt(src, w) {
+    if (w <= 512) {
+      return src.replace("/", "/w0512/");
+    } else if (w <= 1024) {
+      return src.replace("/", "/w1024/");
+    } else if (w <= 2048) {
+      return src.replace("/", "/w2048/");
     }
     return this.src;
   }
 
+  srcsetFor(src) {
+    return (
+      `${this.imageSrcAt(src, 512)} 512w,` +
+      ` ${this.imageSrcAt(src, 1024)} 1024w,` +
+      ` ${this.imageSrcAt(src, 2048)} 1024w,` +
+      ` ${this.imageSrcAt(src)} `
+    );
+  }
+
+  setSrcForImg(img, sizes) {
+    if (sizes) {
+      img.sizes = sizes;
+    }
+    img.srcset = this.srcsetFor(this.src);
+    img.src = this.src;
+  }
+
   checkForLoadSrc() {
-    if (this.src && this.imgwidth) {
-      this.img.src = this.getSrcForWidth();
+    if (this.src) {
+      this.setSrcForImg(this.img);
     }
   }
 
@@ -168,12 +184,12 @@ class GalleryBase extends HTMLElement {
     );
   }
 
-    getThumbSrc() {
-      return (
-        this.closest("[thumbsrc]")?.getAttribute("thumbsrc") ||
-        this.closest("[data-thumbsrc]")?.getAttribute("data-thumbsrc")
-      );
-    }
+  getThumbSrc() {
+    return (
+      this.closest("[thumbsrc]")?.getAttribute("thumbsrc") ||
+      this.closest("[data-thumbsrc]")?.getAttribute("data-thumbsrc")
+    );
+  }
 
   getImage() {
     return this.closest("fade-in-image");
@@ -187,6 +203,10 @@ class GalleryBase extends HTMLElement {
         this.captionDiv.classList.add("hide");
       }
     }
+  }
+
+  setSrcForImg(img, sizes) {
+    this.img.setSrcForImg(img, sizes);
   }
 
   // component attributes
@@ -205,7 +225,6 @@ class GalleryBase extends HTMLElement {
 
   // attribute change
   attributeChangedCallback(property, oldValue, newValue) {
-    // console.log({ property, oldValue, newValue });
     if (oldValue === newValue) return;
     this[property] = newValue;
     if (this.shadowRoot) {

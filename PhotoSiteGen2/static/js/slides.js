@@ -130,34 +130,19 @@ class SlideShow {
     this.currentImg.setAttribute("thumbpct", currentGalleryImage.thumbpct);
     this.currentImg.setAttribute("ar", currentGalleryImage.ar);
 
-    this.resize();
+    const width = this.resize();
 
     document.getElementById("infoContainer").classList.add("hide");
 
     const nextImage = this.images[this.nextIdx];
-    this.nextSmallImg.setAttribute(
-      "src",
-      nextImage.src.replace("/", "/w0512/")
-    );
+    nextImage.setSrcForImg(this.nextImg, `${width}px`);
+    nextImage.setSrcForImg(this.nextSmallImg, "512px");
     fetch(nextImage.src.replace(".jpg", ".html"));
-    let nextSrc = this.getSrcForWidth(
-      nextImage.src,
-      this.widthFromAR(window.innerWidth, window.innerHeight, nextImage.ar)
-    );
-    fetch(nextSrc);
 
     const prevImage = this.images[this.prevIdx];
-    this.prevImg.setAttribute("src", prevImage.fadeInImage.getSrcForWidth());
-    this.prevSmallImg.setAttribute(
-      "src",
-      prevImage.src.replace("/", "/w0512/")
-    );
+    prevImage.setSrcForImg(this.prevImg, `${width}px`);
+    prevImage.setSrcForImg(this.prevSmallImg, "512px");
     fetch(prevImage.src.replace(".jpg", ".html"));
-    let prevSrc = this.getSrcForWidth(
-      prevImage.src,
-      this.widthFromAR(window.innerWidth, window.innerHeight, prevImage.ar)
-    );
-    fetch(prevSrc);
 
     this.setSSIdx();
     this.moveCurrentImgIntoView();
@@ -182,17 +167,6 @@ class SlideShow {
     this.currentImg.setAttribute("imgwidth", width);
     this.currentImg.setAttribute("w", width);
     return width;
-  }
-
-  getSrcForWidth(src, imgWidth) {
-    if (imgWidth <= 512) {
-      return src.replace("/", "/w0512/");
-    } else if (imgWidth <= 1024) {
-      return src.replace("/", "/w1024/");
-    } else if (imgWidth <= 2048) {
-      return src.replace("/", "/w2048/");
-    }
-    return src;
   }
 
   widthFromAR(w, h, ar) {
